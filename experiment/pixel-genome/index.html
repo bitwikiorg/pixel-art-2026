@@ -5,19 +5,19 @@ exp_id: "11"
 status: "PROCEDURAL BASELINE · LIVE"
 category: "Generation"
 question: "How much structured visual variation can a fixed 128-bit description produce when a shared deterministic interpreter generates indexed-color pixels?"
-explanation: "A 16-byte genome controls a restricted family of 24×24 creatures. The interpreter derives shape, pattern, and a four-color RGB palette, then stores each visible address as a 2-bit palette index. The 576-pixel indexed raster therefore contains 1,152 raw index bits; its colors are a rendered interpretation of those indices through the palette."
+explanation: "A 16-byte genome controls a deliberately narrow family of 24×24 creatures. Every genome is decoded by the same hand-written body grammar, so different outputs are expected to look related. The genome varies geometry, pattern, palette, and several discrete traits inside that family; it is not an arbitrary sprite generator."
 deck: "A 128-bit procedural description generates a 24×24 four-color indexed field inside a deliberately restricted family."
 source: "128-bit genome"
 interpretation: "2-bit indexed-color raster + genome-derived 4-entry RGB palette"
 learned: "No · deterministic baseline"
 measure: "genome bits, index-raster bits, changed color indices, exact regeneration"
 shows: "A compact description plus a shared interpreter can generate and restore a larger indexed-color field inside a restricted model family."
-does_not_show: "General image compression or neural generation. The interpreter is shared side information and the image family is deliberately constrained."
+does_not_show: "General image compression, arbitrary sprite generation, or neural generation. The interpreter is shared side information and deliberately limits which images can exist."
 steps:
   - label: "Generate a 128-bit description"
-    text: "A text seed deterministically produces sixteen bytes. Those bits control geometry, pattern, palette, and other traits."
-  - label: "Render indexed color"
-    text: "The interpreter produces 576 values in {0,1,2,3}. Each 2-bit value selects one of four RGB colors derived from the same genome."
+    text: "A text seed deterministically produces sixteen bytes. Those bytes control position, width, height, eyes, horns, legs, pattern, asymmetry, palette, and pattern offsets."
+  - label: "Render one restricted phenotype"
+    text: "The shared body grammar produces 576 values in {0,1,2,3}. Every output belongs to the same designed creature family, which is why different seeds retain a recognizable common style."
   - label: "Separate description from raster"
     text: "Mutation, crossover, and interpolation alter the genome. Damage alters only color indices. Regeneration discards raster damage and renders again from the persistent description."
 technical: |
@@ -25,13 +25,28 @@ technical: |
 
   The four displayed RGB colors are deterministically derived from the already-counted 128-bit genome. They therefore add no new independent instance information in this generator. If a palette were instead stored independently with the raster, four RGB888 entries would cost another `4 × 24 = 96` bits.
 
-  The apparent `128 / 1,152` description-to-raster ratio is meaningful only inside the restricted family defined by the shared interpreter. Many possible 24×24 four-color rasters cannot be represented by this 128-bit family at all.
+  The apparent `128 / 1,152` description-to-raster ratio is meaningful only inside the restricted family defined by the shared interpreter. Many possible 24×24 four-color rasters cannot be represented by this 128-bit family at all. Similar-looking outputs are therefore expected: the decoder intentionally supplies a strong shape prior.
+
+  Genome bytes have fixed roles. Bytes 0–2 control body position and radii; 3–9 control pattern spacing, eye placement, horn length, leg length, pattern mode, and asymmetry while some also participate in palette derivation; 10–12 control body color and pattern offsets; 13–15 control the dark background color. Because several bytes affect more than one expressed trait, a one-bit mutation can have pleiotropic visual effects.
 
   Mutation flips a small deterministic set of genome bits. Crossover selects bytes from two parent genomes. Interpolation blends byte values. Raster damage changes generated palette indices without changing the genome, so regeneration demonstrates separation between persistent description and disposable rendering rather than learned self-repair.
 scripts:
   - /assets/js/pixel-genome.js
 ---
 <div data-genome-lab>
+  <section class="lab-module family-boundary-box">
+    <div class="lab-label">GENERATIVE FAMILY · INTENTIONALLY NARROW</div>
+    <h2>Why different genomes still look like the same kind of creature</h2>
+    <p class="lab-explain">Every 128-bit genome is interpreted by the same body grammar: one central body, paired eyes, optional horn/leg extent, one of several simple patterns, possible asymmetry, and a four-color palette. The experiment measures variation <em>within</em> that family. It cannot generate an arbitrary 24×24 sprite.</p>
+    <div class="genome-trait-map">
+      <div><small>BYTES 0–2</small><strong>body position · width · height</strong></div>
+      <div><small>BYTES 3–5</small><strong>pattern spacing · eye placement · palette</strong></div>
+      <div><small>BYTES 6–9</small><strong>horns · legs · pattern mode · asymmetry</strong></div>
+      <div><small>BYTES 10–12</small><strong>body color · pattern offsets</strong></div>
+      <div><small>BYTES 13–15</small><strong>background color</strong></div>
+    </div>
+  </section>
+
   <section class="lab-module"><div class="lab-controls"><label>Seed <input id="genomeSeed" value="PIXEL-0001"></label><button id="genomeGenerate" class="btn primary">Generate</button><button id="genomeMutate" class="btn">Mutate genome</button><label>Parent B <input id="genomeParentB" value="PIXEL-0002"></label><button id="genomeCross" class="btn">Cross genomes</button><label>Interpolate <input id="genomeInterpolate" type="range" min="0" max="100" value="0"></label><strong id="genomeT">0.00</strong><button id="genomeDamage" class="btn">Damage raster</button><button id="genomeRegenerate" class="btn secondary">Regenerate from genome</button></div></section>
   <section class="lab-two">
     <div class="lab-module canvas-panel"><small>24×24 · FOUR-COLOR INDEXED FIELD</small><canvas id="genomeCanvas" class="pixel-canvas color-indexed"></canvas><p class="lab-explain">Each visible address stores an index from 0–3. The canvas converts that index to RGB using the derived palette.</p></div>
