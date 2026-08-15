@@ -137,9 +137,10 @@ def main() -> int:
         "experiment/interpretation/index.html", "experiment/learned-local-field/index.html",
         "experiment/webgpu/index.html", "experiment/masked-reconstruction/index.html",
         "experiment/primitive-benchmark/index.html", "experiment/pixel-genome/index.html",
-        "experiment/dynamics/index.html", "research/index.html", "glossary/index.html",
+        "experiment/dynamics/index.html", "research/index.html",
+        "research/11-color-light-state/index.html", "glossary/index.html",
         "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
-        "assets/js/site.js", "assets/js/pixel-core.js",
+        "assets/css/clarity-v2.css", "assets/js/site.js", "assets/js/pixel-core.js",
     ]
     for rel in required:
         if not (SITE / rel).exists():
