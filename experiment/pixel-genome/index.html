@@ -4,33 +4,44 @@ title: Pixel Genome
 exp_id: "11"
 status: "PROCEDURAL BASELINE · LIVE"
 category: "Generation"
-question: "How much structured visual variation can a fixed 128-bit description produce when a shared deterministic interpreter supplies the generative rules?"
-explanation: "A 16-byte genome controls a restricted family of 24×24 binary creatures. The genome specifies traits consumed by a shared procedural interpreter; the resulting raster contains 576 visible bits. Mutation, crossover, interpolation, damage, and regeneration separate persistent description from generated appearance."
-deck: "A 128-bit procedural description generates a 576-bit binary raster inside a deliberately restricted family."
+question: "How much structured visual variation can a fixed 128-bit description produce when a shared deterministic interpreter generates indexed-color pixels?"
+explanation: "A 16-byte genome controls a restricted family of 24×24 creatures. The interpreter derives shape, pattern, and a four-color RGB palette, then stores each visible address as a 2-bit palette index. The 576-pixel indexed raster therefore contains 1,152 raw index bits; its colors are a rendered interpretation of those indices through the palette."
+deck: "A 128-bit procedural description generates a 24×24 four-color indexed field inside a deliberately restricted family."
 source: "128-bit genome"
-interpretation: "procedural generative description"
+interpretation: "2-bit indexed-color raster + genome-derived 4-entry RGB palette"
 learned: "No · deterministic baseline"
-measure: "genome bits, raster bits, Hamming change, exact regeneration"
-shows: "A compact description plus a shared interpreter can generate and restore a larger field inside a restricted model family."
+measure: "genome bits, index-raster bits, changed color indices, exact regeneration"
+shows: "A compact description plus a shared interpreter can generate and restore a larger indexed-color field inside a restricted model family."
 does_not_show: "General image compression or neural generation. The interpreter is shared side information and the image family is deliberately constrained."
 steps:
-  - label: "Generate a genome"
-    text: "A text seed deterministically produces sixteen bytes. Those 128 bits become the persistent description used by the interpreter."
-  - label: "Render a field"
-    text: "The shared procedural rules map genome values to body shape, pattern, eyes, horns, legs, asymmetry, and other binary features on a 24×24 raster."
-  - label: "Change description or appearance"
-    text: "Mutation, crossover, and interpolation alter the genome; damage alters only the raster. Regeneration discards raster damage and renders the current genome again."
+  - label: "Generate a 128-bit description"
+    text: "A text seed deterministically produces sixteen bytes. Those bits control geometry, pattern, palette, and other traits."
+  - label: "Render indexed color"
+    text: "The interpreter produces 576 values in {0,1,2,3}. Each 2-bit value selects one of four RGB colors derived from the same genome."
+  - label: "Separate description from raster"
+    text: "Mutation, crossover, and interpolation alter the genome. Damage alters only color indices. Regeneration discards raster damage and renders again from the persistent description."
 technical: |
-  The visible raster contains `24 × 24 = 576` binary addresses, while the instance-specific genome contains exactly `16 × 8 = 128` bits. The apparent 128/576 ratio is meaningful only inside the restricted family defined by the shared interpreter.
+  The visible field contains `24 × 24 = 576` spatial addresses. With four possible palette indices, each address needs `log2(4) = 2` raw index bits, so the full index raster contains `576 × 2 = 1,152` bits.
 
-  The interpreter is side information. It contains the rules that turn genome bytes into geometry and cannot be omitted when comparing against a self-contained arbitrary-image codec. Many possible 576-bit images are not representable by this 128-bit procedural family at all.
+  The four displayed RGB colors are deterministically derived from the already-counted 128-bit genome. They therefore add no new independent instance information in this generator. If a palette were instead stored independently with the raster, four RGB888 entries would cost another `4 × 24 = 96` bits.
 
-  Mutation flips a small deterministic set of genome bits. Crossover selects bytes from two parent genomes. Interpolation blends parent byte values. Raster damage changes generated pixels without changing the genome, so regeneration demonstrates separation between persistent description and disposable rendering rather than learned self-repair.
+  The apparent `128 / 1,152` description-to-raster ratio is meaningful only inside the restricted family defined by the shared interpreter. Many possible 24×24 four-color rasters cannot be represented by this 128-bit family at all.
+
+  Mutation flips a small deterministic set of genome bits. Crossover selects bytes from two parent genomes. Interpolation blends byte values. Raster damage changes generated palette indices without changing the genome, so regeneration demonstrates separation between persistent description and disposable rendering rather than learned self-repair.
 scripts:
   - /assets/js/pixel-genome.js
 ---
 <div data-genome-lab>
   <section class="lab-module"><div class="lab-controls"><label>Seed <input id="genomeSeed" value="PIXEL-0001"></label><button id="genomeGenerate" class="btn primary">Generate</button><button id="genomeMutate" class="btn">Mutate genome</button><label>Parent B <input id="genomeParentB" value="PIXEL-0002"></label><button id="genomeCross" class="btn">Cross genomes</button><label>Interpolate <input id="genomeInterpolate" type="range" min="0" max="100" value="0"></label><strong id="genomeT">0.00</strong><button id="genomeDamage" class="btn">Damage raster</button><button id="genomeRegenerate" class="btn secondary">Regenerate from genome</button></div></section>
-  <section class="lab-two"><div class="lab-module canvas-panel"><small>24×24 GENERATED BINARY FIELD</small><canvas id="genomeCanvas" class="pixel-canvas"></canvas></div><div class="lab-module"><div class="lab-label">128-bit genome</div><pre id="genomeHex" class="carrier-code wrap" style="min-height:80px"></pre><div class="information-ledger"><div><small>GENOME</small><strong id="genomeDescriptionBits">128</strong></div><div><small>RASTER</small><strong id="genomeRasterBits">576</strong></div><div><small>GENOME / RASTER</small><strong id="genomeRatio">—</strong></div><div><small>INTERPRETER</small><strong>shared code</strong></div></div><div id="genomeStatus" class="lab-status"></div></div></section>
-  <p class="lab-explain">Damage changes only the generated raster. The genome remains intact, so regeneration reproduces the raster specified by the current 128-bit description.</p>
+  <section class="lab-two">
+    <div class="lab-module canvas-panel"><small>24×24 · FOUR-COLOR INDEXED FIELD</small><canvas id="genomeCanvas" class="pixel-canvas color-indexed"></canvas><p class="lab-explain">Each visible address stores an index from 0–3. The canvas converts that index to RGB using the derived palette.</p></div>
+    <div class="lab-module"><div class="lab-label">128-bit genome</div><pre id="genomeHex" class="carrier-code wrap" style="min-height:80px"></pre><div class="information-ledger"><div><small>GENOME</small><strong id="genomeDescriptionBits">128</strong></div><div><small>INDEX RASTER</small><strong id="genomeRasterBits">1,152</strong></div><div><small>GENOME / RASTER</small><strong id="genomeRatio">0.111×</strong></div><div><small>PIXEL STATE</small><strong>2-bit index</strong></div></div><div id="genomeStatus" class="lab-status"></div></div>
+  </section>
+  <section class="lab-module"><div class="lab-label">Palette derived from the genome</div><div class="genome-palette">
+    <div class="palette-entry" data-palette-index="0"><span class="palette-swatch"></span><code>00 → —</code></div>
+    <div class="palette-entry" data-palette-index="1"><span class="palette-swatch"></span><code>01 → —</code></div>
+    <div class="palette-entry" data-palette-index="2"><span class="palette-swatch"></span><code>10 → —</code></div>
+    <div class="palette-entry" data-palette-index="3"><span class="palette-swatch"></span><code>11 → —</code></div>
+  </div><p class="lab-explain">The RGB values above are derived from genome bytes. They are not a separate 96-bit instance palette. If the palette were stored independently, its cost would have to be added.</p></section>
+  <p class="lab-explain">Damage changes only generated color indices. The genome remains intact, so regeneration reproduces the indexed field specified by the current 128-bit description.</p>
 </div>
