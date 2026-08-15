@@ -1,0 +1,101 @@
+---
+layout: default
+title: Binary Pixel Photon Carrier Lab
+description: A browser laboratory for exact binary pixels, reversible encoding, corruption and error correction, associative memory, motif coding, hypervectors and cross-domain interpretation.
+binary_carrier: true
+---
+<div class="lab-shell" data-binary-carrier>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Binary Carrier</span></nav>
+
+  <header class="lab-intro carrier-intro">
+    <div class="eyebrow">Pixel Photon primitive · exact binary ground truth</div>
+    <h1>One pixel. One bit. Then choose what it means.</h1>
+    <p class="hero-deck">This lab starts below the neural-network layer. A 16×16 black-and-white image is exactly 256 source bits. The same bits can be read as an image, packed bytes, hexadecimal, harmless text, a noisy communication channel, an associative-memory state, a motif dictionary, a hyperdimensional representation, or a sound signal.</p>
+    <div class="plain-box"><strong>Pixel Photon rule:</strong> <code>pixel = address + carrier state + interpretation</code>. The visible black/white bit is the ground truth carrier here. Richer interpretations may create derived state and computation, but they do not create free information.</div>
+  </header>
+
+  <section class="carrier-layout" aria-label="Binary carrier editor">
+    <section class="lab-card carrier-editor-card">
+      <div class="kicker">01 · exact carrier</div>
+      <h2>Draw the source field</h2>
+      <p class="lab-explain">Black = 0. White = 1. Click any address. A single click changes exactly one source bit.</p>
+      <div id="binaryGrid" class="binary-grid" aria-label="Editable 16 by 16 binary pixel grid"></div>
+      <div class="cta-row compact-actions">
+        <button class="btn" data-preset="smile">Smile</button><button class="btn" data-preset="frame">Frame</button><button class="btn" data-preset="checker">Checker</button><button class="btn" data-preset="random">Random</button><button class="btn" data-preset="clear">Clear</button>
+      </div>
+      <div class="cta-row compact-actions">
+        <button class="btn secondary" data-transform="not">NOT</button><button class="btn secondary" data-transform="mirror">Mirror</button><button class="btn secondary" data-transform="shift">Shift right</button><button class="btn secondary" data-transform="dilate">Dilate</button>
+      </div>
+    </section>
+
+    <aside class="panel carrier-ledger">
+      <div class="kicker">Nothing up our sleeve</div>
+      <h2>Information ledger</h2>
+      <div class="metrics carrier-metrics">
+        <div class="metric"><small>ADDRESSES</small><strong id="metricAddress">16 × 16</strong></div>
+        <div class="metric"><small>SOURCE BITS</small><strong id="metricBits">256</strong></div>
+        <div class="metric"><small>PACKED BYTES</small><strong id="metricBytes">32</strong></div>
+        <div class="metric"><small>WHITE / 1</small><strong id="metricOnes">—</strong></div>
+        <div class="metric"><small>BIT ENTROPY</small><strong id="metricEntropy">—</strong></div>
+        <div class="metric"><small>CRC-32</small><strong id="metricCrc">—</strong></div>
+      </div>
+      <p class="lab-explain">A 4,096-dimensional derived vector may be useful, but this source bitmap still begins with 256 independent carrier bits. Every experiment below states when it allocates extra state.</p>
+    </aside>
+  </section>
+
+  <section class="section carrier-section">
+    <div class="section-head"><div><div class="kicker">02 · multiple exact views</div><h2>The image and the data are the same object.</h2></div><p class="section-intro">Row-major bit packing turns the visible grid into exactly 32 bytes. Hexadecimal is only a more compact human notation for those bytes.</p></div>
+    <div class="carrier-code-grid">
+      <article class="lab-card"><h3>Bit matrix</h3><pre id="bitStream" class="carrier-code"></pre></article>
+      <article class="lab-card"><h3>Packed hexadecimal</h3><pre id="hexStream" class="carrier-code wrap"></pre></article>
+    </div>
+  </section>
+
+  <section class="section carrier-section" id="text-pixelizer">
+    <div class="section-head"><div><div class="kicker">03 · benign data pixelizer</div><h2>Text ↔ pixels ↔ text.</h2></div><p class="section-intro">This is a reversible transport demonstration, not steganography. Two bytes store payload length; the remaining 30 bytes store UTF-8 text.</p></div>
+    <div class="carrier-tool-row">
+      <label class="carrier-field"><span>UTF-8 payload · max 30 bytes</span><textarea id="textPayload" rows="3">HELLO PIXEL</textarea></label>
+      <div><div class="cta-row"><button id="encodeText" class="btn primary">Encode into pixels</button><button id="decodeText" class="btn">Decode current pixels</button></div><p id="textStatus" class="tool-status">Type text, encode it, then alter pixels and see what survives.</p></div>
+    </div>
+  </section>
+
+  <section class="section carrier-section" id="corruption-channel">
+    <div class="section-head"><div><div class="kicker">04 · corruption channel</div><h2>Noise makes information theory visible.</h2></div><p class="section-intro">The raw 256-bit carrier is compared with Hamming(7,4), which expands every 4 source bits to 7 transmitted bits and can correct one flipped bit per codeword.</p></div>
+    <div class="carrier-compare">
+      <div class="lab-card"><h3>Channel controls</h3><div class="control"><label><span>Independent flip probability</span><span id="noiseValue">2%</span></label><input id="noiseRate" type="range" min="0" max="20" value="2" step="1"></div><div class="cta-row"><button id="applyNoise" class="btn primary">Transmit with noise</button><button id="restoreOriginal" class="btn">Restore source</button></div><p id="eccStatus" class="tool-status">The ECC path uses 448 transmitted bits for the same 256 source bits.</p></div>
+      <div class="lab-card"><h3>Recovered field from Hamming(7,4)</h3><div id="recoveredGrid" class="binary-grid small" aria-label="Recovered 16 by 16 binary grid"></div><p class="lab-explain">This panel is reused by several exact reconstruction experiments below.</p></div>
+    </div>
+  </section>
+
+  <section class="section carrier-section" id="associative-memory">
+    <div class="section-head"><div><div class="kicker">05 · associative memory</div><h2>The same bitmap can become an attractor state.</h2></div><p class="section-intro">Store up to four 16×16 patterns in a classical bipolar Hopfield memory, damage the current bitmap, and iterate the symmetric network toward a stored pattern.</p></div>
+    <div class="lab-card carrier-inline-tool"><div class="cta-row"><button id="storeMemory" class="btn primary">Store current pattern</button><button id="corruptMemory" class="btn">Corrupt 15%</button><button id="recallMemory" class="btn secondary">Recall · 8 sweeps</button><button id="resetMemory" class="btn">Clear memory</button></div><p id="memoryStatus" class="tool-status">No patterns stored yet.</p><div class="method-box"><strong>Extra state:</strong> the associative memory allocates a 256×256 floating-point weight matrix. This is not compression; it is a different computational interpretation of the field.</div></div>
+  </section>
+
+  <section class="section carrier-section" id="motif-codec">
+    <div class="section-head"><div><div class="kicker">06 · visual motif codec</div><h2>Repeated local structure can become a dictionary.</h2></div><p class="section-intro">Partition the bitmap into 64 non-overlapping 2×2 tiles. Store each unique 4-bit motif once and encode the field as motif IDs. The browser counts dictionary bits and index bits explicitly.</p></div>
+    <div class="lab-card carrier-inline-tool"><div class="cta-row"><button id="runMotifCodec" class="btn primary">Build exact motif codec</button></div><p id="motifStatus" class="tool-status">Run on a frame or checker pattern to see when a tiny dictionary helps—and run on random noise to see it fail.</p><pre id="motifDictionary" class="carrier-code wrap"></pre></div>
+  </section>
+
+  <section class="section carrier-section" id="hypervector-field">
+    <div class="section-head"><div><div class="kicker">07 · hyperdimensional interpretation</div><h2>Bind address and value into a distributed representation.</h2></div><p class="section-intro">Each x coordinate, y coordinate and bit value receives a deterministic 4,096-dimensional bipolar hypervector. The field bundles all 256 coordinate/value bindings into one distributed state, then attempts to query a selected address.</p></div>
+    <div class="carrier-tool-row">
+      <div class="coordinate-controls"><label>X <input id="queryX" type="number" min="0" max="15" value="4"></label><label>Y <input id="queryY" type="number" min="0" max="15" value="4"></label><button id="buildHypervector" class="btn primary">Bundle + query</button></div>
+      <div><p id="hvStatus" class="tool-status">This is a VSA/HDC-style mechanics experiment. A wrong query is informative: distributed bundling has finite capacity and crosstalk.</p><div class="method-box"><strong>Extra state:</strong> 4,096 logical bipolar dimensions. The browser stores them as signed bytes. This is representation expansion, not free information.</div></div>
+    </div>
+  </section>
+
+  <section class="section carrier-section" id="pixel-sound">
+    <div class="section-head"><div><div class="kicker">08 · cross-domain interpretation</div><h2>The bitstream can become sound.</h2></div><p class="section-intro">Binary frequency-shift keying maps 0 → 440 Hz and 1 → 880 Hz for 10 ms per bit. The purpose is to make “same information, different representation” audible.</p></div>
+    <div class="lab-card carrier-inline-tool"><div class="cta-row"><button id="playBits" class="btn primary">Play 256-bit field</button></div><p id="soundStatus" class="tool-status">No audio generated yet.</p></div>
+  </section>
+
+  <section class="section carrier-section">
+    <div class="section-head"><div><div class="kicker">Where the neural work belongs</div><h2>Carrier → interpretation → state → computation → memory → learning.</h2></div><p class="section-intro">The existing vector, tensor, neural-cell and micro-transformer experiments now sit above this exact binary substrate. They are candidate interpreters—not the definition of a pixel.</p></div>
+    <div class="card-grid">
+      <article class="learn-card"><span class="level">RUNNING</span><h3>Pixel Interpretation Sandbox</h3><p>Scalar, vector, tensor, neural unit, micro-transformer, memory object and subfield mechanics.</p><a class="card-link" href="{{ '/experiment/#pixelUniverseLab' | relative_url }}">Open interpretations →</a></article>
+      <article class="learn-card"><span class="level">TRAINABLE</span><h3>Learned Local Vector Field</h3><p>Shared local neural updates and recurrence over vector-valued cells.</p><a class="card-link" href="{{ '/experiment/#neuralFieldLab' | relative_url }}">Train it →</a></article>
+      <article class="learn-card"><span class="level">RESEARCH MAP</span><h3>Next primitives</h3><p>Masked reconstruction, Pixel Language, GPU texture compute, nested Transformers, Pixel Genome, recursion, regeneration and Semantic Albums.</p><a class="card-link" href="{{ '/research/10-pixel-photon-primitives/' | relative_url }}">Read the primitive map →</a></article>
+    </div>
+  </section>
+</div>
