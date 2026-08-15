@@ -1,64 +1,56 @@
 ---
 layout: default
 title: Pixel Photon Lab
-description: Computational pixels as finite spatial addresses whose state and interpretation can be changed, measured, and compared.
+description: Computational pixels as finite spatial addresses whose stored state, derived measurements, physical context, and computational interpretation can be separated and tested.
 ---
 <section class="hero">
   <div class="eyebrow">Representation · memory · computation · compression</div>
-  <h1>One pixel. Many possible computational objects.</h1>
-  <p class="hero-deck">A pixel is a spatial address with finite state. That state can be a bit, integer, RGB tuple, palette index, hash fragment, float vector, tensor, token set, memory state, or another explicitly defined object. The interpretation determines what the state means and what operations can act on it.</p>
-  <div class="hero-actions"><a class="btn primary" href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Experiments</a><a class="btn" href="{{ '/research/00-research-thesis/' | relative_url }}">Research thesis</a></div>
+  <h1>A pixel is an address whose state can change type.</h1>
+  <p class="hero-deck">Black and white give the smallest visible carrier: one bit per address. Color expands the finite state alphabet. Vectors, tensors, token sets, memory, and other computational objects extend it further. Each extension has an explicit storage cost, interpretation, and measurable effect.</p>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/learn/' | relative_url }}">Foundations</a><a class="btn" href="{{ '/research/11-color-light-state/' | relative_url }}">Color & light</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Experiments</a></div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div class="kicker">Computational pixel</div><h2>Address + finite state + interpretation.</h2></div>
-  <p class="core-note">The address says <em>where</em> the object lives. The carrier state says <em>what is represented at that address</em>. The interpretation determines how those finite values are read, transformed, compared, stored, routed, or learned.</p>
-  <div class="equation">pixel = address + carrier state + interpretation<br><br>F[i,j] = O_ij<br><br>O_ij ∈ {bit, uint8, RGB, index, hash fragment, vector, tensor, tokens, memory, subfield, ...}</div>
-</section>
-
-<section class="section">
-  <div class="section-head"><div class="kicker">Finite state examples</div><h2>The word “pixel” does not determine the data type.</h2></div>
-  <p class="core-note">Each example below occupies one spatial address but carries a different finite object. Raw state cost is explicit. Shared palettes, codebooks, model weights, schemas, and interpreters are separate resources when they are required.</p>
-  <div class="state-specimen-grid">
-    <article class="state-specimen"><div class="specimen-top"><h3>Bit</h3><span class="state-cost">1 bit</span></div><div class="state-value bit-visual"><i></i><i class="on"></i></div><p>`0` or `1`. The cleanest source-information baseline.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>Unsigned integer</h3><span class="state-cost">8 bits</span></div><div class="state-value">uint8 = 173</div><p>One address stores one integer from 0 through 255.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>RGB tuple</h3><span class="state-cost">24 bits</span></div><div class="state-value rgb-visual" aria-label="RGB color examples"></div><p>`(44, 167, 145)` stores three independent 8-bit color channels.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>Indexed color</h3><span class="state-cost">2 bits / pixel</span></div><div class="state-value index-visual">{% for i in (1..16) %}<i></i>{% endfor %}</div><p>A 2-bit index selects one of four palette entries. The palette itself must also be accounted for unless it is shared or derived.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>Hash fragment</h3><span class="state-cost">16 bits</span></div><div class="state-value">0xA6F3</div><p>A fixed-width fragment can act as a compact identifier or routing key. It is not the same as storing a full cryptographic hash.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>Float vector</h3><span class="state-cost">8 × fp32 = 256 bits</span></div><div class="state-value vector-visual" aria-label="Eight-component vector projection"></div><p>`x ∈ R⁸`. Quantization can reduce storage, but raw fp32 uses 32 bits per component.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>Tensor</h3><span class="state-cost">4×4 fp16 = 256 bits</span></div><div class="state-value tensor-visual">{% for i in (1..16) %}<i></i>{% endfor %}</div><p>Sixteen values are organized as a 4×4 internal object instead of a flat vector.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>Token set</h3><span class="state-cost">3×6 fp16 = 288 bits</span></div><div class="state-value token-visual"><i></i><i></i><i></i></div><p>Three six-dimensional internal tokens can interact with attention before the address communicates outward.</p></article>
-    <article class="state-specimen"><div class="specimen-top"><h3>Memory state</h3><span class="state-cost">16 fp16 = 256 bits</span></div><div class="state-value">[ fast₈ | slow₈ ]</div><p>Fast activity and slower persistent state occupy the same address but play different temporal roles.</p></article>
+  <div class="section-head"><div class="kicker">Carrier progression</div><h2>Binary establishes the baseline. Color opens a larger state space.</h2></div>
+  <div class="progression">
+    <article class="progression-card"><small>01 · BINARY</small><h3>Black or white</h3><p>One address stores one bit: `0` or `1`. Packing, decoding, corruption, and recovery can be tested exactly.</p></article>
+    <article class="progression-card color-stage"><small>02 · COLOR</small><h3>Finite color state</h3><div class="color-bar" aria-hidden="true"></div><p>RGB888 stores 24 bits per address. Indexed color stores a smaller index plus palette information. Hue, Lab, XYZ, and other coordinates may describe the same color state without adding independent source information.</p></article>
+    <article class="progression-card"><small>03 · COMPUTATIONAL OBJECT</small><h3>Structured internal state</h3><p>An address can hold an integer, hash fragment, vector, tensor, token set, memory state, or another finite object when its representation and cost are defined.</p></article>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div class="kicker">Finite ground truth</div><h2>A 16×16 black-and-white field contains 256 source bits.</h2></div>
-  <p class="core-note">Black can represent 0 and white can represent 1. Reading the 256 addresses in row-major order produces a 256-bit stream, which packs into 32 bytes. The bitmap, bit matrix, byte sequence, and hexadecimal string are losslessly related descriptions of the same finite object.</p>
+  <div class="section-head"><div class="kicker">State layers</div><h2>Not every property belongs to the same layer.</h2></div>
+  <div class="family-list">
+    <div class="family-row"><h3>Stored digital state</h3><p>Bits physically carried by the computational representation: RGB channels, alpha, palette indices, integers, vectors, tensors, token IDs, memory values.</p></div>
+    <div class="family-row"><h3>Derived coordinates</h3><p>Values computed from other state: HSL, Lab, LCH, chromaticity, hue angle, luminance-related coordinates, gradients, color differences. They add storage only when explicitly cached or transmitted.</p></div>
+    <div class="family-row"><h3>Physical measurements</h3><p>Spectral power distribution, wavelength content, radiance, irradiance, polarization, reflectance, illumination direction, material response, and other properties of real optical systems.</p></div>
+    <div class="family-row"><h3>Assigned semantics</h3><p>Meanings deliberately encoded into finite state: class, probability, confidence, token ID, relation, hierarchy level, instruction, memory address, uncertainty, hash, or compressed payload.</p></div>
+  </div>
+  <p class="core-note"><a href="{{ '/research/11-color-light-state/' | relative_url }}">Color, Light, and Pixel State →</a> separates perceptual, colorimetric, optical, spatial, temporal, material, and computational properties with explicit definitions and accounting.</p>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Architectural parallel</div><h2>Encoding a pixel can play a tokenizer-like role.</h2></div>
+  <div class="parallel-schema">
+    <div class="schema-label">TEXT</div><div><strong>Source</strong>characters or bytes</div><div><strong>Tokenizer</strong>finite token IDs</div><div><strong>Network</strong>distributed computation</div><div><strong>Output</strong>tokens or decisions</div>
+    <div class="schema-label">PIXEL FIELD</div><div><strong>Source</strong>bits, color, measurements</div><div><strong>Pixel encoder</strong>finite local state</div><div><strong>Field operator</strong>local, recurrent, graph, attention, memory</div><div><strong>Output</strong>image, data, decision, action</div>
+  </div>
+  <p class="parallel-note">The parallel is exact only at the mechanism level. A tokenizer performs a finite mapping into tokens or codewords. A raw RGB tuple or floating-point vector is simply stored state unless an explicit encoder or quantizer gives it token-like semantics. A pixel is self-similar to the larger computation only when its internal object actually repeats meaningful structure, such as a micro-network, internal token set, recurrent cell, or recursively reused subfield.</p>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Measured capability</div><h2>Richer state matters only when it changes a measured outcome.</h2></div>
   <div class="concept-stack">
-    <div class="concept-row"><div class="concept-key">16 × 16</div><div><h3>256 binary addresses</h3><p>Each address contributes exactly one source bit. No hidden dimensions or learned parameters are required.</p></div></div>
-    <div class="concept-row"><div class="concept-key">256 bits</div><div><h3>32 packed bytes</h3><p>Eight adjacent bits form one byte. Exact packing and unpacking give a reference case where information accounting is unambiguous.</p></div></div>
-    <div class="concept-row"><div class="concept-key">same source</div><div><h3>Image, data, or computational field</h3><p>The source bits do not change when their interpretation changes. A visible pattern is one projection of the same addressable information.</p></div></div>
+    <div class="concept-row"><div class="concept-key">ROBUSTNESS</div><div><h3>Redundancy can repair corruption.</h3><p>Error correction improves recovery by carrying additional coded state. The extra bits are part of the cost.</p></div></div>
+    <div class="concept-row"><div class="concept-key">MEMORY</div><div><h3>Persistent state can support retrieval.</h3><p>Memory requires successful write, delay or interference, and later query—not merely hidden activation during one forward pass.</p></div></div>
+    <div class="concept-row"><div class="concept-key">COMPUTATION</div><div><h3>Spatial relationships can participate causally.</h3><p>Neighborhoods, regions, direction, scale, and topology become useful only when controlled interventions show that those relationships affect the result.</p></div></div>
+    <div class="concept-row"><div class="concept-key">LEARNING</div><div><h3>Operators can be optimized from data.</h3><p>Learned fields are compared on held-out tasks with resource controls, repeated seeds, and baselines. More dimensions alone do not establish an advantage.</p></div></div>
+    <div class="concept-row"><div class="concept-key">COMPRESSION</div><div><h3>Useful structure can reduce total description cost.</h3><p>Carrier bits, codebooks, palettes, metadata, model parameters, hidden state, and interpreters must all be counted under a declared accounting rule.</p></div></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div class="kicker">Added capability</div><h2>Every added mechanism has a measurable cost and effect.</h2></div>
-  <div class="concept-stack">
-    <div class="concept-row"><div class="concept-key">Robustness</div><div><h3>Redundancy can repair corrupted bits.</h3><p>Hamming(7,4) expands four source bits to seven transmitted bits. Recovery improves because extra coded bits are carried through the channel.</p></div></div>
-    <div class="concept-row"><div class="concept-key">Representation</div><div><h3>A field can be recoded into distributed state.</h3><p>Coordinate and value bindings can be bundled into a high-dimensional hypervector. Retrieval accuracy and storage grow with dimension; the original source information does not.</p></div></div>
-    <div class="concept-row"><div class="concept-key">Memory</div><div><h3>A field can become an attractor state.</h3><p>A Hopfield memory stores relationships in its weight matrix and can move a corrupted state toward a stored pattern. The weights are part of the memory cost.</p></div></div>
-    <div class="concept-row"><div class="concept-key">Computation</div><div><h3>Spatial state can be operated on directly.</h3><p>Binary neighborhood operators such as dilation and edge detection can run over the same address field on a CPU reference or a WebGPU compute shader.</p></div></div>
-    <div class="concept-row"><div class="concept-key">Learning</div><div><h3>Update rules can be optimized from data.</h3><p>Learned local fields and masked reconstruction models are evaluated on held-out examples. Accuracy measures the trained model under its protocol, not automatic superiority of the pixel representation.</p></div></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="section-head"><div class="kicker">Accounting</div><h2>More state is not more source information.</h2></div>
-  <p class="core-note">A deterministic expansion from 256 source bits to a 4,096-dimensional representation may improve separability, robustness, retrieval, or computation. It does not create 4,096 independent source bits. Storage and computation must include hidden state, metadata, codebooks, shared parameters, and other side information.</p>
-  <div class="equation">system cost = carrier + hidden state + metadata + side information + model cost</div>
-</section>
-
-<section class="section">
-  <div class="plain-box"><strong>Pixel Photon is a computational analogy.</strong> Photons can be characterized by properties such as frequency, phase, polarization, momentum, helicity, path, and spatial mode. The analogy is limited to the idea that an observed projection need not exhaust the state used by an information-processing system. Every computational implementation here remains finite.</div>
+  <div class="section-head"><div class="kicker">Pixel Photon</div><h2>Visible color can be only one projection of a richer state.</h2></div>
+  <p class="core-note">The photon analogy is limited and physical quantities stay physically defined. Frequency, spectrum, polarization, phase coherence, direction, and radiometric quantities describe optical systems; they are not automatically present in an RGB value. The computational parallel is that a visible pixel may expose only one projection of a larger finite state.</p>
 </section>

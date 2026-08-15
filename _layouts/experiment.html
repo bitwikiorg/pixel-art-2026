@@ -4,69 +4,80 @@ layout: default
 {% assign exp = site.data.experiments | where: "id", page.exp_id | first %}
 {% assign teach = site.data.experiment_teaching[page.exp_id] %}
 {% assign category_slug = page.category | slugify %}
-<div class="page-shell experiment-shell exp-{{ category_slug }}">
+<div class="page-shell experiment-shell exp-{{ category_slug }} experiment-shell-v2">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiments</a><span>›</span><span>{{ page.exp_id }}</span></nav>
 
-  <header class="experiment-hero teaching-hero">
-    <div class="teaching-hero-copy">
-      <div class="experiment-meta"><span class="exp-number">{{ page.exp_id }}</span><span class="exp-status">{{ page.status }}</span><span class="exp-category">{{ page.category }}</span></div>
-      <h1>{{ page.title }}</h1>
-      {% if page.question %}<p class="research-question">{{ page.question }}</p>{% endif %}
-      <p class="experiment-summary">{{ page.explanation | default: page.deck }}</p>
-    </div>
-    <aside class="glance-card" aria-label="Experiment summary">
-      <div><small>INPUT</small><strong>{{ page.source }}</strong></div>
-      <div><small>PIXEL / STATE</small><strong>{{ page.interpretation }}</strong></div>
-      <div><small>OPERATION</small><strong>{{ exp.operation }}</strong></div>
-      <div><small>MEASURE</small><strong>{{ page.measure }}</strong></div>
-    </aside>
+  <header class="experiment-hero experiment-hero-v2">
+    <div class="experiment-meta"><span class="exp-number">{{ page.exp_id }}</span><span class="exp-status">{{ page.status }}</span><span class="exp-category">{{ page.category }}</span></div>
+    <h1>{{ page.title }}</h1>
+    {% if page.question %}<p class="research-question">{{ page.question }}</p>{% endif %}
   </header>
 
-  {% if teach %}
-  <section class="experiment-primer">
-    <div class="primer-panel primer-background">
-      <div class="section-token">BACKGROUND CONCEPTS</div>
-      <div class="primer-list">{% for item in teach.background %}<p>{{ item }}</p>{% endfor %}</div>
+  <section class="experiment-schema" aria-label="Experimental schema">
+    <div class="schema-node"><small>INPUT</small><strong>{{ page.source }}</strong></div>
+    <span class="schema-arrow" aria-hidden="true">→</span>
+    <div class="schema-node"><small>PIXEL STATE</small><strong>{{ page.interpretation }}</strong></div>
+    <span class="schema-arrow" aria-hidden="true">→</span>
+    <div class="schema-node"><small>OPERATION</small><strong>{{ exp.operation }}</strong></div>
+    <span class="schema-arrow" aria-hidden="true">→</span>
+    <div class="schema-node"><small>MEASURE</small><strong>{{ page.measure }}</strong></div>
+  </section>
+
+  <section class="experiment-outline">
+    <div class="outline-row">
+      <h2>What it is</h2>
+      <p>{{ page.explanation | default: page.deck }}</p>
     </div>
-    <div class="primer-panel primer-model">
-      <div class="section-token">MENTAL MODEL</div>
+    {% if teach %}
+    <div class="outline-row">
+      <h2>How to think about it</h2>
       <p>{{ teach.mental_model }}</p>
     </div>
+    <div class="outline-row">
+      <h2>Know first</h2>
+      <ul>{% for item in teach.background %}<li>{{ item }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
   </section>
-  <section class="term-strip" aria-label="Key terms">
-    {% for item in teach.terms %}<div class="term-chip"><strong>{{ item.term }}</strong><span>{{ item.definition }}</span></div>{% endfor %}
-  </section>
+
+  {% if teach %}
+  <details class="definition-drawer">
+    <summary>Definitions used in this experiment</summary>
+    <div class="definition-list">{% for item in teach.terms %}<div><strong>{{ item.term }}</strong><p>{{ item.definition }}</p></div>{% endfor %}</div>
+  </details>
   {% endif %}
 
   {% if page.steps %}
-  <section class="method-block">
-    <div class="method-heading"><span class="section-token">METHOD</span><h2>What happens in the experiment</h2></div>
-    <div class="method-steps" aria-label="Experimental method">
-      {% for step in page.steps %}<div class="method-step"><small>{{ forloop.index | prepend: '0' }}</small><h3>{{ step.label }}</h3><p>{{ step.text }}</p></div>{% endfor %}
-    </div>
+  <section class="method-block method-block-v2">
+    <h2>Method</h2>
+    <ol class="method-outline">{% for step in page.steps %}<li><strong>{{ step.label }}</strong><span>{{ step.text }}</span></li>{% endfor %}</ol>
   </section>
   {% endif %}
 
   {% if teach %}
-  <section class="outcome-block">
-    <div class="method-heading"><span class="section-token">INTERPRETING RESULTS</span><h2>Possible outcomes</h2></div>
-    <div class="outcome-grid">{% for item in teach.outcomes %}<div class="outcome-card"><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div>
+  <section class="result-guide">
+    <h2>Possible outcomes</h2>
+    <div class="result-outline">{% for item in teach.outcomes %}<div><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div>
   </section>
   {% endif %}
 
-  <section class="apparatus-block">
+  <section class="apparatus-block apparatus-v2">
     <div class="apparatus-heading"><span class="section-token">EXPERIMENT</span><h2>{{ page.title }}</h2></div>
     <article class="experiment-content">{{ content }}</article>
   </section>
 
-  {% if page.technical %}
-  <details class="deep-dive"><summary>Technical details</summary><div class="deep-dive-body">{{ page.technical | markdownify }}</div></details>
-  {% endif %}
-
-  <section class="evidence-panel">
-    <div><small>SUPPORTED BY THIS EXPERIMENT</small><p>{{ page.shows }}</p></div>
-    <div><small>NOT SUPPORTED BY THIS EXPERIMENT</small><p>{{ page.does_not_show }}</p></div>
+  <section class="evidence-panel evidence-v2">
+    <div><small>SUPPORTED</small><p>{{ page.shows }}</p></div>
+    <div><small>NOT SUPPORTED</small><p>{{ page.does_not_show }}</p></div>
   </section>
+
+  {% if page.technical %}
+  <details class="technical-section">
+    <summary>Technical section: equations, implementation, and formal definitions</summary>
+    <div class="technical-intro">The formal description is isolated here so the conceptual model and measured result can be understood first. Every symbol, state variable, resource count, and implementation assumption should be interpreted within the experiment above.</div>
+    <div class="deep-dive-body">{{ page.technical | markdownify }}</div>
+  </details>
+  {% endif %}
 
   <nav class="experiment-next"><a class="btn" href="{{ '/experiment/' | relative_url }}">← Experiments</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Experimental method</a></nav>
 </div>
