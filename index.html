@@ -6,14 +6,30 @@ description: Computational pixels as finite spatial addresses whose state and in
 <section class="hero">
   <div class="eyebrow">Representation · memory · computation · compression</div>
   <h1>One pixel. Many possible computational objects.</h1>
-  <p class="hero-deck">A conventional pixel stores a display value at a position. A computational pixel keeps the position but allows the finite object at that address to change: a bit, vector, tensor, distributed code, memory state, token set, neural state, or nested field.</p>
+  <p class="hero-deck">A pixel is a spatial address with finite state. That state can be a bit, integer, RGB tuple, palette index, hash fragment, float vector, tensor, token set, memory state, or another explicitly defined object. The interpretation determines what the state means and what operations can act on it.</p>
   <div class="hero-actions"><a class="btn primary" href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Experiments</a><a class="btn" href="{{ '/research/00-research-thesis/' | relative_url }}">Research thesis</a></div>
 </section>
 
 <section class="section">
   <div class="section-head"><div class="kicker">Computational pixel</div><h2>Address + finite state + interpretation.</h2></div>
-  <p class="core-note">The address says <em>where</em> the object lives. The carrier state says <em>what is physically represented</em>. The interpretation determines <em>what that state means and what operations can act on it</em>. Changing the interpretation can change the computation without changing the outer spatial address.</p>
-  <div class="equation">pixel = address + carrier state + interpretation<br><br>F[i,j] = O_ij<br><br>O_ij ∈ {bit, scalar, vector, tensor, hypervector, token set, memory, neural state, subfield, ...}</div>
+  <p class="core-note">The address says <em>where</em> the object lives. The carrier state says <em>what is represented at that address</em>. The interpretation determines how those finite values are read, transformed, compared, stored, routed, or learned.</p>
+  <div class="equation">pixel = address + carrier state + interpretation<br><br>F[i,j] = O_ij<br><br>O_ij ∈ {bit, uint8, RGB, index, hash fragment, vector, tensor, tokens, memory, subfield, ...}</div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Finite state examples</div><h2>The word “pixel” does not determine the data type.</h2></div>
+  <p class="core-note">Each example below occupies one spatial address but carries a different finite object. Raw state cost is explicit. Shared palettes, codebooks, model weights, schemas, and interpreters are separate resources when they are required.</p>
+  <div class="state-specimen-grid">
+    <article class="state-specimen"><div class="specimen-top"><h3>Bit</h3><span class="state-cost">1 bit</span></div><div class="state-value bit-visual"><i></i><i class="on"></i></div><p>`0` or `1`. The cleanest source-information baseline.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>Unsigned integer</h3><span class="state-cost">8 bits</span></div><div class="state-value">uint8 = 173</div><p>One address stores one integer from 0 through 255.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>RGB tuple</h3><span class="state-cost">24 bits</span></div><div class="state-value rgb-visual" aria-label="RGB color examples"></div><p>`(44, 167, 145)` stores three independent 8-bit color channels.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>Indexed color</h3><span class="state-cost">2 bits / pixel</span></div><div class="state-value index-visual">{% for i in (1..16) %}<i></i>{% endfor %}</div><p>A 2-bit index selects one of four palette entries. The palette itself must also be accounted for unless it is shared or derived.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>Hash fragment</h3><span class="state-cost">16 bits</span></div><div class="state-value">0xA6F3</div><p>A fixed-width fragment can act as a compact identifier or routing key. It is not the same as storing a full cryptographic hash.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>Float vector</h3><span class="state-cost">8 × fp32 = 256 bits</span></div><div class="state-value vector-visual" aria-label="Eight-component vector projection"></div><p>`x ∈ R⁸`. Quantization can reduce storage, but raw fp32 uses 32 bits per component.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>Tensor</h3><span class="state-cost">4×4 fp16 = 256 bits</span></div><div class="state-value tensor-visual">{% for i in (1..16) %}<i></i>{% endfor %}</div><p>Sixteen values are organized as a 4×4 internal object instead of a flat vector.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>Token set</h3><span class="state-cost">3×6 fp16 = 288 bits</span></div><div class="state-value token-visual"><i></i><i></i><i></i></div><p>Three six-dimensional internal tokens can interact with attention before the address communicates outward.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>Memory state</h3><span class="state-cost">16 fp16 = 256 bits</span></div><div class="state-value">[ fast₈ | slow₈ ]</div><p>Fast activity and slower persistent state occupy the same address but play different temporal roles.</p></article>
+  </div>
 </section>
 
 <section class="section">
