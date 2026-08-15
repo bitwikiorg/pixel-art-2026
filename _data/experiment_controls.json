@@ -14,7 +14,7 @@
     {"control":"Preset","changes":"The 256-bit source pattern.","fixed":"Both raw and Hamming-coded branches receive the same source.","watch":"Source structure only; transmission budgets stay 256 vs 448 bits."},
     {"control":"Flip probability","changes":"Independent probability that each transmitted bit is flipped.","fixed":"Encoding and source size.","watch":"Residual BER and exact recovery for raw versus coded transmission."},
     {"control":"Seed","changes":"The reproducible random corruption pattern.","fixed":"Flip probability and source.","watch":"A different seed can produce a different error placement at the same noise level."},
-    {"control":"Run one channel / 200 trials","changes":"Runs one reproducible corruption event or estimates average behavior across many events.","fixed":"The declared channel probability and code.","watch":"Single-trial recovery versus repeated-trial BER."}
+    {"control":"Run one channel / Run 200 trials","changes":"Runs one reproducible corruption event or estimates average behavior across 200 events.","fixed":"The declared channel probability and code.","watch":"Single-trial recovery versus repeated-trial BER."}
   ],
   "03": [
     {"control":"Preset","changes":"The current 256-spin visible pattern.","fixed":"Previously stored memories remain in the Hopfield weight matrix.","watch":"Whether the current pattern matches or differs from stored attractors."},
@@ -32,7 +32,7 @@
     {"control":"Dimension","changes":"Length D of the distributed hypervectors.","fixed":"The original 256 source bits.","watch":"Retrieval accuracy versus added derived state/storage."},
     {"control":"Build hypervector","changes":"Constructs and bundles all 256 coordinate/value bindings at the chosen D.","fixed":"Source field.","watch":"Full query accuracy and representation footprint."},
     {"control":"x, y + Query address","changes":"Selects one address to decode from the bundled representation.","fixed":"Bundled hypervector.","watch":"Similarity-based recovered value at that coordinate."},
-    {"control":"Run dimension sweep","changes":"Repeats the same encoding/query protocol from 256D through 4096D.","fixed":"Source and code construction.","watch":"Accuracy improvement versus representation size."}
+    {"control":"Run 256D → 4096D sweep","changes":"Repeats the same encoding/query protocol at several hypervector dimensions.","fixed":"Source and code construction.","watch":"Accuracy improvement versus representation size."}
   ],
   "06": [
     {"control":"Scalar / Vector / Tensor / Neural / Transformer / Memory / Subfield","changes":"The finite object and update factorization associated with every outer address.","fixed":"The outer 12×12 address grid.","watch":"Scalars per pixel, total field state, inspector values, and RGB projection."},
@@ -41,36 +41,40 @@
     {"control":"Reset","changes":"Restores the deterministic initial state.","fixed":"Selected interpretation and rule family.","watch":"Step counter and field return to the starting condition."}
   ],
   "07": [
-    {"control":"Train / reset model","changes":"Optimizes or reinitializes the shared local recurrent model on the deterministic relation task.","fixed":"Task definition and four relation classes.","watch":"Training accuracy, held-out accuracy, and parameter count."},
-    {"control":"Recurrent steps","changes":"How many times the shared local update is reused before readout.","fixed":"Per-step local 3×3 communication rule.","watch":"Near-versus-far accuracy as effective communication radius grows."},
-    {"control":"Example / trace controls","changes":"Which held-out marker pair is inspected or how one inference trace is intervened on.","fixed":"Trained model parameters unless retraining is requested.","watch":"Predicted relation and distance-conditioned behavior."}
+    {"control":"Epochs","changes":"Number of optimization passes used when Train is pressed.","fixed":"Dataset construction, model architecture, and selected recurrent depth.","watch":"Training time, training loss, and whether more epochs improve held-out accuracy."},
+    {"control":"Recurrent steps","changes":"How many times the same learned 3×3 local update is reused before classification.","fixed":"Model parameter sharing and task definition.","watch":"Accuracy at distances 2–4 versus 5–8 as communication depth changes."},
+    {"control":"Train","changes":"Optimizes the seeded recurrent vector-field model on the deterministic training set.","fixed":"Current epochs and recurrent-step settings.","watch":"Train accuracy/loss and held-out accuracy by distance."},
+    {"control":"New seeded model","changes":"Reinitializes model parameters to the experiment's deterministic starting model.","fixed":"Task and current hyperparameter sliders.","watch":"Metrics reset until training is run again."},
+    {"control":"Inspect step","changes":"Which recurrent state from one held-out inference trace is projected to the canvas.","fixed":"Trained parameters and prediction.","watch":"How the latent projection changes from step 0 through final depth."},
+    {"control":"Use distance 5–8 example","changes":"Chooses a farther held-out marker pair instead of a nearer one for the displayed trace.","fixed":"Trained model.","watch":"Prediction, truth, marker distance, and visible propagation depth."},
+    {"control":"Shuffle cells in displayed trace","changes":"Permutes cells only in the displayed inference trace after training.","fixed":"Training topology and model parameters.","watch":"Any changed displayed prediction is a trace intervention, not a topology benchmark."},
+    {"control":"New held-out example","changes":"Samples another deterministic held-out relation example for inspection.","fixed":"Trained model and aggregate held-out metrics.","watch":"Prediction, class scores, truth, and distance for the new example."}
   ],
   "08": [
-    {"control":"Operator","changes":"Which exact binary field operation is run: NOT, dilation, or binary edge detection.","fixed":"64×64 source and CPU/GPU comparison protocol.","watch":"CPU↔GPU mismatch count."},
-    {"control":"Run CPU / GPU comparison","changes":"Executes the operator independently in JavaScript and WGSL when WebGPU is available.","fixed":"Input and operator.","watch":"Correctness first; runtime only after mismatch count is zero."},
-    {"control":"Input/preset controls","changes":"The binary source field supplied to both implementations.","fixed":"Same input is sent to CPU and GPU.","watch":"Whether exact agreement survives different spatial patterns."}
+    {"control":"Operation","changes":"Which exact operator is applied to the fixed 64×64 source: NOT, 3×3 dilation, or binary neighborhood edge detection.","fixed":"Source field and CPU↔GPU correctness protocol.","watch":"The output pattern and mismatch count."},
+    {"control":"Run CPU + WebGPU","changes":"Executes the selected operator once in JavaScript and once in WGSL when WebGPU is available.","fixed":"Both implementations receive the same source and operation.","watch":"Mismatch count first; compare CPU and GPU time only when mismatches are 0."}
   ],
   "09": [
-    {"control":"Mask / regenerate dataset","changes":"Which source pixels are hidden and/or which deterministic structured samples are used.","fixed":"Task remains reconstruction of hidden binary pixels.","watch":"Masked locations and baseline difficulty."},
-    {"control":"Train model","changes":"Fits the 745-parameter convolutional baseline to the training set.","fixed":"Architecture, deterministic data protocol, and scoring rule.","watch":"Held-out hidden-pixel accuracy."},
-    {"control":"Evaluate baseline/model","changes":"Runs the local-majority control or learned model on held-out masked pixels.","fixed":"Same test examples and masks.","watch":"Learned accuracy minus baseline accuracy."}
+    {"control":"Mask rate","changes":"Fraction of source pixels hidden in generated training and held-out examples.","fixed":"Pattern family, model architecture, and hidden-pixel scoring rule.","watch":"How reconstruction difficulty and baseline accuracy change as less source state is visible."},
+    {"control":"Epochs","changes":"Number of optimization passes used by the learned convolutional reconstruction model.","fixed":"745-parameter architecture and deterministic data protocol.","watch":"Training loss/time and held-out learned accuracy."},
+    {"control":"Train reconstruction model","changes":"Regenerates the deterministic masked dataset for the selected mask rate, trains the model, then evaluates both local-majority and learned reconstruction on held-out hidden pixels.","fixed":"Evaluation rule and architecture.","watch":"LOCAL BASELINE versus LEARNED accuracy; only hidden pixels count in the headline comparison."}
   ],
   "10": [
-    {"control":"Equal-state protocol","changes":"Architecture dimensions are chosen so each outer address carries the same scalar state budget.","fixed":"Task and training data.","watch":"Accuracy, parameters, runtime, and seed variance."},
-    {"control":"Equal-parameter protocol","changes":"Architecture widths are adjusted toward similar trainable parameter counts.","fixed":"Task and evaluation metric.","watch":"Whether rankings change when the matched resource changes."},
-    {"control":"Seeds / result files","changes":"Which independent training runs are aggregated.","fixed":"Named benchmark protocol.","watch":"Mean, sample standard deviation, and overlap rather than a single best run."}
+    {"control":"Equal-state result","changes":"The comparison rule fixes 16 scalar state values per outer address and reports the already-run multi-seed audit.","fixed":"Relation task, six recurrent updates, 12 epochs, and seeds 7/17/29 in the recorded result.","watch":"Near/far mean accuracy, sample standard deviation, parameters, and runtime together."},
+    {"control":"Approx. equal-parameter smoke result","changes":"The comparison rule targets roughly 4,000 trainable parameters with different internal state allocations.","fixed":"Same relation-task family.","watch":"Most runs are undertrained; treat the table as a protocol diagnostic, not a ranking."},
+    {"control":"Reproduction commands","changes":"Rerunning the Python benchmark can change protocol, state target, parameter target, or seeds.","fixed":"Nothing is changed by merely reading the browser result.","watch":"Whether conclusions remain stable under a fully converged repeated protocol."}
   ],
   "11": [
-    {"control":"Seed + Generate","changes":"The deterministic 128-bit genome, which regenerates shape, pattern, palette, and all 576 color indices.","fixed":"The shared procedural interpreter.","watch":"Genome hex, palette, phenotype, and 128-bit versus 1,152-bit ledger."},
+    {"control":"Seed + Generate","changes":"The deterministic 128-bit genome, which regenerates shape, pattern, palette, and all 576 color indices.","fixed":"The shared procedural interpreter and its intentionally narrow creature grammar.","watch":"Genome hex, palette, phenotype, and 128-bit versus 1,152-bit ledger."},
     {"control":"Mutate genome","changes":"Flips 1–3 deterministic genome bits and regenerates the phenotype.","fixed":"Interpreter and raster size.","watch":"Which visual traits or palette entries change from a very small genotype edit."},
-    {"control":"Cross genomes","changes":"Builds a child by selecting bytes from parent A or parent B using a deterministic mask.","fixed":"Genome length: 16 bytes.","watch":"Trait combinations inherited from the two parents."},
+    {"control":"Cross genomes","changes":"Builds a child by selecting bytes from parent A or parent B using a deterministic mask.","fixed":"Genome length: 16 bytes and the same creature grammar.","watch":"Trait combinations inherited from the two parents."},
     {"control":"Interpolate","changes":"Blends corresponding genome byte values between the two parents.","fixed":"Interpreter.","watch":"Phenotype changes are not guaranteed to be visually smooth because byte meanings are nonlinear/discrete."},
-    {"control":"Damage raster / Regenerate","changes":"Damage modifies only visible 2-bit color indices; regenerate discards those damaged indices and renders again from the unchanged genome.","fixed":"Genome and derived palette during damage.","watch":"Exact restoration demonstrates persistent description versus disposable raster, not learned healing."}
+    {"control":"Damage raster / Regenerate from genome","changes":"Damage modifies only visible 2-bit color indices; regeneration discards damaged indices and renders again from the unchanged genome.","fixed":"Genome and derived palette during damage.","watch":"Exact restoration demonstrates persistent description versus disposable raster, not learned healing."}
   ],
   "12": [
     {"control":"Genome seed + Generate organism","changes":"Creates one deterministic 256-bit inherited genome, then decodes a 24×24 body, palette, recurrent controller, and physiology.","fixed":"Genome decoder and experiment rules.","watch":"Genome hex, body, palette, vision, energy costs, and controller weights."},
     {"control":"World seed","changes":"The deterministic placement of food in the 32×32 toroidal environment.","fixed":"Organism genome.","watch":"The same organism can score differently in different environments."},
-    {"control":"Lifetime steps + Run lifetime","changes":"Maximum evaluation horizon, then simulates sensing → recurrent update → action → movement → energy/food update.","fixed":"Genome and selected world.","watch":"Trajectory, food eaten, energy, survival, recurrent state, and world score."},
+    {"control":"Lifetime steps + Run lifetime","changes":"Sets the maximum evaluation horizon, then simulates sensing → recurrent update → action → movement → energy/food update.","fixed":"Genome and selected world.","watch":"Trajectory, food eaten, energy, survival, recurrent state, and world score."},
     {"control":"Mutate 1–3 bits","changes":"Flips inherited genome bits and immediately regenerates body/controller traits from the mutated description.","fixed":"World seed unless changed separately.","watch":"Genome Δ bits, body Δ pixels, controller/physiology changes, and changed behavior."},
     {"control":"Select one generation","changes":"Evaluates the current parent plus eight deterministic mutants on the same selected world and keeps the highest-scoring candidate.","fixed":"World, score function, lifetime horizon, decoder.","watch":"Selected-world score versus three held-out-world scores; improvement on one world may be overfitting."}
   ],
@@ -79,6 +83,6 @@
     {"control":"State memory","changes":"How much previous state persists into the next step.","fixed":"Other update terms.","watch":"RMS magnitude and settling/oscillation behavior."},
     {"control":"Regional summary","changes":"Adds or removes a coarser regional feedback signal.","fixed":"Local state dimensions.","watch":"Whether large-scale organization changes."},
     {"control":"Random source remap each step","changes":"Reassigns the hand-written source mapping at each update.","fixed":"No learning occurs.","watch":"How sensitive the trajectory is to source correspondence."},
-    {"control":"Run / Step / Zero 8×8 / Reset","changes":"Advances dynamics, applies one update, zeros a controlled region, or restores initial state.","fixed":"Rule parameters unless sliders/toggles are changed.","watch":"Descriptive diagnostics only; visual recovery is not semantic regeneration."}
+    {"control":"Run / Step / Zero 8×8 region / Reset","changes":"Advances dynamics, applies one update, zeros a controlled region, or restores initial state.","fixed":"Rule parameters unless sliders/toggles are changed.","watch":"Descriptive diagnostics only; visual recovery is not semantic regeneration."}
   ]
 }
