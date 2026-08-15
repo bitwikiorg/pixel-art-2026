@@ -1,13 +1,33 @@
 ---
 layout: research
-title: Neural Architecture
+title: Vector-Field Baseline Architecture
 ---
 
-# From a pixel field to a neural network
+# One neural architecture: the learned vector field
 
-<div class="plain-box"><strong>Plain English:</strong> the neural version of MPF is not a file format. It is a recurrent network whose hidden state happens to be arranged as a grid. A small neural rule is copied across all grid locations and reused over several time steps.</div>
+<div class="plain-box"><strong>Scope:</strong> this page documents the current trainable baseline, not the definition of MPF. Here a pixel is interpreted as a learned vector and every location shares a recurrent local neural update. Other experiments interpret a pixel as a tensor, neural unit, micro-transformer, memory object or subfield.</div>
 
-## Minimal architecture
+The broad project keeps three choices separate:
+
+```text
+1. what is inside a pixel?
+2. how do pixels communicate?
+3. how does the whole system learn / persist / compute?
+```
+
+This page chooses:
+
+```text
+pixel object      = vector
+communication     = local 3×3 neighborhood
+update            = shared neural rule
+computation       = recurrence
+readout            = small pooled classifier
+```
+
+That combination is useful because it is close to Neural Cellular Automata, easy to train, and small enough to inspect.
+
+## Minimal vector-field architecture
 
 Let the field state be
 
@@ -15,9 +35,7 @@ Let the field state be
 F_t: [B, H, W, D]
 ```
 
-where `B` is batch size, `H×W` is the grid, and `D` is the hidden width of each cell.
-
-A useful first architecture is:
+where `B` is batch size, `H×W` is the grid, and `D` is the vector width of each pixel.
 
 ```text
 input items/query
@@ -49,23 +67,21 @@ A[k,i,j] = softmax(q_k · key[i,j])
 F_0[i,j] = Σ_k A[k,i,j] value_k
 ```
 
-This lets the model discover placement instead of requiring a human-designed semantic map.
+This allows placement itself to become learnable.
 
 ## 2. Local perception
 
-The simplest local operation is a 3×3 convolution. Every cell receives information from itself and its eight immediate neighbors.
+The current baseline uses a 3×3 convolution. Every pixel receives information from itself and its immediate neighbors.
 
 ```python
 local = conv3x3(field)
 ```
 
-Growing NCA often uses fixed derivative filters (such as Sobel-like perception) before a learned update. A learned depthwise convolution is another clean option.
-
-The key property is **shared locality**: parameter count does not grow with the number of cells.
+The important property is weight sharing: parameter count does not grow with the number of spatial addresses.
 
 ## 3. Shared update
 
-A gated residual update is a strong default:
+A gated residual update is a strong research default:
 
 ```text
 p_ij = [x_ij, local_ij, region_ij, global]
@@ -73,13 +89,11 @@ p_ij = [x_ij, local_ij, region_ij, global]
 x_ij' = x_ij + sigmoid(gate) ⊙ Δx
 ```
 
-For a tiny browser model, the update can be as simple as
+The tiny browser implementation is simpler:
 
 ```text
 F_(t+1) = tanh(F_t + Conv1x1(ReLU(Conv3x3(F_t))))
 ```
-
-This is a genuine trainable recurrent convolutional network.
 
 ## 4. Recurrence
 
@@ -92,80 +106,109 @@ F_2 = Uθ(F_1)
 F_T = Uθ(F_(T-1))
 ```
 
-Training can sample `T` from a range, for example 8–16, rather than always using one fixed depth. At evaluation, test a larger range of recurrent steps to see whether extra compute helps or destabilizes the state.
+Recurrence is useful for this architecture because a local neighborhood can only move information a short distance in one update.
+
+It is **not** a requirement for every computational-pixel experiment. A tensor-pixel or Transformer-pixel architecture may factor computation differently.
 
 ## 5. Multiresolution extension
 
-A hierarchical version adds coarse states:
+A vector-field hierarchy can add coarse states:
 
 ```text
 F32: 32×32×D
-  ↓ pool
+  ↓
 F8:   8×8×D
-  ↓ pool
+  ↓
 F4:   4×4×D
   ↓
 G:    1×1×D
 ```
 
-Each fine cell receives its local context plus an upsampled representation of the region it belongs to.
-
-A stronger recursive version reuses the same update function at several scales. That is the architecture in which “fractal” or scale-recursive language could become rigorous.
+A stronger recursive architecture would allow the object associated with a location to itself be a field and would reuse related operations at several scales.
 
 ## 6. Weak readout
 
-Use a deliberately small decoder first:
+The baseline intentionally uses a small decoder:
 
 ```text
 z = pool(F_T)
 y = MLP(z)
 ```
 
-A powerful Transformer decoder can be tested later, but if the decoder is much more expressive than the field, it becomes difficult to know where the computation happened.
+A powerful external decoder can hide where computation actually occurred.
 
-## Reference implementation sizes
-
-### Browser learning model
+## Browser learning model
 
 ```text
-12×12 cells
-D = 12
-2 input marker channels
-shared 3×3 conv
+12×12 addresses
+pixel = 12D vector
+2 marker input channels
+shared 3×3 convolution
 shared 1×1 update
 2–10 recurrent steps
 4-way softmax readout
 ```
 
-This is intentionally small enough to train interactively with TensorFlow.js.
+This is small enough to train interactively with TensorFlow.js.
 
-### Research model
-
-A practical next scale from the deep research audit is:
+## PyTorch reference baseline
 
 ```text
-32×32 cells
-D = 48–64
-hidden update width ≈ 128
-3×3 local communication
-8–16 recurrent updates during training
-optional 8×8 / 4×4 / global hierarchy
+12×12 or larger field
+pixel = D-dimensional vector
+shared local update
+gated residual recurrence
+global max readout
 ```
 
-A 32×32×64 field contains 65,536 scalar state values. Stored in fp16, one raw field state is about 128 KiB before any compression.
+The reference implementation exists to support repeatable runs, larger batches and controlled topology tests.
+
+## The next architecture comparisons
+
+The useful next step is not simply “make this vector field bigger.” It is to change the pixel primitive while controlling resources.
+
+### Vector versus tensor
+
+```text
+R^64
+versus
+R^(8×8)
+```
+
+Same scalar state, different internal organization.
+
+### Neural unit versus micro-transformer
+
+```text
+shared MLP update
+versus
+shared internal attention over K tokens
+```
+
+### Attention inside versus between pixels
+
+```text
+micro-transformer pixel
+versus
+field Transformer
+```
+
+### Flat pixel versus subfield pixel
+
+```text
+one vector state
+versus
+small inner field at every outer address
+```
+
+These comparisons are described in the [experimental program]({{ '/research/02-experiment-protocol/' | relative_url }}).
 
 ## Complexity intuition
 
-For a fixed local neighborhood, spatial communication scales roughly linearly with the number of cells:
+A fixed local neighborhood communicates with roughly linear scaling in the number of outer addresses, up to channel, tensor and internal-object costs. Full attention between `N = H×W` outer addresses introduces an `N²` interaction matrix. Internal attention inside every pixel instead scales with the square of the **internal token count** per pixel.
 
-```text
-O(H × W × T)
-```
-
-up to channel/kernel factors.
-
-Full self-attention across all `N = H×W` cells has an `N²` interaction matrix. That does not mean MPF is automatically faster: recurrence may require many steps, and convolutional implementations have their own constants. Report real runtime/FLOPs rather than relying on asymptotics alone.
+That distinction is one reason the pixel interpretation matters: the same ingredients can have very different computational structure depending on where they are placed.
 
 ## Closest implementation analogy
 
-Growing NCA explicitly notes that its model can be viewed as a recurrent residual convolutional network applied locally to cells. That is a useful grounding statement for MPF: the novelty question is **not whether the network is made of unfamiliar primitives**, but whether this particular state organization develops useful computational properties.
+Growing Neural Cellular Automata is the closest structural analogy for this **specific vector-field baseline**: recurrent residual local computation over vector-valued cells. The broader Pixel Neural Net Lab deliberately extends beyond that baseline by varying what a cell actually is.
