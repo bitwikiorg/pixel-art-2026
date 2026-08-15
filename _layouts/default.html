@@ -14,11 +14,18 @@
   <link rel="stylesheet" href="{{ '/assets/css/clarity.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/clarity-v2.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/clarity-v3.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/clarity-v4.css' | relative_url }}">
   {% if page.styles %}{% for style in page.styles %}<link rel="stylesheet" href="{{ style | relative_url }}">{% endfor %}{% endif %}
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="site-header"><div class="header-inner"><a class="brand" href="{{ '/' | relative_url }}" aria-label="Pixel Photon Lab home"><span class="brand-mark" aria-hidden="true"></span><span><strong>PIXEL PHOTON LAB</strong><small>Multidimensional Pixel Fields · 2026</small></span></a><nav class="top-nav" aria-label="Primary"><a href="{{ '/learn/' | relative_url }}">Foundations</a><a href="{{ '/experiment/' | relative_url }}">Experiments</a><a href="{{ '/research/' | relative_url }}">Research</a><a href="{{ '/glossary/' | relative_url }}">Glossary</a><a href="https://github.com/bitwikiorg/pixel-art-2026">Code</a></nav></div></header>
+  <header class="site-header"><div class="header-inner"><a class="brand" href="{{ '/' | relative_url }}" aria-label="Pixel Photon Lab home"><span class="brand-mark" aria-hidden="true"></span><span><strong>PIXEL PHOTON LAB</strong><small>Multidimensional Pixel Fields · 2026</small></span></a><nav class="top-nav" aria-label="Primary">
+    <a href="{{ '/learn/' | relative_url }}"{% if page.url contains '/learn/' %} class="active" aria-current="page"{% endif %}>Foundations</a>
+    <a href="{{ '/experiment/' | relative_url }}"{% if page.url contains '/experiment/' or page.url == '/carrier/' %} class="active" aria-current="page"{% endif %}>Experiments</a>
+    <a href="{{ '/research/' | relative_url }}"{% if page.url contains '/research/' %} class="active" aria-current="page"{% endif %}>Research</a>
+    <a href="{{ '/glossary/' | relative_url }}"{% if page.url contains '/glossary/' %} class="active" aria-current="page"{% endif %}>Glossary</a>
+    <a href="https://github.com/bitwikiorg/pixel-art-2026">Code</a>
+  </nav></div></header>
   <main id="main-content">{{ content }}</main>
   <footer class="site-footer"><div><strong>Pixel Photon Lab</strong><br><span>pixel = address + finite carrier state + interpretation</span></div><div class="footer-links"><a href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a href="{{ '/experiment/' | relative_url }}">Experiments</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="https://github.com/bitwikiorg/pixel-art-2026">Source</a></div></footer>
   <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
