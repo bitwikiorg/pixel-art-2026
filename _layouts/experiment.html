@@ -2,8 +2,10 @@
 layout: default
 ---
 {% assign exp = site.data.experiments | where: "id", page.exp_id | first %}
-<div class="page-shell experiment-shell">
+{% assign theme = page.category | downcase | replace: ' ', '-' %}
+<div class="page-shell experiment-shell exp-theme-{{ theme }}">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiments</a><span>›</span><span>{{ page.exp_id }}</span></nav>
+
   <header class="experiment-hero">
     <div class="experiment-meta"><span class="exp-number">{{ page.exp_id }}</span><span class="exp-status">{{ page.status }}</span><span class="exp-category">{{ page.category }}</span></div>
     <h1>{{ page.title }}</h1>
@@ -11,20 +13,74 @@ layout: default
     <p class="experiment-summary">{{ page.explanation | default: page.deck }}</p>
     <div class="experiment-facts">
       <div><small>INPUT</small><strong>{{ page.source }}</strong></div>
-      <div><small>STATE</small><strong>{{ page.interpretation }}</strong></div>
-      <div><small>METHOD</small><strong>{{ exp.operation }}</strong></div>
+      <div><small>PIXEL STATE</small><strong>{{ page.interpretation }}</strong></div>
+      <div><small>OPERATION</small><strong>{{ exp.operation }}</strong></div>
       <div><small>MEASURE</small><strong>{{ page.measure }}</strong></div>
     </div>
   </header>
-  {% if page.steps %}
-  <section class="method-steps" aria-label="Experimental method">
-    {% for step in page.steps %}<div class="method-step"><small>{{ forloop.index | prepend: '0' }}</small><h2>{{ step.label }}</h2><p>{{ step.text }}</p></div>{% endfor %}
+
+  {% if exp.mental_model or exp.background %}
+  <section class="orientation-grid" aria-label="Conceptual background">
+    <div class="mental-model-card">
+      <div class="section-label">MENTAL MODEL</div>
+      <h2>{{ exp.mental_model_title | default: "How to think about it" }}</h2>
+      <p>{{ exp.mental_model }}</p>
+      {% if exp.analogy %}<p class="analogy-line"><strong>Useful analogy:</strong> {{ exp.analogy }}</p>{% endif %}
+    </div>
+    <aside class="background-card">
+      <div class="section-label">BACKGROUND</div>
+      <h2>Concepts needed first</h2>
+      <dl class="background-definitions">
+        {% for item in exp.background %}<div><dt>{{ item.term }}</dt><dd>{{ item.definition }}</dd></div>{% endfor %}
+      </dl>
+    </aside>
   </section>
   {% endif %}
-  {% if page.technical %}
-  <details class="deep-dive"><summary>Technical notes</summary><div class="deep-dive-body">{{ page.technical | markdownify }}</div></details>
+
+  {% if exp.data_types %}
+  <section class="data-state-section" aria-label="Data and state types">
+    <div class="section-label">DATA & STATE</div>
+    <h2>What actually occupies the addresses and supporting structures?</h2>
+    <div class="data-type-grid">
+      {% for item in exp.data_types %}<article class="data-type-card"><span class="data-type-name">{{ item.name }}</span><code>{{ item.example }}</code><strong>{{ item.bits }}</strong><p>{{ item.role }}</p></article>{% endfor %}
+    </div>
+  </section>
   {% endif %}
-  <article class="experiment-content">{{ content }}</article>
-  <details class="evidence-note"><summary>Evidence and limits</summary><div class="evidence-body"><div><strong>Supported</strong><p>{{ page.shows }}</p></div><div><strong>Not supported</strong><p>{{ page.does_not_show }}</p></div></div></details>
+
+  {% if page.steps %}
+  <section class="experiment-method" aria-label="Experimental method">
+    <div class="section-label">METHOD</div><h2>What happens, in order</h2>
+    <div class="method-steps">
+      {% for step in page.steps %}<div class="method-step"><small>{{ forloop.index | prepend: '0' }}</small><h3>{{ step.label }}</h3><p>{{ step.text }}</p></div>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if exp.outcomes %}
+  <section class="outcomes-section" aria-label="Possible outcomes">
+    <div class="section-label">POSSIBLE OUTCOMES</div><h2>How to interpret the result</h2>
+    <div class="outcome-grid">
+      {% for outcome in exp.outcomes %}<article class="outcome-card outcome-{{ outcome.tone | default: 'neutral' }}"><span>{{ outcome.label }}</span><strong>{{ outcome.criterion }}</strong><p>{{ outcome.meaning }}</p></article>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page.technical %}
+  <section class="technical-brief">
+    <div class="section-label">TECHNICAL DEPTH</div><h2>Mechanism and accounting</h2>
+    <div class="technical-brief-body">{{ page.technical | markdownify }}</div>
+  </section>
+  {% endif %}
+
+  <section class="apparatus-section">
+    <div class="section-label">APPARATUS</div><h2>Run and inspect</h2>
+    <article class="experiment-content">{{ content }}</article>
+  </section>
+
+  <section class="evidence-section">
+    <div class="section-label">EVIDENCE BOUNDARY</div><h2>What the measurement supports</h2>
+    <div class="evidence-body"><div><strong>Supported</strong><p>{{ page.shows }}</p></div><div><strong>Not supported</strong><p>{{ page.does_not_show }}</p></div></div>
+  </section>
+
   <nav class="experiment-next"><a class="btn" href="{{ '/experiment/' | relative_url }}">← Experiments</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Methods</a></nav>
 </div>
