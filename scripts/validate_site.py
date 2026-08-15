@@ -145,7 +145,7 @@ def main() -> int:
         "research/13-pixel-organisms-artificial-life/index.html",
         "glossary/index.html", "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
         "assets/css/clarity-v2.css", "assets/css/clarity-v3.css", "assets/js/site.js", "assets/js/pixel-core.js",
-        "assets/js/color-carrier.js", "assets/js/pixel-organism.js",
+        "assets/js/color-carrier.js", "assets/js/pixel-organism.js", "assets/js/experiment-help.js",
     ]
     for rel in required:
         if not (SITE / rel).exists():
