@@ -3,92 +3,102 @@ layout: research
 title: Research Neighborhood
 ---
 
-# The research neighborhood
+# Research neighborhood
 
-<div class="plain-box"><strong>Plain English:</strong> most ingredients of MPF already exist somewhere in machine learning. The interesting work is understanding what each neighboring field contributes, then testing combinations that are not already standard.</div>
+Most ingredients required for Multidimensional Pixel Fields already exist in established machine learning and information-processing systems. The useful question is not whether multidimensional cells, recurrence, memory, quantization, or learned topology are possible. It is which combinations produce a measurable advantage after strong baselines and resource costs are controlled.
 
-## Neural Cellular Automata — the closest structural ancestor
+## Neural Cellular Automata
 
-[Growing Neural Cellular Automata](https://distill.pub/2020/growing-ca/) places a multidimensional state in every grid cell and repeatedly applies a learned local update rule. Its cells communicate with nearby cells and can learn robust global behavior from local computation.
+[Growing Neural Cellular Automata](https://distill.pub/2020/growing-ca/) places a multidimensional state in every grid cell and repeatedly applies a learned local update rule. Neighboring cells communicate locally, yet training can produce coherent global growth and regeneration.
 
-[Self-classifying MNIST Digits](https://distill.pub/2020/selforg/mnist/) goes further toward semantic computation: local cells collectively classify the global digit and converge on a label. This is particularly important for MPF because it shows that NCA is not limited to growing pictures.
+[Self-classifying MNIST Digits](https://distill.pub/2020/selforg/mnist/) moves beyond image growth: local cells collectively classify the global digit and converge on a label. This demonstrates that learned cellular systems can perform distributed semantic computation.
 
-**What MPF adds as a research direction:** persistent semantic workspace, explicit reasoning tasks, multiresolution state, stored memory, topology studies, rate–utility analysis, and stronger investigation of learned functional specialization.
+For MPF, NCA is therefore a baseline rather than merely inspiration. Hidden vector channels, shared local updates, recurrence, persistence, and regeneration cannot by themselves establish a distinct contribution.
+
+Stronger hypotheses involve persistent semantic workspace, explicit memory, alternative cell primitives, multiresolution communication, learned topology, rate–utility analysis, or tasks where internal computation can be inspected causally.
 
 ## Classical cellular automata
 
-A [cellular automaton](https://www.scholarpedia.org/article/Cellular_automata) is a discrete spatial system where local neighborhood rules produce global dynamics. Classical CA is useful background because it makes the distinction between **local transition rule** and **global emergent computation** unusually clear.
+A [cellular automaton](https://www.scholarpedia.org/article/Cellular_automata) is a spatial system in which local transition rules generate global dynamics. Classical CA makes the distinction between a **local rule** and **emergent global computation** unusually clear.
 
-Neural CA replaces a hand-written transition table with differentiable learned functions.
+Neural cellular automata replace the hand-written transition table with differentiable learned functions, but the same conceptual warning remains: visually complex global behavior does not automatically reveal what information is being represented or what task has been solved.
 
-## Neural Map — persistent 2D learned memory
+## Neural Map and persistent spatial memory
 
-[Neural Map: Structured Memory for Deep Reinforcement Learning](https://arxiv.org/abs/1702.08360) uses a persistent spatially structured 2D memory to store information over long time intervals.
+[Neural Map: Structured Memory for Deep Reinforcement Learning](https://arxiv.org/abs/1702.08360) uses a persistent two-dimensional learned memory so information can retain stable spatial addresses over long time intervals.
 
-**Connection:** both systems give learned information stable spatial addresses.
+The overlap with persistent pixel fields is direct: both give learned information an addressable spatial substrate. A stronger MPF memory result must establish what is gained when computation occurs throughout the field rather than when an external controller merely writes to and reads from a spatial memory map.
 
-**Difference:** MPF is interested in recurrent computation occurring throughout the field itself, not only in a memory map being written and queried by an external controller.
+## Self-Organizing Maps and semantic neighborhood
 
-## Self-Organizing Maps — semantic neighborhood on a 2D lattice
+The [Kohonen Self-Organizing Map](https://www.scholarpedia.org/article/Kohonen_network) maps high-dimensional observations to an ordered grid while encouraging nearby grid units to represent nearby regions of the data distribution.
 
-The [Kohonen Self-Organizing Map](https://www.scholarpedia.org/article/Kohonen_network) maps high-dimensional data onto a regular grid while encouraging topological ordering.
+This is an important precedent for semantic organization on a two-dimensional lattice. It also provides a useful control: if learned semantic geography is proposed, the result should be compared with established topographic mapping methods rather than treating organized neighborhoods as novel by default.
 
-**Connection:** it is a major precedent for the idea that a 2D neighborhood can reflect structure in a high-dimensional representation.
+## Graph Neural Networks and message passing
 
-**Difference:** SOM is primarily a mapping/organization method; MPF studies recurrent task computation in a persistent state field.
+A regular pixel grid is a graph with a specific connectivity pattern. [A Gentle Introduction to Graph Neural Networks](https://distill.pub/2021/gnn-intro/) provides the general message-passing view: nodes aggregate information from connected neighbors and update their states.
 
-## Graph Neural Networks — a general message-passing view
+That view separates two hypotheses:
 
-A grid is a graph with regular connectivity. From this viewpoint, an MPF update is message passing over a graph with shared node dynamics. [A Gentle Introduction to Graph Neural Networks](https://distill.pub/2021/gnn-intro/) is a useful bridge.
+```text
+stable connectivity is useful
+```
 
-This viewpoint is important because a positive result from stable connectivity may not imply that **2D Cartesian geometry** is special. A fixed random graph or learned semantic graph can be used as a control.
+from
+
+```text
+2D Cartesian geometry is specifically useful
+```
+
+A fixed random graph, learned graph, torus, sparse long-range graph, or attention network can test whether the Cartesian arrangement itself matters.
 
 ## Recurrent convolutional networks
 
-A recurrent convolution can repeatedly apply the same local kernels to a hidden spatial tensor. In implementation terms, a minimal MPF can look extremely close to this established family.
+A recurrent convolution repeatedly applies shared local kernels to a hidden spatial tensor. A minimal learned vector field can therefore be mathematically close to an established recurrent CNN.
 
-That is useful, not embarrassing: it gives strong baselines and mature tooling. The project becomes more specific when position, persistence, multiscale structure and learned semantic organization are themselves studied as computational variables.
+This similarity is useful because it supplies mature baselines. A distinctive result must come from an experimentally isolated property such as persistent addressability, alternative internal pixel structure, multiscale recursion, learned routing, or unusually efficient memory—not from recurrence plus convolution alone.
 
-## Slot Attention — learned specialization
+## Slot Attention and learned specialization
 
 [Slot Attention](https://arxiv.org/abs/2006.15055) learns a set of internal slots that can specialize around objects or entities.
 
-**Connection:** it demonstrates that useful internal specialization can emerge from task training.
+Slot systems show that functional specialization can emerge without assigning semantic roles by hand. Their slots are typically permutation-symmetric rather than embedded at persistent spatial addresses, making them a useful comparison for any hypothesis that stable location improves specialization or memory.
 
-**Difference:** slots are typically permutation-symmetric rather than persistently embedded in a 2D spatial workspace.
+## Vector quantization and discrete latent state
 
-## Vector quantization — discrete latent state
+[VQ-VAE](https://arxiv.org/abs/1711.00937) replaces continuous latent vectors with codebook entries. [VQ-VAE-2](https://arxiv.org/abs/1906.00446) adds hierarchical latent scales.
 
-[VQ-VAE](https://arxiv.org/abs/1711.00937) learns discrete codebook representations. [VQ-VAE-2](https://arxiv.org/abs/1906.00446) adds hierarchical latent scales.
-
-These are direct precedents for any MPF storage/compression experiment. A field only becomes a compression method when actual representation bits—including codebooks and instance-specific side information—are counted.
+These methods are direct precedents for compressed persistent pixel state. A field becomes a compression method only when the total representation rate—including codebooks, indices, metadata, and model cost under a declared amortization rule—is lower for a chosen reconstruction quality or task utility.
 
 ## Hyperbolic representation learning
 
-[Poincaré Embeddings](https://arxiv.org/abs/1705.08039) showed that hyperbolic space can efficiently represent hierarchical symbolic data. This motivates a narrow MPF experiment in which hierarchy-related state uses hyperbolic distance or a hyperbolic manifold.
+[Poincaré Embeddings](https://arxiv.org/abs/1705.08039) showed that negatively curved space can represent tree-like hierarchical data efficiently.
 
-Hyperbolic geometry is a **metric/geometric choice**, not an extra dimension and not a source of free storage capacity.
+The relevant hypothesis for MPF is narrow: hierarchy-related components of pixel or region state may benefit from hyperbolic geometry when the target relationships are genuinely hierarchical. Hyperbolic geometry is a metric choice, not an extra dimension and not a free source of storage capacity.
 
-## Hyperdimensional / Vector-Symbolic Computing
+## Hyperdimensional computing and vector-symbolic architectures
 
-Vector-symbolic architectures encode entities and relations in high-dimensional vectors and support operations such as binding, bundling and similarity-based retrieval. A useful overview is [A Survey on Hyperdimensional Computing](https://arxiv.org/abs/2111.06077).
+Vector-symbolic architectures encode entities and relations in high-dimensional distributed vectors and use operations such as binding, bundling, permutation, and similarity-based retrieval. A broad technical entry point is [A Survey on Hyperdimensional Computing](https://arxiv.org/abs/2111.06077).
 
-A later MPF variant could place vector-symbolic representations inside persistent spatial cells, using the field for routing and memory while VSA operations provide explicit composition.
+A field can provide stable spatial address and routing while VSA operations provide explicit compositional algebra. The combination is only informative when compared directly with ordinary learned vectors and when the high-dimensional codebook and derived state are counted as resources.
 
-## Where the integration may be less explored
+## The integration question
 
-The combination worth investigating is not any one component above. It is a persistent system where:
+A less standard combination would contain several properties at once:
 
-- a recurrent field is the active working state;
-- local and multiscale communication coexist;
-- stable spatial organization can itself be learned and measured;
-- regions may develop persistent computational functions;
-- reasoning traces remain inside the field over time;
-- the same field can later be stored, retrieved, quantized or composed with other fields.
+- a persistent field as active working state;
+- local and multiscale communication;
+- stable or learned spatial organization;
+- internal cell structures beyond flat vectors;
+- explicit write, delay, interference, and retrieval;
+- inspectable reasoning or computation traces;
+- quantization or storage of the resulting state;
+- interaction between multiple persistent fields.
 
-That integration must still be compared with simpler recurrent grids, graph networks, memory maps, slot models and Transformers.
+The correct controls include simpler recurrent grids, recurrent CNNs, NCA, graph networks, spatial memory maps, slot models, Transformers, vector databases, and external-memory architectures. Integration becomes scientifically meaningful only if the added structure survives those comparisons.
 
-## Reading order
+## Core references
 
 1. [Growing Neural Cellular Automata](https://distill.pub/2020/growing-ca/)
 2. [Self-classifying MNIST Digits](https://distill.pub/2020/selforg/mnist/)
@@ -98,3 +108,4 @@ That integration must still be compared with simpler recurrent grids, graph netw
 6. [Distill: GNN introduction](https://distill.pub/2021/gnn-intro/)
 7. [VQ-VAE](https://arxiv.org/abs/1711.00937)
 8. [Poincaré Embeddings](https://arxiv.org/abs/1705.08039)
+9. [HDC/VSA survey](https://arxiv.org/abs/2111.06077)
