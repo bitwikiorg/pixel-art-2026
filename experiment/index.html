@@ -1,0 +1,46 @@
+---
+layout: default
+title: Field Lab
+field_lab: true
+---
+<div class="lab-shell">
+  <div class="eyebrow">Experiment 0 · topology causality demonstrator</div>
+  <h1 style="font-size:clamp(2.6rem,6vw,5rem);max-width:980px">Multidimensional field dynamics</h1>
+  <p class="hero-deck">Each of the 1,024 cells below contains an 8-dimensional numerical state. RGB is only a fixed projection of those states. Change the update dynamics, destroy topology, damage a region, and export the run.</p>
+  <div class="warning"><strong>Scientific status:</strong> this browser model is a concept instrument, not a trained neural reasoning system and not evidence for MPF. Its purpose is to make the hypotheses inspectable before implementing the real PyTorch experiments.</div>
+  <div class="lab-grid" style="margin-top:20px">
+    <aside class="experiment-panel">
+      <h2>Controls</h2>
+      <div class="control"><label><span>Local coupling</span><span data-value="coupling">0.72</span></label><input id="coupling" type="range" min="0" max="1.4" step="0.01" value="0.72"></div>
+      <div class="control"><label><span>State memory</span><span data-value="memory">0.70</span></label><input id="memory" type="range" min="0" max="0.98" step="0.01" value="0.70"></div>
+      <div class="toggle"><span>Multiscale region signal</span><input id="hierarchy" type="checkbox" checked></div>
+      <div class="toggle"><span>Shuffle topology each step</span><input id="shuffle" type="checkbox"></div>
+      <div class="cta-row"><button id="runBtn" class="btn primary">Run</button><button id="stepBtn" class="btn">Step</button><button id="resetBtn" class="btn">Reset</button></div>
+      <div class="cta-row"><button id="damageBtn" class="btn">Damage 8×8 region</button></div>
+      <p class="protocol">Topology shuffling deliberately destroys persistent spatial addressability while retaining the same total state size. In the real experiment, this becomes a controlled model ablation.</p>
+    </aside>
+    <section class="lab-canvas-wrap">
+      <div class="overlay-label">32×32 CELLS · 8D/CELL · STEP <span id="stepCount">0</span></div>
+      <canvas id="fieldCanvas" aria-label="Multidimensional field visualization"></canvas>
+    </section>
+    <aside class="experiment-panel">
+      <h2>Observed state</h2>
+      <div class="metrics">
+        <div class="metric"><small>LOCAL COHERENCE</small><strong id="coherence">—</strong></div>
+        <div class="metric"><small>RMS ENERGY</small><strong id="energy">—</strong></div>
+        <div class="metric"><small>OCCUPANCY</small><strong id="occupancy">—</strong></div>
+        <div class="metric"><small>STEP STABILITY</small><strong id="stability">—</strong></div>
+      </div>
+      <h2 style="margin-top:24px">Protocol</h2>
+      <ol class="protocol">
+        <li>Reset. Keep hierarchy on and shuffle off.</li>
+        <li>Run 50–100 steps. Export JSON.</li>
+        <li>Reset. Turn shuffle on. Keep every other setting identical.</li>
+        <li>Run the same number of steps. Export JSON.</li>
+        <li>Compare coherence and stability. Do not interpret a difference as proof; use it to specify the real trained ablation.</li>
+      </ol>
+      <button id="exportBtn" class="btn primary">Export run JSON</button>
+      <p class="protocol">Next: implement an actual supervised relational-reasoning task where both models receive identical inputs, parameters, compute budget, and decoder.</p>
+    </aside>
+  </div>
+</div>
