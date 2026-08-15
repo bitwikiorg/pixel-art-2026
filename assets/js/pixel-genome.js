@@ -26,9 +26,20 @@
     return Array.from(genome, b => b.toString(16).padStart(2, '0').toUpperCase()).join('');
   }
 
+  function paletteFromGenome(genome) {
+    if (genome.length !== 16) throw new RangeError('Pixel Genome uses exactly 16 bytes (128 bits)');
+    const lift = b => 55 + (b % 176);
+    return [
+      [12 + (genome[13] % 28), 16 + (genome[14] % 28), 20 + (genome[15] % 28)],
+      [lift(genome[10]), lift(genome[11]), lift(genome[12])],
+      [lift(genome[3]), lift(genome[6]), lift(genome[8])],
+      [205 + (genome[4] % 51), 205 + (genome[5] % 51), 205 + (genome[9] % 51)]
+    ];
+  }
+
   function renderGenome(genome, size = 24) {
     if (genome.length !== 16) throw new RangeError('Pixel Genome uses exactly 16 bytes (128 bits)');
-    const bits = new Uint8Array(size * size);
+    const pixels = new Uint8Array(size * size);
     const cx = (size - 1) / 2;
     const cy = size * (0.48 + (genome[0] / 255 - 0.5) * 0.08);
     const rx = size * (0.18 + (genome[1] / 255) * 0.10);
@@ -45,18 +56,19 @@
       for (let x = 0; x < size; x++) {
         const nx = (x - cx) / rx;
         const ny = (y - cy) / ry;
-        let on = nx * nx + ny * ny <= 1;
-        if (on) {
-          if (patternMode === 1 && ((x + genome[10]) % stripePeriod === 0)) on = false;
-          else if (patternMode === 2 && ((y + genome[11]) % stripePeriod === 0)) on = false;
-          else if (patternMode === 3 && (((x + y + genome[12]) % stripePeriod) === 0)) on = false;
+        const inside = nx * nx + ny * ny <= 1;
+        let value = inside ? 1 : 0;
+        if (inside) {
+          if (patternMode === 1 && ((x + genome[10]) % stripePeriod === 0)) value = 2;
+          else if (patternMode === 2 && ((y + genome[11]) % stripePeriod === 0)) value = 2;
+          else if (patternMode === 3 && (((x + y + genome[12]) % stripePeriod) === 0)) value = 2;
         }
-        bits[y * size + x] = on ? 1 : 0;
+        pixels[y * size + x] = value;
       }
     }
 
     const eyeXs = [Math.round(cx - eyeOffset), Math.round(cx + eyeOffset)];
-    for (const ex of eyeXs) if (ex >= 0 && ex < size) bits[eyeY * size + ex] = 0;
+    for (const ex of eyeXs) if (ex >= 0 && ex < size) pixels[eyeY * size + ex] = 3;
 
     const hornY = Math.max(0, Math.round(cy - ry));
     for (let k = 1; k <= hornLength; k++) {
@@ -64,8 +76,8 @@
       if (yy < 0) break;
       const left = Math.round(cx - rx * 0.55 - k * 0.35);
       const right = Math.round(cx + rx * 0.55 + k * 0.35);
-      if (left >= 0) bits[yy * size + left] = 1;
-      if (right < size) bits[yy * size + right] = 1;
+      if (left >= 0) pixels[yy * size + left] = 2;
+      if (right < size) pixels[yy * size + right] = 2;
     }
 
     const baseY = Math.min(size - 1, Math.round(cy + ry));
@@ -73,15 +85,15 @@
     for (const lx of legXs) for (let k = 1; k <= legLength; k++) {
       const yy = baseY + k;
       if (yy >= size) break;
-      bits[yy * size + lx] = 1;
+      pixels[yy * size + lx] = 1;
     }
 
     if (asymmetry) {
       const y = Math.max(0, Math.min(size - 1, Math.round(cy)));
       const x = Math.min(size - 1, Math.round(cx + rx + 1));
-      bits[y * size + x] = 1;
+      pixels[y * size + x] = 2;
     }
-    return bits;
+    return pixels;
   }
 
   function mutateGenome(genome, seedText) {
@@ -112,21 +124,28 @@
   }
 
   function hammingBits(a, b) {
-    if (a.length !== b.length) throw new RangeError('bitmaps must have equal length');
+    if (a.length !== b.length) throw new RangeError('pixel arrays must have equal length');
     let d = 0;
     for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d += 1;
     return d;
   }
 
-  function damage(bits, rate, seedText) {
+  function damage(pixels, rate, seedText) {
     const next = xorshift32(hashSeed(seedText));
-    const out = Uint8Array.from(bits);
+    const out = Uint8Array.from(pixels);
     let flips = 0;
-    for (let i = 0; i < out.length; i++) if ((next() / 4294967296) < rate) { out[i] ^= 1; flips++; }
+    for (let i = 0; i < out.length; i++) if ((next() / 4294967296) < rate) {
+      out[i] = (out[i] + 1 + (next() % 3)) % 4;
+      flips++;
+    }
     return { bits: out, flips };
   }
 
-  const api = { hashSeed, genomeFromSeed, genomeHex, renderGenome, mutateGenome, crossGenomes, interpolateGenomes, hammingBits, damage };
+  function rgbHex(rgb) {
+    return `#${rgb.map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+  }
+
+  const api = { hashSeed, genomeFromSeed, genomeHex, paletteFromGenome, renderGenome, mutateGenome, crossGenomes, interpolateGenomes, hammingBits, damage };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.PixelGenome = api;
   if (typeof document === 'undefined') return;
@@ -135,6 +154,7 @@
     const root = document.querySelector('[data-genome-lab]');
     if (!root) return;
     const SIZE = 24;
+    const BITS_PER_INDEX = 2;
     let parentA = genomeFromSeed(root.querySelector('#genomeSeed').value);
     let parentB = genomeFromSeed('SECOND-PARENT');
     let genome = Uint8Array.from(parentA);
@@ -143,17 +163,30 @@
     const canvas = root.querySelector('#genomeCanvas');
     const ctx = canvas.getContext('2d'); canvas.width = SIZE; canvas.height = SIZE;
 
+    function paintPalette(palette) {
+      root.querySelectorAll('[data-palette-index]').forEach(node => {
+        const i = Number(node.dataset.paletteIndex);
+        const rgb = palette[i];
+        const swatch = node.querySelector('.palette-swatch');
+        const code = node.querySelector('code');
+        if (swatch) swatch.style.background = `rgb(${rgb.join(',')})`;
+        if (code) code.textContent = `${i.toString(2).padStart(2, '0')} → ${rgbHex(rgb)}`;
+      });
+    }
+
     function paint() {
+      const palette = paletteFromGenome(genome);
       const image = ctx.createImageData(SIZE, SIZE);
       for (let i = 0; i < raster.length; i++) {
-        const v = raster[i] ? 245 : 12;
-        image.data[i * 4] = v; image.data[i * 4 + 1] = v; image.data[i * 4 + 2] = v; image.data[i * 4 + 3] = 255;
+        const rgb = palette[raster[i]];
+        image.data[i * 4] = rgb[0]; image.data[i * 4 + 1] = rgb[1]; image.data[i * 4 + 2] = rgb[2]; image.data[i * 4 + 3] = 255;
       }
       ctx.putImageData(image, 0, 0);
+      paintPalette(palette);
       root.querySelector('#genomeHex').textContent = genomeHex(genome);
-      root.querySelector('#genomeRasterBits').textContent = raster.length;
+      root.querySelector('#genomeRasterBits').textContent = (raster.length * BITS_PER_INDEX).toLocaleString();
       root.querySelector('#genomeDescriptionBits').textContent = 128;
-      root.querySelector('#genomeRatio').textContent = `${(128 / raster.length).toFixed(3)}×`;
+      root.querySelector('#genomeRatio').textContent = `${(128 / (raster.length * BITS_PER_INDEX)).toFixed(3)}×`;
     }
 
     function regenerate(note = 'Regenerated exactly from the current 128-bit genome and the shared procedural interpreter.') {
@@ -161,10 +194,10 @@
     }
 
     root.querySelector('#genomeGenerate').addEventListener('click', () => {
-      parentA = genomeFromSeed(root.querySelector('#genomeSeed').value); genome = Uint8Array.from(parentA); mutationCounter = 0; regenerate('Generated a deterministic genome from the seed.');
+      parentA = genomeFromSeed(root.querySelector('#genomeSeed').value); genome = Uint8Array.from(parentA); mutationCounter = 0; regenerate('Generated a deterministic genome, four-color palette, and 2-bit indexed raster from the seed.');
     });
     root.querySelector('#genomeMutate').addEventListener('click', () => {
-      mutationCounter += 1; genome = mutateGenome(genome, `${root.querySelector('#genomeSeed').value}:mutation:${mutationCounter}`); regenerate(`Deterministic mutation #${mutationCounter}: flipped 1–3 genome bits, then regenerated the raster.`);
+      mutationCounter += 1; genome = mutateGenome(genome, `${root.querySelector('#genomeSeed').value}:mutation:${mutationCounter}`); regenerate(`Deterministic mutation #${mutationCounter}: flipped 1–3 genome bits, then regenerated traits, palette, and color indices.`);
     });
     root.querySelector('#genomeCross').addEventListener('click', () => {
       parentB = genomeFromSeed(root.querySelector('#genomeParentB').value); genome = crossGenomes(parentA, parentB, root.querySelector('#genomeSeed').value); regenerate('Crossed parent genomes byte-by-byte using a deterministic selection mask.');
@@ -173,7 +206,7 @@
       const t = Number(e.target.value) / 100; genome = interpolateGenomes(parentA, parentB, t); regenerate(`Interpolated genome bytes at t=${t.toFixed(2)}.`); root.querySelector('#genomeT').textContent = t.toFixed(2);
     });
     root.querySelector('#genomeDamage').addEventListener('click', () => {
-      const original = renderGenome(genome, SIZE); const d = damage(original, 0.15, `${genomeHex(genome)}:damage`); raster = d.bits; paint(); root.querySelector('#genomeStatus').textContent = `Damaged ${d.flips}/${raster.length} visible pixels. The genome itself was not changed.`;
+      const original = renderGenome(genome, SIZE); const d = damage(original, 0.15, `${genomeHex(genome)}:damage`); raster = d.bits; paint(); root.querySelector('#genomeStatus').textContent = `Damaged ${d.flips}/${raster.length} visible color indices. The genome and derived palette were not changed.`;
     });
     root.querySelector('#genomeRegenerate').addEventListener('click', () => regenerate());
     regenerate();
