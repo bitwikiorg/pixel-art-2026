@@ -100,11 +100,13 @@
     const out = Uint8Array.from(genome);
     const next = xorshift32(hashSeed(seedText));
     const mutations = 1 + (next() % 3);
-    for (let m = 0; m < mutations; m++) {
-      const byte = next() % out.length;
-      const bit = next() % 8;
+    const positions = new Set();
+    while (positions.size < mutations) positions.add(next() % (out.length * 8));
+    positions.forEach(bitIndex => {
+      const byte = Math.floor(bitIndex / 8);
+      const bit = bitIndex % 8;
       out[byte] ^= 1 << bit;
-    }
+    });
     return out;
   }
 
@@ -130,6 +132,16 @@
     return d;
   }
 
+  function genomeBitDistance(a, b) {
+    if (a.length !== b.length) throw new RangeError('genomes must have equal length');
+    let d = 0;
+    for (let i = 0; i < a.length; i++) {
+      let x = a[i] ^ b[i];
+      while (x) { d += x & 1; x >>>= 1; }
+    }
+    return d;
+  }
+
   function damage(pixels, rate, seedText) {
     const next = xorshift32(hashSeed(seedText));
     const out = Uint8Array.from(pixels);
@@ -145,7 +157,7 @@
     return `#${rgb.map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
   }
 
-  const api = { hashSeed, genomeFromSeed, genomeHex, paletteFromGenome, renderGenome, mutateGenome, crossGenomes, interpolateGenomes, hammingBits, damage };
+  const api = { hashSeed, genomeFromSeed, genomeHex, paletteFromGenome, renderGenome, mutateGenome, crossGenomes, interpolateGenomes, hammingBits, genomeBitDistance, damage };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.PixelGenome = api;
   if (typeof document === 'undefined') return;
@@ -156,7 +168,7 @@
     const SIZE = 24;
     const BITS_PER_INDEX = 2;
     let parentA = genomeFromSeed(root.querySelector('#genomeSeed').value);
-    let parentB = genomeFromSeed('SECOND-PARENT');
+    let parentB = genomeFromSeed(root.querySelector('#genomeParentB').value);
     let genome = Uint8Array.from(parentA);
     let raster = renderGenome(genome, SIZE);
     let mutationCounter = 0;
@@ -194,16 +206,21 @@
     }
 
     root.querySelector('#genomeGenerate').addEventListener('click', () => {
-      parentA = genomeFromSeed(root.querySelector('#genomeSeed').value); genome = Uint8Array.from(parentA); mutationCounter = 0; regenerate('Generated a deterministic genome, four-color palette, and 2-bit indexed raster from the seed.');
+      parentA = genomeFromSeed(root.querySelector('#genomeSeed').value); genome = Uint8Array.from(parentA); mutationCounter = 0; regenerate('Generated a deterministic genome, four-color palette, and 2-bit indexed raster from the Parent A seed.');
     });
     root.querySelector('#genomeMutate').addEventListener('click', () => {
-      mutationCounter += 1; genome = mutateGenome(genome, `${root.querySelector('#genomeSeed').value}:mutation:${mutationCounter}`); regenerate(`Deterministic mutation #${mutationCounter}: flipped 1–3 genome bits, then regenerated traits, palette, and color indices.`);
+      mutationCounter += 1;
+      const before = Uint8Array.from(genome);
+      genome = mutateGenome(genome, `${root.querySelector('#genomeSeed').value}:mutation:${mutationCounter}`);
+      const changed = genomeBitDistance(before, genome);
+      regenerate(`Deterministic mutation #${mutationCounter}: flipped exactly ${changed} genome bit${changed === 1 ? '' : 's'}, then regenerated traits, palette, and color indices.`);
     });
     root.querySelector('#genomeCross').addEventListener('click', () => {
-      parentB = genomeFromSeed(root.querySelector('#genomeParentB').value); genome = crossGenomes(parentA, parentB, root.querySelector('#genomeSeed').value); regenerate('Crossed parent genomes byte-by-byte using a deterministic selection mask.');
+      parentB = genomeFromSeed(root.querySelector('#genomeParentB').value); genome = crossGenomes(parentA, parentB, root.querySelector('#genomeSeed').value); regenerate('Crossed Parent A and Parent B genomes byte-by-byte using a deterministic selection mask.');
     });
     root.querySelector('#genomeInterpolate').addEventListener('input', e => {
-      const t = Number(e.target.value) / 100; genome = interpolateGenomes(parentA, parentB, t); regenerate(`Interpolated genome bytes at t=${t.toFixed(2)}.`); root.querySelector('#genomeT').textContent = t.toFixed(2);
+      parentB = genomeFromSeed(root.querySelector('#genomeParentB').value);
+      const t = Number(e.target.value) / 100; genome = interpolateGenomes(parentA, parentB, t); regenerate(`Interpolated Parent A and the currently visible Parent B seed at t=${t.toFixed(2)}.`); root.querySelector('#genomeT').textContent = t.toFixed(2);
     });
     root.querySelector('#genomeDamage').addEventListener('click', () => {
       const original = renderGenome(genome, SIZE); const d = damage(original, 0.15, `${genomeHex(genome)}:damage`); raster = d.bits; paint(); root.querySelector('#genomeStatus').textContent = `Damaged ${d.flips}/${raster.length} visible color indices. The genome and derived palette were not changed.`;
