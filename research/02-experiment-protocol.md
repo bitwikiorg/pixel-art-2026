@@ -1,170 +1,177 @@
 ---
 layout: research
-title: "02 · Experiment Protocol"
+title: Experimental Program
 ---
 
-# Experiment protocol
+# Experimental program
 
-## Experiment 0 — the smallest decisive test
+<div class="plain-box"><strong>Plain English:</strong> the lab is a sequence of questions. Each experiment changes one part of the field and observes what happens to learning, generalization, computation or memory.</div>
 
-**Question:** does persistent spatial topology add computational value, or is the field only an ordinary tensor with a visual metaphor?
+The browser demo is the first executable model, not the final experiment. The larger research program should move from tiny controlled tasks to harder reasoning and memory settings.
 
-### Task
+## Lab 1 — Trainable local recurrent field
 
-Generate synthetic relational problems with entities and directional relations.
+**Question:** can a shared local neural rule learn a global spatial relation?
 
-Example:
+The live TensorFlow.js model writes two marked locations into a 12×12 field, performs several recurrent convolutional updates and predicts LEFT / RIGHT / ABOVE / BELOW.
 
-> A is left of B.  
-> B is above C.  
-> C is right of D.  
-> Where is A relative to D?
+What this teaches:
 
-Train on relation chains of length 2–4. Test out of distribution on chains of length 5–8.
+- cell state is learned, not assigned a semantic color;
+- the same local weights can be reused over space and time;
+- recurrence gives local communication more effective range;
+- intermediate hidden states can be visualized.
 
-### Model A — persistent MPF
+[Run it in the browser]({{ '/experiment/' | relative_url }}).
 
-- field: 16×16 or 32×32;
-- state width: D=48 or 64;
-- local 3×3 communication;
-- shared recurrent update network;
-- 8–16 update steps during training;
-- weak global pooling + MLP readout.
+## Lab 2 — Persistent address versus shuffled state
 
-### Model B — topology-destroyed MPF
+Use the same trained local model, but permute cell locations between recurrent updates.
 
-Keep everything identical except apply a new random permutation of cell identities after every recurrent update.
+Three versions are informative:
 
-This preserves:
+| Version | What stays stable? | What it probes |
+|---|---|---|
+| Persistent grid | position + neighborhood | full field organization |
+| Fixed random permutation | stable address, altered Cartesian placement | addressability versus specific geometry |
+| New permutation each step | no stable address | whether recurrence depends on persistent locations |
 
-- total state variables;
-- trainable parameter count;
-- update network;
-- number of recurrent steps;
-- approximate compute;
-- decoder.
+A useful result does not have to be “the grid wins.” If a fixed random graph works as well as 2D coordinates, the project should describe the useful mechanism as persistent graph structure rather than specifically pixels.
 
-It destroys persistent addressability.
+## Lab 3 — Recurrence depth
 
-### Model C — fixed random permutation
+Train with a range of update counts and evaluate with more or fewer recurrent steps.
 
-Apply one random permutation once and keep it fixed for the entire run.
+Plot:
 
-Interpretation:
+```text
+accuracy versus number of recurrent updates
+```
 
-- if A > B but A ≈ C, **stable addressability matters**, but Cartesian geometry may not;
-- if A > B and A > C, the learned spatial arrangement itself may matter;
-- if A ≈ B ≈ C, the field organization is not yet earning its complexity.
+Questions:
 
-## Metrics
+- Does performance improve as information gets more time to propagate?
+- Does it saturate?
+- Does running far beyond training destabilize the field?
+- Do longer-distance examples benefit more from extra recurrent depth?
 
-Primary:
+This connects directly to current work on recurrent latent computation and test-time depth.
 
-- exact-match task accuracy;
-- length-OOD accuracy;
-- accuracy versus recurrent update count;
-- parameter count;
-- measured inference MACs/FLOPs.
+## Lab 4 — Multiresolution field
 
-Secondary:
+Add regional summaries:
 
-- convergence of field state;
-- robustness to region deletion;
-- linear-probe decodability of intermediate relations;
-- targeted region-ablation effect.
-
-## Evidence for field reasoning
-
-Accuracy alone is insufficient.
-
-For problems with known intermediate propositions, probe every recurrent step. A credible reasoning trace should show intermediate conclusions becoming available in the expected causal order.
-
-Then intervene.
-
-If a region appears to encode proposition P at step t, corrupt or patch that region and test whether logically downstream conclusions change selectively. This separates causal computation from post-hoc decodability.
-
-## Experiment 1 — hierarchy
+```text
+32×32 cells → 8×8 regions → 4×4 super-regions → global
+```
 
 Compare:
 
-- flat 32×32 field;
-- 32×32 + 8×8 regions + 4×4 super-regions + global state;
-- random groups with identical group sizes.
+- local-only field;
+- local + region;
+- local + region + global;
+- equal-size randomly grouped regions.
 
-The hierarchical model earns its place only if it improves at least one of:
+This separates the benefit of **coarse communication capacity** from the benefit of **spatially meaningful hierarchy**.
 
-- OOD reasoning accuracy;
-- number of recurrent steps required;
-- compute at matched accuracy;
-- robustness;
-- representation rate.
+## Lab 5 — Shortest-path / wavefront computation
 
-## Experiment 2 — scale reuse
+Give the model an obstacle grid plus start and goal locations. Ask for path existence, shortest distance or first action.
 
-Use the same update rule at multiple resolutions.
+This task is useful because a classical breadth-first search produces a ground-truth wavefront over time. The learned field can be compared against that computational trace.
 
-This is the experiment that can justify **recursive** or eventually **fractal** terminology. If every scale requires independent parameters, call the system multiresolution instead.
+Caution: pathfinding naturally favors spatial architectures, so it should be paired with non-spatial relation tasks.
 
-## Experiment 3 — purposeful roles
+## Lab 6 — Symbolic relational composition
 
-Measure role stability across examples and random training seeds.
+Use arbitrary entities and facts such as:
 
-Evidence ladder:
+```text
+A is left of B
+B is above C
+C is right of D
+```
 
-1. information is linearly decodable from a region;
-2. the same functional region recurs after seed alignment;
-3. targeted ablation hurts the corresponding semantic factor more than random equal-area ablation;
-4. patching the region transfers the predicted property while preserving unrelated properties.
+and ask for a relation that requires composition.
 
-## Experiment 4 — semantic rate–utility
+Train on short chains and evaluate on longer unseen chains. This tests whether recurrent depth supports systematic composition rather than only geometric lookup.
 
-Store trained field states using:
+Useful later benchmarks include [bAbI](https://research.facebook.com/downloads/babi/) and [CLUTRR](https://arxiv.org/abs/1908.06177).
 
-- fp16;
-- int8;
-- vector quantization;
-- product quantization;
-- entropy-coded quantized states;
-- hierarchical VQ.
+## Lab 7 — Learned semantic layout
 
-Count all instance-dependent bits.
+There are two different input regimes:
 
-Plot task utility against actual stored bits. Compare with flat continuous latents and VQ baselines.
+### Oracle layout
+A human decides where entities are written. This is excellent for debugging.
 
-## Experiment 5 — hyperbolic hierarchy
+### Learned layout
+An encoder produces item embeddings and learns where/how to write them into the field.
 
-Use datasets with explicit taxonomic or tree structure.
+The second is essential if the project wants to study whether a useful semantic geography can emerge rather than being supplied by the experimenter.
 
-Compare equal-dimensional Euclidean hierarchy channels with Poincaré/Lorentz hierarchy channels. Report downstream task score and hierarchy distortion.
+## Lab 8 — Functional specialization
 
-Do not generalize a positive result beyond hierarchical data without evidence.
+Observe whether locations or regions develop consistent functions across examples and random training seeds.
 
-## Experiment 6 — damage and recovery
+Useful measurements:
 
-At an intermediate update:
+- activation patterns by task factor;
+- linear probes for entity/relation/intermediate state;
+- intervention maps;
+- region-to-role consistency across seeds;
+- selective damage versus equal-size random damage.
 
-- zero a contiguous region;
-- randomly drop cells;
-- inject state noise;
-- patch in a region from another example.
+A readable visualization should distinguish **correlation** (“this region is active”) from **causal contribution** (“editing this region selectively changes this computation”).
 
-Continue recurrence and measure task recovery over time.
+## Lab 9 — Persistence, damage and recovery
 
-Call this semantic regeneration only if task-relevant state recovers—not merely the rendered RGB pattern.
+Delete or corrupt a region after the field has formed useful state, then continue recurrent updates.
 
-## Minimum publishable package
+Measure a recovery curve:
 
-A disciplined first paper can be small:
+```text
+performance after damage versus additional update steps
+```
 
-- NCA baseline;
-- MPF-local;
-- MPF-hierarchical;
-- shuffled MPF;
-- synthetic relational reasoning;
+Growing NCA provides a strong precedent for self-repair in pattern-forming systems. The open question is whether analogous recovery can occur for semantic or reasoning state.
+
+## Lab 10 — Stored state and quantization
+
+Quantize a trained field between episodes. Compare:
+
+- fp16 state;
+- int8 state;
+- VQ codebook indices;
+- product VQ;
+- sparse / top-k state;
+- flat quantized latent baseline.
+
+Report **actual stored bits** and task utility after reconstruction or resumption.
+
+## Experimental fairness
+
+Different architectures spend resources differently, so report at least three views:
+
+1. similar trainable parameter count;
+2. similar inference computation;
+3. similar stored representation bits.
+
+These controls are interpretive tools. They keep the experiment readable: when something changes, we can say more precisely *what* changed.
+
+## A practical first research suite
+
+A compact serious study can start with four models:
+
+- NCA-style local recurrent grid;
+- MPF-Local;
+- MPF-Hier;
+- shuffled-state MPF.
+
+and three task families:
+
+- spatial relations;
 - shortest path;
-- CLUTRR;
-- ≥5 independent seeds;
-- parameter-matched and compute-matched reporting;
-- causal region interventions.
+- CLUTRR-style relational composition.
 
-If topology and hierarchy survive those controls, the larger compression, hyperbolic, memory, and album program becomes justified.
+Measure accuracy, longer-depth generalization, accuracy versus recurrent steps, compute, and region interventions.

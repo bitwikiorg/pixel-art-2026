@@ -91,18 +91,27 @@ def main() -> int:
             if str(target) == "__OUTSIDE_SITE__":
                 errors.append(f"Path escapes site: {html_file.relative_to(SITE)} {attr}={raw!r}")
             elif not target.exists():
+                try:
+                    shown = target.relative_to(SITE)
+                except ValueError:
+                    shown = target
                 errors.append(
-                    f"Broken internal reference: {html_file.relative_to(SITE)} {attr}={raw!r} -> "
-                    f"{target.relative_to(SITE) if target.is_relative_to(SITE) else target}"
+                    f"Broken internal reference: {html_file.relative_to(SITE)} "
+                    f"{attr}={raw!r} -> {shown}"
                 )
 
     required = [
         SITE / "index.html",
+        SITE / "learn" / "index.html",
         SITE / "experiment" / "index.html",
         SITE / "research" / "index.html",
+        SITE / "glossary" / "index.html",
+        SITE / "research" / "05-neural-architecture" / "index.html",
+        SITE / "research" / "09-current-frontier" / "index.html",
         SITE / "assets" / "css" / "style.css",
         SITE / "assets" / "js" / "site.js",
         SITE / "assets" / "js" / "field.js",
+        SITE / "assets" / "js" / "neural-field.js",
     ]
     for path in required:
         if not path.exists():

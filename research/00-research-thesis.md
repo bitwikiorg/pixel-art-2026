@@ -1,70 +1,122 @@
 ---
 layout: research
-title: "00 · Research Thesis"
+title: What is an MPF?
 ---
 
-# Research thesis
+# What is a Multidimensional Pixel Field?
 
-## Core question
+<div class="plain-box"><strong>Plain English:</strong> imagine a scratchpad made of many small locations. Each location stores a learned vector rather than a color. The locations repeatedly exchange information, so the scratchpad itself becomes part of the computation.</div>
 
-> Can a persistent, spatially addressable, multiresolution field of learned multidimensional states acquire purposeful computational roles and serve as a useful substrate for machine reasoning?
+## The central research question
 
-An MPF is a recurrent state tensor:
+Can a machine-learning system use a persistent two-dimensional field of high-dimensional learned states—not merely as an activation map, but as the actual workspace in which information is stored, organized and iteratively transformed?
 
-`F_t ∈ R^(H×W×D)`
+The field is
 
-with cell state `x_ij^(t) = F_t[i,j]` and shared update dynamics:
+```text
+F_t ∈ R^(H × W × D)
+```
 
-`x_ij^(t+1) = x_ij^(t) + gθ(x_ij, local(F_t), region(F_t), global(F_t), q)`.
+with one cell
 
-The important concept is persistence. The field is not merely an intermediate activation map; it is intended to be the machine's working state.
+```text
+F_t[i,j] = x_ij^(t) ∈ R^D.
+```
 
-## What a cell is
+A visible RGB pixel can be generated from that state for inspection, but RGB is not the computational limit. The original project formulation explicitly separates the **visible pixel** from the **multidimensional computational cell**.
 
-A cell may contain unconstrained learned dimensions or partitions such as:
+## Why use a field at all?
 
-- semantic/content state;
-- learned role state;
-- recurrent working memory;
-- confidence or control state;
-- routing / communication state;
-- hierarchy-specific state.
+A conventional model can already hold information in vectors or tensors. The reason to study a persistent field is more specific: a field gives every state both an **internal representation** and an **address**.
 
-Those labels are architectural hypotheses, not biological claims and not requirements that humans hand-label neurons.
+That creates several architectural possibilities:
 
-## What "pixel" means
+- neighboring locations can communicate with a cheap local rule;
+- stable position can act as working memory;
+- regions can form larger computational units;
+- coarse and fine representations can coexist;
+- the same update rule can be reused over time;
+- intermediate computation can be visualized and intervened on spatially.
 
-The word pixel refers to **addressability and visualization**, not information capacity. RGB/hex/HSL are alternative descriptions of visible color. The actual computational primitive is the high-dimensional state vector. A fixed 64→3 projection can render the state as color for inspection.
+None of those advantages is automatic. They are separate research questions.
 
-## Strong form of the hypothesis
+## The shortest useful model
 
-A publishable MPF result should establish at least one causal advantage from the field organization itself:
+A minimal version contains four pieces:
 
-- persistent topology improves out-of-distribution reasoning;
-- multiscale communication reduces recurrent steps or compute;
-- stable regions develop causally identifiable computational roles;
-- field dynamics expose faithful intermediate reasoning state;
-- distributed state permits semantic damage recovery;
-- quantized hierarchical fields improve task utility per stored bit.
+1. **Writer** — converts the input into an initial field `F₀`.
+2. **Local recurrent rule** — updates every cell from itself and nearby cells.
+3. **Repeated updates** — produces `F₁, F₂, …, F_T`.
+4. **Readout** — extracts a prediction from the final field.
 
-## Compression claim
+A generic update can be written as
 
-A 32×32×64 fp16 field occupies 128 KiB before compression. Therefore the grid is not intrinsically compact.
+```text
+x_ij^(t+1) = x_ij^t + gθ(x_ij^t, N_ij(F_t), q)
+```
 
-Compression can only come from mechanisms such as quantization, entropy coding, sparsity, shared codebooks, low-rank structure, recursive rule reuse, predictive coding, or hierarchical abstraction.
+where `N_ij` is local neighborhood information, `q` is an optional task/query representation, and `gθ` is a learned function shared across space.
 
-The correct dependent variable is **rate–utility**, not visual compactness.
+This basic mechanism is strongly related to [Neural Cellular Automata](https://distill.pub/2020/growing-ca/). MPF should therefore be understood as an architectural research program built **on top of** that lineage, not as the discovery that grid cells can contain vectors.
 
-## "Fractal" claim
+## What makes MPF a distinct research direction?
 
-Use **multiresolution** or **hierarchical** by default.
+The project is interested in combining several properties in one persistent workspace:
 
-Reserve *fractal* for a demonstrated case where substantially the same computational/representational rule is recursively reused across cell, region, field, and possibly album scales, with measurable parameter, storage, or generalization benefit.
+### Semantic topology
+The arrangement of states may become useful rather than incidental. Stable addresses, neighborhoods, regions or learned long-range connections may carry information.
 
-## Hyperbolic claim
+### Purposeful specialization
+Some locations or regions may develop persistent functions—entity memory, relation processing, routing, uncertainty, or other roles. These roles should emerge from training and be studied causally rather than assigned by aesthetic interpretation.
 
-Hyperbolic geometry is not another embedding dimension. It is a choice of geometry for distances and transformations. It should be tested only where hierarchical structure predicts an advantage, with matched Euclidean controls.
+### Multiresolution organization
+Cells can be summarized into regions, regions into super-regions, and coarse information can return to fine states. If the same rule can be reused across scales, the architecture becomes recursively organized.
 
-## North star
+### Persistence
+The field can remain active across many recurrent updates and may eventually be stored and recalled as machine memory.
 
-MPF asks whether **position, state, neighborhood, scale, and temporal transformation can jointly become a learned representational language** for AI memory and reasoning.
+### Representation efficiency
+A raw multidimensional field is not compressed. Compression becomes a separate engineering problem involving quantization, sparsity, shared codebooks, hierarchy, entropy coding or predictive reconstruction.
+
+## How this differs from an image
+
+The grid is convenient because it provides a regular neighborhood and is easy to visualize. But the research object is not “AI stored in a PNG.” A normal image format cannot directly hold a 64-dimensional float vector at every visible pixel.
+
+A practical implementation is a tensor, for example:
+
+```python
+field.shape == [batch, height, width, channels]
+```
+
+Color is a human-facing projection of a few hidden channels.
+
+## How this differs from a Transformer
+
+A Transformer usually lets any token directly interact with any other through attention. A local field instead imposes locality and uses recurrent steps to propagate information. That can make communication scale differently, but it can also require many updates. The tradeoff is empirical.
+
+Recent recurrent latent-reasoning work is relevant because it shows renewed interest in gaining computation by repeatedly applying a shared block rather than only producing more output tokens. See the [current frontier page]({{ '/research/09-current-frontier/' | relative_url }}).
+
+## Working architecture map
+
+```text
+input / query
+    ↓
+field writer
+    ↓
+F₀ ─→ local perception ─→ shared update ─→ F₁
+                              ↑             │
+                              └──── repeat ─┘
+                                    ↓
+                          optional region levels
+                                    ↓
+                                 readout
+```
+
+The project becomes interesting when the **field itself** carries useful intermediate state, not merely when a powerful encoder or decoder happens to surround a decorative grid.
+
+## Continue
+
+- [Start Here: mechanism-by-mechanism]({{ '/learn/' | relative_url }})
+- [Neural architecture]({{ '/research/05-neural-architecture/' | relative_url }})
+- [Live neural field]({{ '/experiment/' | relative_url }})
+- [Research neighborhood]({{ '/research/01-prior-art/' | relative_url }})

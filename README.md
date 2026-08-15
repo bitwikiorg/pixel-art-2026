@@ -1,43 +1,63 @@
-# Multidimensional Pixel Fields — Research Lab
+# Pixel Neural Net Lab — Multidimensional Pixel Fields
 
-A living research site for **Multidimensional Pixel Fields (MPF)**: persistent spatial neural workspaces where every cell contains a learned multidimensional state and field dynamics are tested as a substrate for representation, memory, compression, and reasoning.
+A public research library and interactive neural-field laboratory exploring **Multidimensional Pixel Fields (MPF)**: persistent spatial neural states in which every grid location contains a learned vector and computation occurs through repeated field updates.
 
-## Research question
+## Website
 
-> Can persistent topology, multiscale organization, learned specialization, and recurrent state transformation provide measurable advantages over equivalent unstructured latent representations?
+https://bitwikiorg.github.io/pixel-art-2026/
 
-## Site
+The site is organized as:
 
-After GitHub Pages is enabled and this branch is merged, the intended URL is:
+- **Start here** — intuitive-to-technical introduction;
+- **Lab** — trainable TensorFlow.js recurrent field + dynamics sandbox;
+- **Research** — card-based library by topic;
+- **Glossary** — concise definitions with primary / Scholarpedia / Wikipedia references;
+- **Code** — reproducible browser and PyTorch prototypes.
 
-**https://bitwikiorg.github.io/pixel-art-2026/**
+## Trainable browser lab
 
-## What is included
+The browser model is a real small neural network:
 
-- interactive 32×32×8D field dynamics demonstrator;
-- topology-shuffle and damage/recovery controls;
-- JSON experiment export;
-- research thesis and terminology discipline;
-- prior-art / novelty audit;
-- falsifiable experiment protocol;
-- concepts and future research directions;
-- primary-source bibliography;
-- GitHub Pages deployment workflow.
+```text
+markers → learned field writer → shared local 3×3 neural update
+        → recurrent field evolution → weak max-pooled readout
+```
 
-## Important scientific constraint
+Weights are trained in the browser with TensorFlow.js. Hidden cell state is projected to RGB only for visualization.
 
-The browser visualization is a **concept instrument, not evidence for MPF**. The first real experiment must compare a trained persistent field against position-destroyed and conventional recurrent baselines at matched parameters and compute.
+## PyTorch reference
 
-## First experiment
+```bash
+pip install torch
+python experiments/mpf_relations.py --epochs 20 --steps 6
+```
 
-Implement the topology-causality study in `research/02-experiment-protocol.md`:
+Compare a per-step topology permutation:
 
-1. generate relational reasoning chains;
-2. train a small recurrent 16×16 or 32×32 field;
-3. compare stable topology vs per-step cell permutation;
-4. evaluate longer chains out of distribution;
-5. inspect intermediate field states and perform region interventions.
+```bash
+python experiments/mpf_relations.py --topology per_step --epochs 20 --steps 6
+```
 
-## Source inspiration
+See [`experiments/README.md`](experiments/README.md).
 
-The site structure takes inspiration from the Jekyll research-index pattern in `bitwikiorg/BITCORE_CORAL_REEF`, expanded into an interactive computational research laboratory.
+## Research direction
+
+The basic primitive has close precedent in Neural Cellular Automata. The larger program studies whether a recurrent spatial field can become a useful **semantic workspace and persistent memory**, with experimentally separable questions about topology, multiresolution communication, specialization, quantization, geometry, robustness and reasoning depth.
+
+Primary starting references:
+
+- Mordvintsev et al., *Growing Neural Cellular Automata* — https://distill.pub/2020/growing-ca/
+- Randazzo et al., *Self-classifying MNIST Digits* — https://distill.pub/2020/selforg/mnist/
+- Parisotto & Salakhutdinov, *Neural Map* — https://arxiv.org/abs/1702.08360
+- van den Oord et al., *VQ-VAE* — https://arxiv.org/abs/1711.00937
+- Nickel & Kiela, *Poincaré Embeddings* — https://arxiv.org/abs/1705.08039
+
+## Site validation
+
+Every push to `main` runs:
+
+- JavaScript syntax checks;
+- a production Jekyll build;
+- rendered-link / Liquid validation.
+
+GitHub Pages deploys from `main` only.

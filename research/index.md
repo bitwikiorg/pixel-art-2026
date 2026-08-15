@@ -1,43 +1,24 @@
 ---
-layout: research
+layout: default
 title: Research Library
+description: Browse Multidimensional Pixel Field research by concept, architecture, experiment, memory, geometry and literature.
 ---
-
-# MPF Research Library
-
-This library treats **Multidimensional Pixel Fields (MPF)** as a falsifiable architecture program rather than a claim that colored pixels create new information capacity.
-
-The working object is a persistent field
-
-`F_t ∈ R^(H×W×D)`
-
-where each spatial location contains a learned multidimensional state and repeated field updates perform computation.
-
-## Research nodes
-
-| Node | Question |
-|---|---|
-| [00 · Research thesis](./00-research-thesis/) | What exactly is MPF, and which claims are hypotheses? |
-| [01 · Prior art & novelty boundary](./01-prior-art/) | What already exists, and where could a contribution remain? |
-| [02 · Experiment protocol](./02-experiment-protocol/) | What is the smallest decisive experiment? |
-| [03 · Concepts to explore](./03-concepts-to-explore/) | Which technical directions are worth branching into? |
-| [04 · References](./04-references/) | Primary literature and benchmark sources. |
-
-## The discipline of this project
-
-A successful MPF result must show that **organization is doing work**. If stable spatial address, meaningful neighborhood, hierarchy, recurrence, or state persistence can be removed without measurable degradation, those components should be deleted from the theory.
-
-Likewise, a high-dimensional field is **not compression by itself**. Compression requires an operational rate measure: actual serialized latent bits plus all instance-specific side information, with shared model/codebook cost reported separately or amortized explicitly.
-
-## Research ladder
-
-1. **Topology** — persistent grid vs position-destroying control.
-2. **Recurrence** — does extra update depth extend reasoning depth?
-3. **Hierarchy** — flat field vs multiscale field at matched resources.
-4. **Purpose** — do regions acquire stable, causally testable roles?
-5. **Compression** — rate–utility under actual quantization/serialization.
-6. **Geometry** — Euclidean vs hyperbolic hierarchy channels.
-7. **Memory** — save, retrieve, damage, repair, and reuse fields.
-8. **Albums** — collections of fields as higher-order persistent memory.
-
-The 500×500 idea is a late scaling experiment. Start at 16×16 or 32×32 so every failure can be inspected.
+<div class="page-shell">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Research</span></nav>
+  <header class="library-hero"><div class="eyebrow">Research library</div><h1>Choose the question you want to understand.</h1><p class="hero-deck">Each page starts with the intuitive idea, then gives the mathematical or engineering version. The library separates established neighboring work from the parts of MPF that still need experiments.</p></header>
+  <div class="library-tools" aria-label="Research filters"><button class="filter-btn active" data-research-filter="all">All</button><button class="filter-btn" data-research-filter="core">Core architecture</button><button class="filter-btn" data-research-filter="experiment">Experiments</button><button class="filter-btn" data-research-filter="memory">Memory & compression</button><button class="filter-btn" data-research-filter="theory">Geometry & representation</button><button class="filter-btn" data-research-filter="literature">Literature</button></div>
+  <div class="card-grid">
+    <article class="research-card" data-research-tags="core"><span class="level">START HERE</span><h3>What is an MPF?</h3><p>The central object, in plain English and mathematical notation: a persistent 2D field of learned vector states.</p><a class="card-link" href="{{ '/research/00-research-thesis/' | relative_url }}">Read overview →</a></article>
+    <article class="research-card" data-research-tags="core"><span class="level">ARCHITECTURE</span><h3>From grid to neural network</h3><p>Writer, local perception, shared recurrent update, regional summaries and weak readout—with implementation shapes and pseudocode.</p><a class="card-link" href="{{ '/research/05-neural-architecture/' | relative_url }}">Open architecture →</a></article>
+    <article class="research-card" data-research-tags="core experiment"><span class="level">LEARNING</span><h3>How the field learns</h3><p>Backpropagation through recurrent field updates, training data, recurrence depth, stability, and what the browser demo is actually optimizing.</p><a class="card-link" href="{{ '/research/06-learning-and-training/' | relative_url }}">Read learning guide →</a></article>
+    <article class="research-card" data-research-tags="literature core"><span class="level">CONTEXT</span><h3>Closest research neighbors</h3><p>Neural Cellular Automata, Neural Map, self-organizing maps, Slot Attention, recurrent convolution and graph message passing.</p><a class="card-link" href="{{ '/research/01-prior-art/' | relative_url }}">Explore the neighborhood →</a></article>
+    <article class="research-card" data-research-tags="experiment"><span class="level">METHODS</span><h3>Experimental program</h3><p>A sequence of controlled studies for topology, recurrence, hierarchy, reasoning traces, robustness and scaling.</p><a class="card-link" href="{{ '/research/02-experiment-protocol/' | relative_url }}">See experiments →</a></article>
+    <article class="research-card" data-research-tags="experiment theory"><span class="level">TOPOLOGY</span><h3>Does spatial organization help?</h3><p>Separate stable addressability, 2D geometry, random fixed graphs and learned semantic neighborhoods.</p><a class="card-link" href="{{ '/research/03-concepts-to-explore/#semantic-topology' | relative_url }}">Explore topology →</a></article>
+    <article class="research-card" data-research-tags="memory"><span class="level">MEMORY</span><h3>Persistence & compression</h3><p>Stored fields, vector quantization, rate–utility accounting, codebooks, damage/recovery and the meaning of “self-contained.”</p><a class="card-link" href="{{ '/research/07-memory-compression/' | relative_url }}">Open memory research →</a></article>
+    <article class="research-card" data-research-tags="theory"><span class="level">GEOMETRY</span><h3>Hyperbolic state & vector-symbolic ideas</h3><p>When non-Euclidean distance is useful, what VSA/HDC contributes, and why neither should be inserted before the core field works.</p><a class="card-link" href="{{ '/research/08-geometry-vsa/' | relative_url }}">Explore representation →</a></article>
+    <article class="research-card" data-research-tags="literature experiment"><span class="level">2025–2026</span><h3>Current frontier</h3><p>NCA on ARC-AGI, recursive latent reasoning, cellular-automata reasoning depth and why the timing of this project is interesting.</p><a class="card-link" href="{{ '/research/09-current-frontier/' | relative_url }}">See recent work →</a></article>
+    <article class="research-card" data-research-tags="theory experiment"><span class="level">IDEAS</span><h3>Concepts to explore</h3><p>A branching map of purposeful roles, multiresolution state, semantic neighborhoods, albums, interpretability and alternative architectures.</p><a class="card-link" href="{{ '/research/03-concepts-to-explore/' | relative_url }}">Browse concepts →</a></article>
+    <article class="research-card" data-research-tags="literature"><span class="level">SOURCES</span><h3>Reference library</h3><p>Primary papers, accessible explainers, benchmark sources and recommended reading order.</p><a class="card-link" href="{{ '/research/04-references/' | relative_url }}">Open references →</a></article>
+    <article class="research-card" data-research-tags="core"><span class="level">TERMS</span><h3>Glossary</h3><p>Short definitions with Scholarpedia, Distill, primary-paper and Wikipedia links.</p><a class="card-link" href="{{ '/glossary/' | relative_url }}">Open glossary →</a></article>
+  </div>
+</div>

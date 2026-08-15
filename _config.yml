@@ -1,5 +1,5 @@
-title: "Multidimensional Pixel Fields"
-description: "A living research lab for spatial neural representation, compression, memory, and reasoning."
+title: "Pixel Neural Net Lab"
+description: "An interactive research library and neural-field laboratory for Multidimensional Pixel Fields."
 url: "https://bitwikiorg.github.io"
 baseurl: "/pixel-art-2026"
 markdown: kramdown
@@ -10,3 +10,4 @@ exclude:
   - Gemfile.lock
   - vendor
   - scripts
+  - experiments

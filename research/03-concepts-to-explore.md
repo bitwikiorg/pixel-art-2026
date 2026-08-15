@@ -1,160 +1,196 @@
 ---
 layout: research
-title: "03 · Concepts to Explore"
+title: Concepts to Explore
 ---
 
 # Concepts to explore
 
-These are branches of the MPF program. They should not all be implemented at once.
+This page is a branching map. None of these directions is required for the basic MPF. The useful order is to add one mechanism only when it answers a specific question.
 
-## 1. Learned semantic geography
+## Semantic topology {#semantic-topology}
 
-Can the write mechanism discover where information should live instead of receiving a human-designed layout?
+**Idea:** the organization of cells might become part of the representation.
 
-Compare oracle placement, soft learned placement, and unconstrained placement.
+Possible neighborhood structures:
 
-## 2. Stable addresses vs Cartesian geometry
+- physical 2D neighbors;
+- fixed random graph neighbors;
+- learned content-based neighbors;
+- hybrid local + long-range edges;
+- multiscale parent/child links.
 
-A fixed random graph may provide persistent addresses without meaningful x/y geometry. Test regular grid neighbors against fixed random neighbors and learned content-addressed neighbors.
+Key distinction:
 
-This determines whether the true object is a **pixel field**, a **persistent graph**, or a **recurrent set**.
+```text
+stable address ≠ 2D geometry ≠ semantic neighborhood
+```
 
-## 3. Role channels
+An experiment should separate those three.
 
-Reserve a small subset of cell dimensions for slowly changing role identity while the remaining dimensions hold fast-changing content.
+Related background: [Kohonen Self-Organizing Maps](https://www.scholarpedia.org/article/Kohonen_network) and [Graph Neural Networks](https://distill.pub/2021/gnn-intro/).
 
-Question: does separating *what this location does* from *what it currently contains* improve specialization and interpretability?
+## Purposeful cell and region roles
 
-## 4. Fast state / slow state
+A cell state can be entirely distributed, but it is worth testing whether training produces recurring functional types.
 
-Give each cell two timescales:
+Candidate roles include:
 
-- fast working state updated every reasoning step;
-- slow memory state updated only when confidence is high.
+- entity/state storage;
+- relation integration;
+- routing;
+- uncertainty;
+- temporal memory;
+- coarse context;
+- query-conditioned control.
 
-This could turn a field from working memory into persistent learned memory.
+Do not hard-code these labels first. Measure whether stable functions emerge, then test them with interventions.
 
-## 5. Semantic neighborhoods
+Related work: [Slot Attention](https://arxiv.org/abs/2006.15055).
 
-Physical neighbors and semantic neighbors need not be identical.
+## Multiresolution representation
 
-Test a dual graph:
+Represent the same computation at several scales:
 
-- local Cartesian edges for cheap diffusion;
-- sparse learned semantic edges for distant but related concepts.
-
-## 6. Product geometry
-
-A cell need not live in one geometry. Use Euclidean content channels plus hyperbolic hierarchy channels.
-
-The research question is not “is hyperbolic better?” but “which kinds of information benefit from which geometry?”
-
-## 7. Vector-symbolic operations inside cells
-
-Introduce differentiable binding/bundling/permutation operations from VSA/HDC as explicit tools available to the recurrent update.
-
-This might help a field represent role–filler relationships without storing every relation in a separate location.
-
-## 8. Quantized persistent memory
-
-Keep active computation continuous, but quantize fields when they are stored between episodes.
-
-This avoids injecting quantization error at every recurrent step while still testing the “semantic album” memory idea.
-
-## 9. Semantic albums
-
-Treat one field as an episode or coherent knowledge object. An album is then a collection of fields with an index for retrieval and inter-field communication.
+```text
+cell → region → super-region → field
+```
 
 Questions:
 
-- how are fields retrieved?
-- can fields be merged?
-- can one field write to another?
-- can repeated structure be shared across fields?
+- Does coarse state reduce communication distance?
+- Can fine detail be reconstructed from coarse summaries plus local state?
+- Can a query selectively activate only the scale it needs?
+- Can the same update module operate at every scale?
 
-## 10. Field consolidation
+If the same transform is genuinely reused recursively across scales, terms such as **scale-reused** or eventually **fractal** become technically meaningful. Otherwise use **multiresolution**.
 
-Periodically compress many episodic fields into a higher-level field.
+## Learned routing
 
-This resembles memory consolidation: detailed instances remain available while recurring structure is summarized.
+Local communication is deliberately constrained. Some tasks may require occasional long-range communication.
 
-## 11. Self-contained fields
+Options:
 
-Use three levels of self-containment:
+- sparse learned edges;
+- routing channels inside each cell;
+- region-to-region attention;
+- global broadcast only every `k` steps;
+- content-addressed memory lookup.
 
-1. **interpreter-dependent** — only latent state is stored;
-2. **instance-self-contained** — a shared interpreter/codebook is allowed, but every instance-specific bit travels with the field;
-3. **strict self-describing** — schema/codebook/decoding metadata are encoded inside the artifact.
+The goal is not to ban global communication, but to discover how little of it is needed.
 
-Start with level 2. Level 3 is a separate research problem.
+## Persistent memory
 
-## 12. Shared-scale recurrence
+A field can be treated as a memory object that continues to exist after one forward pass.
 
-Run the same update operator on cells, regions, and super-regions.
+Experiments:
 
-If successful, this supplies a rigorous version of the “fractal” intuition: computational law is reused across scale.
+- save and restore a field;
+- resume computation from a stored field;
+- retrieve one field from a collection by similarity;
+- merge information from two fields;
+- update a field without catastrophic corruption;
+- consolidate many fields into a coarse summary field.
 
-## 13. Conditional computation
+Related work: [Neural Map](https://arxiv.org/abs/1702.08360).
 
-Not every cell should update every step.
+## Albums: fields of fields
 
-Learn a gate so only active or uncertain regions spend compute. Measure solved-task utility per cell-update.
+A higher-level collection can contain multiple fields representing episodes, hypotheses, modalities or time points.
 
-This could make the field computationally sparse.
+```text
+cell → region → field → album
+```
 
-## 14. Attractor reasoning
+An album is interesting only if interactions between fields add capabilities that one larger tensor or conventional memory does not already provide.
 
-Train solved field configurations to become stable attractors. After reaching an answer, the system should remain correct for extra update steps and potentially recover after perturbation.
+## Vector quantization
 
-## 15. Counterfactual field editing
+A stored cell vector can be replaced by an index into a learned codebook.
 
-If a region represents a causal factor, edit that region and observe whether the downstream reasoning changes predictably.
+This makes a clean storage experiment:
 
-This is simultaneously an interpretability test and a possible interface for controllable AI reasoning.
+```text
+continuous active state → quantized stored state → restored active state
+```
 
-## 16. Learned read/write codecs
+Product VQ can split a cell state into sub-vectors and quantize each separately. Report codebook cost and side information. Start with [VQ-VAE](https://arxiv.org/abs/1711.00937).
 
-Instead of treating language tokens or visual features as the field itself, train explicit codecs:
+## Predictive / multiscale compression
 
-`input → field` and `field → output`.
+Rather than storing every fine state independently, store coarse state plus residual detail only where needed.
 
-Then keep the decoder deliberately weak during early experiments so it cannot hide the reasoning outside the field.
+Possible mechanisms:
 
-## 17. Test-time compute scaling
+- low-rank regional state;
+- learned residual coding;
+- sparse exception maps;
+- entropy models;
+- repeated-pattern dictionaries;
+- query-dependent reconstruction.
 
-Train with a variable number of recurrent steps and evaluate far beyond the training horizon.
+The measurement is a rate–utility curve, not visual compactness.
 
-A useful algorithmic field should ideally improve with additional steps until convergence rather than collapse outside the trained depth.
+## Hyperbolic hierarchy
 
-## 18. Topological phase transitions
+A physical grid can remain Euclidean while some semantic channels use hyperbolic distance.
 
-Vary neighborhood density and long-range edge count. There may be regimes where information propagation becomes dramatically easier or where local specialization collapses into global homogenization.
+A conservative first variant:
 
-## 19. Learned information routing
+```text
+cell state = [Euclidean content | hierarchy coordinates]
+```
 
-Give cells explicit send/receive gates or routing vectors. Measure whether routing structure becomes sparse, hierarchical, or task-specific.
+Only the hierarchy coordinates use a Poincaré or Lorentz geometry. Compare against an equal-dimensional Euclidean version on explicitly hierarchical data.
 
-## 20. Cognitive-neuroscience bridge without biological claims
+Primary reference: [Poincaré Embeddings](https://arxiv.org/abs/1705.08039).
 
-Use cognitive neuroscience as a source of **computational questions**, not biological equivalence:
+## Vector-Symbolic / Hyperdimensional state
 
-- persistent working state;
-- topographic organization;
-- recurrent inference;
-- multiple timescales;
-- hierarchical abstraction;
-- distributed vs localized representations.
+A cell or region can contain a high-dimensional vector designed for operations such as binding and superposition.
 
-The class contribution can compare these computational motifs while remaining explicit that MPF is an engineered architecture.
+Possible synthesis:
 
-## Highest-value order
+- VSA encodes entity + relation composition;
+- field topology provides persistent location/routing;
+- recurrence propagates and refines state;
+- regions provide multiscale context.
 
-1. topology causality;
-2. recurrence-depth scaling;
-3. hierarchy;
-4. causal role specialization;
-5. quantized persistent memory;
-6. semantic albums;
-7. VSA integration;
-8. hyperbolic hierarchy;
-9. strict self-description.
+This is a later experiment because it adds a second representational formalism. First establish the value of the recurrent field itself.
+
+## Attractor-like computation
+
+A recurrent field may learn stable states that act like memories or solutions. Instead of reading after a fixed number of steps, the system could stop when change becomes small or a learned halting signal fires.
+
+Related reading: [Scholarpedia: Attractor network](https://www.scholarpedia.org/article/Attractor_network).
+
+## Adaptive computation
+
+Different problems may need different numbers of recurrent steps. A learned halting mechanism could let easy examples stop early while difficult examples continue.
+
+This connects MPF to current research on test-time compute and recurrent latent reasoning.
+
+## Learned coordinate systems
+
+The grid does not have to keep a fixed interpretation. The field may learn a coordinate system or a soft transport mechanism that moves representations to useful regions.
+
+Questions:
+
+- Can positions remain stable enough for memory while content moves?
+- Can a learned writer discover useful neighborhoods?
+- Should coordinates be absolute, relative or content-addressed?
+
+## Mechanistic visualization
+
+Useful visualizations go beyond RGB projections:
+
+- update-magnitude heatmaps;
+- local message norm;
+- region-to-region flow;
+- probe accuracy by location;
+- intervention sensitivity maps;
+- PCA/UMAP trajectories of cell state;
+- role-consistency maps across training seeds;
+- damage/recovery curves;
+- accuracy versus recurrent depth.
+
+A visualization becomes most informative when it is paired with a causal perturbation.
