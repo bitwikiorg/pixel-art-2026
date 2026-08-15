@@ -5,7 +5,7 @@ const assert = require('assert');
 function element(extra = {}) {
   const listeners = {};
   return Object.assign({
-    value: '', checked: false, textContent: '',
+    id: '', value: '', checked: false, textContent: '',
     addEventListener(type, fn) { (listeners[type] ||= []).push(fn); },
     dispatch(type) { for (const fn of listeners[type] || []) fn({ target: this }); },
     click() { this.dispatch('click'); }
@@ -13,27 +13,27 @@ function element(extra = {}) {
 }
 
 const nodes = {
-  '#coupling': element({ value: '0.72' }),
-  '#memory': element({ value: '0.70' }),
-  '#hierarchy': element({ checked: true }),
-  '#shuffle': element({ checked: false }),
-  '#runBtn': element({ textContent: 'Run' }),
-  '#stepBtn': element(),
-  '#resetBtn': element(),
-  '#damageBtn': element(),
-  '#exportBtn': element(),
-  '#stepCount': element(),
-  '#coherence': element(),
-  '#energy': element(),
-  '#occupancy': element(),
-  '#stability': element(),
+  '#coupling': element({ id: 'coupling', value: '0.72' }),
+  '#memory': element({ id: 'memory', value: '0.70' }),
+  '#hierarchy': element({ id: 'hierarchy', checked: true }),
+  '#shuffle': element({ id: 'shuffle', checked: false }),
+  '#runBtn': element({ id: 'runBtn', textContent: 'Run' }),
+  '#stepBtn': element({ id: 'stepBtn' }),
+  '#resetBtn': element({ id: 'resetBtn' }),
+  '#damageBtn': element({ id: 'damageBtn' }),
+  '#exportBtn': element({ id: 'exportBtn' }),
+  '#stepCount': element({ id: 'stepCount' }),
+  '#coherence': element({ id: 'coherence' }),
+  '#energy': element({ id: 'energy' }),
+  '#occupancy': element({ id: 'occupancy' }),
+  '#stability': element({ id: 'stability' }),
 };
 
 const canvasContext = {
   createImageData(width, height) { return { data: new Uint8ClampedArray(width * height * 4) }; },
   putImageData() {}
 };
-nodes['#fieldCanvas'] = element({ width: 0, height: 0, getContext() { return canvasContext; } });
+nodes['#fieldCanvas'] = element({ id: 'fieldCanvas', width: 0, height: 0, getContext() { return canvasContext; } });
 
 const dataValues = {
   coupling: element({ textContent: '0.72' }),
