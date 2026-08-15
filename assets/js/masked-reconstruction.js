@@ -117,6 +117,8 @@
     if (!root) return;
     const SIZE = 16;
     let model = null;
+    const rateInput = root.querySelector('#maskRate');
+    const epochsInput = root.querySelector('#maskEpochs');
     const originalCanvas = root.querySelector('#maskOriginal');
     const inputCanvas = root.querySelector('#maskInput');
     const outputCanvas = root.querySelector('#maskOutput');
@@ -143,6 +145,12 @@
       root.querySelector('#maskExampleStatus').textContent = `Gray cells were hidden. Local-majority baseline masked-pixel accuracy: ${(maskedAccuracy(base, target, masked.hidden) * 100).toFixed(1)}%.`;
     }
 
+    function invalidateMeasurement(reason) {
+      for (const id of ['maskBaseline', 'maskLearned', 'maskTime', 'maskLoss']) root.querySelector(`#${id}`).textContent = '—';
+      root.querySelector('#maskProgress').style.width = '0%';
+      root.querySelector('#maskStatus').textContent = reason;
+    }
+
     function buildModel() {
       if (typeof tf === 'undefined') return null;
       if (model) model.dispose();
@@ -160,16 +168,17 @@
 
     async function train() {
       if (typeof tf === 'undefined') { root.querySelector('#maskStatus').textContent = 'TensorFlow.js is unavailable; the deterministic baseline remains runnable.'; return; }
-      const button = root.querySelector('#maskTrain'); button.disabled = true;
-      const rate = Number(root.querySelector('#maskRate').value) / 100;
-      const epochs = Number(root.querySelector('#maskEpochs').value);
+      const button = root.querySelector('#maskTrain');
+      button.disabled = true; rateInput.disabled = true; epochsInput.disabled = true;
+      const rate = Number(rateInput.value) / 100;
+      const epochs = Number(epochsInput.value);
       const trainSet = makeDataset(256, SIZE, rate, 0x1000);
       const testSet = makeDataset(64, SIZE, rate, 0x90000000);
       const xTrain = tf.tensor4d(trainSet.inputs, [trainSet.count, SIZE, SIZE, 2]);
       const yTrain = tf.tensor4d(trainSet.targets, [trainSet.count, SIZE, SIZE, 1]);
       const xTest = tf.tensor4d(testSet.inputs, [testSet.count, SIZE, SIZE, 2]);
       buildModel();
-      root.querySelector('#maskStatus').textContent = 'Training deterministic synthetic reconstruction set…';
+      invalidateMeasurement(`Training at ${(rate * 100).toFixed(0)}% mask rate for ${epochs} epoch${epochs === 1 ? '' : 's'}…`);
       const started = performance.now();
       try {
         await model.fit(xTrain, yTrain, { epochs, batchSize: 32, shuffle: false, callbacks: { onEpochEnd: async (epoch, logs) => {
@@ -193,7 +202,7 @@
         root.querySelector('#maskBaseline').textContent = `${(100 * baselineGood / baselineTotal).toFixed(1)}%`;
         root.querySelector('#maskLearned').textContent = `${(100 * modelAcc).toFixed(1)}%`;
         root.querySelector('#maskTime').textContent = `${((performance.now() - started) / 1000).toFixed(1)} s`;
-        root.querySelector('#maskStatus').textContent = 'Held-out accuracy is measured only on pixels that were hidden from the input.';
+        root.querySelector('#maskStatus').textContent = `Measured at ${(rate * 100).toFixed(0)}% mask rate and ${epochs} epochs. Accuracy is scored only on held-out pixels that were hidden.`;
 
         const target0 = testSet.targets.slice(0, SIZE * SIZE);
         const hidden0 = testSet.hiddenMasks.slice(0, SIZE * SIZE);
@@ -205,15 +214,22 @@
       } catch (err) {
         root.querySelector('#maskStatus').textContent = `Training failed: ${err.message}`;
       } finally {
-        xTrain.dispose(); yTrain.dispose(); xTest.dispose(); button.disabled = false;
+        xTrain.dispose(); yTrain.dispose(); xTest.dispose(); button.disabled = false; rateInput.disabled = false; epochsInput.disabled = false;
       }
     }
 
-    root.querySelector('#maskRate').addEventListener('input', e => { root.querySelector('#maskRateValue').textContent = `${e.target.value}%`; example(Number(e.target.value) / 100); });
-    root.querySelector('#maskEpochs').addEventListener('input', e => root.querySelector('#maskEpochsValue').textContent = e.target.value);
+    rateInput.addEventListener('input', e => {
+      root.querySelector('#maskRateValue').textContent = `${e.target.value}%`;
+      example(Number(e.target.value) / 100);
+      invalidateMeasurement('Mask rate changed. The displayed example is current; aggregate learned/baseline measurements are cleared until Train reconstruction model runs again.');
+    });
+    epochsInput.addEventListener('input', e => {
+      root.querySelector('#maskEpochsValue').textContent = e.target.value;
+      invalidateMeasurement('Epoch count changed. Previous training measurements are cleared until Train reconstruction model runs again.');
+    });
     root.querySelector('#maskTrain').addEventListener('click', train);
-    example(Number(root.querySelector('#maskRate').value) / 100);
-    if (typeof tf !== 'undefined') tf.ready().then(() => { buildModel(); root.querySelector('#maskStatus').textContent = `TensorFlow.js ready on ${tf.getBackend()}.`; });
-    else root.querySelector('#maskStatus').textContent = 'TensorFlow.js unavailable; baseline is still active.';
+    example(Number(rateInput.value) / 100);
+    if (typeof tf !== 'undefined') tf.ready().then(() => { buildModel(); root.querySelector('#maskStatus').textContent = `TensorFlow.js ready on ${tf.getBackend()}. No learned measurement has run yet.`; });
+    else root.querySelector('#maskStatus').textContent = 'TensorFlow.js unavailable; the deterministic local-majority example remains active.';
   });
 })();

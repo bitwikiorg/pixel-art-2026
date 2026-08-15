@@ -39,10 +39,14 @@ assert.ok(Number.isFinite(run1.score));
 assert.ok(run1.state.hidden.every(Number.isFinite));
 assert.ok(run1.state.steps <= 120);
 
+for (let i = 0; i < 2000; i++) {
+  const mutation = O.mutateGenome(a, `MUTATION-${i}`);
+  const bitDistance = O.genomeBitDistance(a, mutation.genome);
+  assert.ok(mutation.flips >= 1 && mutation.flips <= 3);
+  assert.strictEqual(bitDistance, mutation.flips, `mutation ${i}: claimed ${mutation.flips}, actual ${bitDistance}`);
+  assert.strictEqual(new Set(mutation.touched).size, mutation.flips);
+}
 const mutation = O.mutateGenome(a, "MUTATION-TEST");
-assert.ok(mutation.flips >= 1 && mutation.flips <= 3);
-const bitDistance = O.genomeBitDistance(a, mutation.genome);
-assert.ok(bitDistance >= 1 && bitDistance <= 3);
 const mutatedBody = O.renderBody(mutation.genome);
 assert.ok(O.rasterDistance(body, mutatedBody) >= 0);
 
@@ -56,5 +60,11 @@ assert.strictEqual(generation.candidates.length, 9);
 assert.ok(generation.winner >= 0 && generation.winner < 9);
 assert.ok(generation.selected.train.score >= generation.candidates[0].train.score);
 assert.ok(Number.isFinite(generation.selected.heldOut.mean));
+for (const candidate of generation.candidates.slice(1)) {
+  assert.strictEqual(O.genomeBitDistance(a, candidate.genome), candidate.mutation.flips);
+}
+const generationAgain = O.selectGeneration(a, "WORLD-TEST", 1, 100);
+assert.strictEqual(generation.winner, generationAgain.winner);
+assert.strictEqual(generation.selected.train.score, generationAgain.selected.train.score);
 
 console.log("pixel organism tests passed");

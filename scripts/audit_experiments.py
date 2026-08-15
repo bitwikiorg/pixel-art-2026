@@ -71,8 +71,8 @@ def main() -> int:
         for rel in exp["code"] + exp["tests"]:
             if not (ROOT / rel).is_file():
                 errors.append(f"{exp_id}: referenced file missing: {rel}")
-        if exp["status"] == "exact" and not exp["tests"]:
-            errors.append(f"{exp_id}: exact experiment requires at least one behavioral test")
+        if not exp["tests"]:
+            errors.append(f"{exp_id}: every canonical experiment requires at least one behavioral test or recorded-result audit")
 
         guide = controls.get(exp_id)
         if not isinstance(guide, list) or not guide:
@@ -136,7 +136,7 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
         return 1
-    print(f"EXPERIMENT AUDIT PASSED: {len(data)} canonical experiments with grouped navigation, controls and references")
+    print(f"EXPERIMENT AUDIT PASSED: {len(data)} canonical experiments with verification, grouped navigation, controls and references")
     return 0
 
 

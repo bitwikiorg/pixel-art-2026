@@ -5,6 +5,7 @@ layout: default
 {% assign teach = site.data.experiment_teaching[page.exp_id] %}
 {% assign controls = site.data.experiment_controls[page.exp_id] %}
 {% assign references = site.data.experiment_references[page.exp_id] %}
+{% assign wiring = site.data.experiment_wiring[page.exp_id] %}
 {% assign mental_model = teach.mental_model | default: page.mental_model %}
 {% assign background = teach.background | default: page.background %}
 {% assign terms = teach.terms | default: page.terms %}
@@ -15,6 +16,7 @@ layout: default
 {% assign last_index = site.data.experiments.size | minus: 1 %}
 {% if current_index > 0 %}{% assign prev_index = current_index | minus: 1 %}{% assign prev_exp = site.data.experiments[prev_index] %}{% endif %}
 {% if current_index < last_index %}{% assign next_index = current_index | plus: 1 %}{% assign next_exp = site.data.experiments[next_index] %}{% endif %}
+{% assign apparatus_recorded = false %}{% if wiring.mode == 'recorded' %}{% assign apparatus_recorded = true %}{% endif %}
 <div class="page-shell experiment-shell exp-{{ category_slug }} experiment-shell-v4">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiments</a><span>›</span><span>{{ page.exp_id }}</span></nav>
 
@@ -28,10 +30,10 @@ layout: default
       <nav class="side-local-outline" aria-label="On this experiment">
         <strong class="side-nav-title">On this experiment</strong>
         <a href="#overview"><span>01</span>Overview</a>
-        {% if controls %}<a href="#controls"><span>02</span>Controls</a>{% endif %}
+        {% if controls %}<a href="#controls"><span>02</span>{% if apparatus_recorded %}Protocols{% else %}Controls{% endif %}</a>{% endif %}
         {% if page.steps %}<a href="#method"><span>03</span>Method</a>{% endif %}
         {% if outcomes %}<a href="#outcomes"><span>04</span>Outcomes</a>{% endif %}
-        <a href="#apparatus"><span>05</span>Live experiment</a>
+        <a href="#apparatus"><span>05</span>{% if apparatus_recorded %}Recorded results{% else %}Live experiment{% endif %}</a>
         <a href="#evidence"><span>06</span>Evidence</a>
         {% if page.technical %}<a href="#technical"><span>07</span>Technical</a>{% endif %}
         {% if references %}<a href="#references"><span>08</span>References</a>{% endif %}
@@ -88,23 +90,20 @@ layout: default
           {% if background %}<div class="outline-row"><h2>Know first</h2><ul>{% for item in background %}<li>{{ item }}</li>{% endfor %}</ul></div>{% endif %}
         </section>
 
-        {% if terms %}
-        <details class="definition-drawer"><summary>Definitions used in this experiment</summary><div class="definition-list">{% for item in terms %}<div><strong class="term-with-tip">{{ item.term }} <span class="help-tip" tabindex="0" data-tip="{{ item.definition | escape }}">?</span></strong><p>{{ item.definition }}</p></div>{% endfor %}</div></details>
-        {% endif %}
+        {% if terms %}<details class="definition-drawer"><summary>Definitions used in this experiment</summary><div class="definition-list">{% for item in terms %}<div><strong class="term-with-tip">{{ item.term }} <span class="help-tip" tabindex="0" data-tip="{{ item.definition | escape }}">?</span></strong><p>{{ item.definition }}</p></div>{% endfor %}</div></details>{% endif %}
       </section>
 
       {% if controls %}
       <section id="controls" class="interaction-guide anchor-section">
-        <div class="section-head compact"><div class="kicker">Interaction guide</div><h2>What each control changes</h2></div>
+        <div class="section-head compact"><div class="kicker">{% if apparatus_recorded %}Protocol guide{% else %}Interaction guide{% endif %}</div><h2>{% if apparatus_recorded %}What each recorded protocol changes{% else %}What each control changes{% endif %}</h2></div>
         <div class="control-guide-list">{% for item in controls %}<article class="control-guide-row"><div class="control-name"><strong>{{ item.control }}</strong></div><div><small>CHANGES</small><p>{{ item.changes }}</p></div><div><small>STAYS FIXED</small><p>{{ item.fixed }}</p></div><div><small>WATCH</small><p>{{ item.watch }}</p></div></article>{% endfor %}</div>
       </section>
       {% endif %}
 
       {% if page.steps %}<section id="method" class="method-block method-block-v2 anchor-section"><h2>Method</h2><ol class="method-outline">{% for step in page.steps %}<li><strong>{{ step.label }}</strong><span>{{ step.text }}</span></li>{% endfor %}</ol></section>{% endif %}
-
       {% if outcomes %}<section id="outcomes" class="result-guide anchor-section"><h2>Possible outcomes</h2><div class="result-outline">{% for item in outcomes %}<div><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div></section>{% endif %}
 
-      <section id="apparatus" class="apparatus-block apparatus-v2 anchor-section"><div class="apparatus-heading"><span class="section-token">LIVE EXPERIMENT</span><h2>{{ page.title }}</h2></div><article class="experiment-content">{{ content }}</article></section>
+      <section id="apparatus" class="apparatus-block apparatus-v2 anchor-section"><div class="apparatus-heading"><span class="section-token">{% if apparatus_recorded %}RECORDED BENCHMARK{% else %}LIVE EXPERIMENT{% endif %}</span><h2>{{ page.title }}</h2></div><article class="experiment-content">{{ content }}</article></section>
 
       <section id="evidence" class="evidence-panel evidence-v2 anchor-section"><div><small>SUPPORTED</small><p>{{ page.shows }}</p></div><div><small>NOT SUPPORTED</small><p>{{ page.does_not_show }}</p></div></section>
 

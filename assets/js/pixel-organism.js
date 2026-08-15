@@ -60,9 +60,7 @@
 
   function nibbles(bytes) {
     const out = [];
-    for (const byte of bytes) {
-      out.push((byte >>> 4) & 15, byte & 15);
-    }
+    for (const byte of bytes) out.push((byte >>> 4) & 15, byte & 15);
     return out;
   }
 
@@ -220,17 +218,12 @@
       const center = Math.floor(size / 2);
       if (Math.abs(x - center) + Math.abs(y - center) < 3) continue;
       const i = y * size + x;
-      if (!food[i]) {
-        food[i] = 1;
-        placed++;
-      }
+      if (!food[i]) { food[i] = 1; placed++; }
     }
     return { size, food };
   }
 
-  function wrap(v, size) {
-    return ((v % size) + size) % size;
-  }
+  function wrap(v, size) { return ((v % size) + size) % size; }
 
   function directionVector(heading) {
     const h = ((heading % 4) + 4) % 4;
@@ -272,19 +265,7 @@
 
   function initialState(controller, size = WORLD_SIZE) {
     const center = Math.floor(size / 2);
-    return {
-      x: center,
-      y: center,
-      heading: 0,
-      energy: controller.startEnergy,
-      eaten: 0,
-      steps: 0,
-      alive: true,
-      hidden: new Float64Array(2),
-      lastInputs: new Float64Array(4),
-      lastOutputs: new Float64Array(3),
-      path: [[center, center]]
-    };
+    return { x: center, y: center, heading: 0, energy: controller.startEnergy, eaten: 0, steps: 0, alive: true, hidden: new Float64Array(2), lastInputs: new Float64Array(4), lastOutputs: new Float64Array(3), path: [[center, center]] };
   }
 
   function simulate(genome, worldSeed = "WORLD-01", maxSteps = DEFAULT_STEPS) {
@@ -322,23 +303,11 @@
       }
       state.steps += 1;
       state.path.push([state.x, state.y]);
-      if (state.energy <= 0) {
-        state.energy = 0;
-        state.alive = false;
-      }
+      if (state.energy <= 0) { state.energy = 0; state.alive = false; }
     }
 
     const score = state.eaten * 20 + state.energy + state.steps * 0.05;
-    return {
-      worldSeed,
-      maxSteps,
-      controller,
-      state,
-      initialFood: world.food,
-      remainingFood: food,
-      consumed,
-      score
-    };
+    return { worldSeed, maxSteps, controller, state, initialFood: world.food, remainingFood: food, consumed, score };
   }
 
   function heldOutMean(genome, baseWorldSeed = "WORLD-01", maxSteps = DEFAULT_STEPS) {
@@ -351,27 +320,23 @@
     const out = Uint8Array.from(genome);
     const next = xorshift32(hashSeed(seedText));
     const flips = 1 + (next() % 3);
-    const touched = [];
-    for (let i = 0; i < flips; i++) {
-      const bitIndex = next() % (GENOME_BYTES * 8);
+    const positions = new Set();
+    while (positions.size < flips) positions.add(next() % (GENOME_BYTES * 8));
+    const touched = Array.from(positions);
+    for (const bitIndex of touched) {
       const byteIndex = Math.floor(bitIndex / 8);
       const bit = bitIndex % 8;
       out[byteIndex] ^= 1 << bit;
-      touched.push(bitIndex);
     }
-    return { genome: out, flips, touched };
+    return { genome: out, flips: touched.length, touched };
   }
 
   function genomeBitDistance(a, b) {
-    assertGenome(a);
-    assertGenome(b);
+    assertGenome(a); assertGenome(b);
     let distance = 0;
     for (let i = 0; i < a.length; i++) {
       let x = a[i] ^ b[i];
-      while (x) {
-        distance += x & 1;
-        x >>>= 1;
-      }
+      while (x) { distance += x & 1; x >>>= 1; }
     }
     return distance;
   }
@@ -403,9 +368,7 @@
     return `#${rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("").toUpperCase()}`;
   }
 
-  function fmt(value, digits = 2) {
-    return Number(value).toFixed(digits);
-  }
+  function fmt(value, digits = 2) { return Number(value).toFixed(digits); }
 
   function initBrowser() {
     if (typeof document === "undefined") return;
@@ -439,10 +402,7 @@
       const image = bodyCtx.createImageData(BODY_SIZE, BODY_SIZE);
       for (let i = 0; i < raster.length; i++) {
         const rgb = palette[raster[i]];
-        image.data[i * 4] = rgb[0];
-        image.data[i * 4 + 1] = rgb[1];
-        image.data[i * 4 + 2] = rgb[2];
-        image.data[i * 4 + 3] = 255;
+        image.data[i * 4] = rgb[0]; image.data[i * 4 + 1] = rgb[1]; image.data[i * 4 + 2] = rgb[2]; image.data[i * 4 + 3] = 255;
       }
       bodyCtx.putImageData(image, 0, 0);
       root.querySelectorAll("[data-organism-palette]").forEach(node => {
@@ -464,21 +424,24 @@
         image.data[i * 4 + 2] = food ? 96 : 27;
         image.data[i * 4 + 3] = 255;
       }
-      for (let i = 0; i < run.state.path.length; i++) {
-        const [x, y] = run.state.path[i];
+      for (const [x, y] of run.state.path) {
         const p = (y * WORLD_SIZE + x) * 4;
-        image.data[p] = 72;
-        image.data[p + 1] = 157;
-        image.data[p + 2] = 219;
+        image.data[p] = 72; image.data[p + 1] = 157; image.data[p + 2] = 219;
       }
       for (const [x, y] of run.consumed) {
         const p = (y * WORLD_SIZE + x) * 4;
-        image.data[p] = 244;
-        image.data[p + 1] = 193;
-        image.data[p + 2] = 81;
+        image.data[p] = 244; image.data[p + 1] = 193; image.data[p + 2] = 81;
       }
       const p = (run.state.y * WORLD_SIZE + run.state.x) * 4;
       image.data[p] = 255; image.data[p + 1] = 255; image.data[p + 2] = 255;
+      arenaCtx.putImageData(image, 0, 0);
+    }
+
+    function clearArena() {
+      const image = arenaCtx.createImageData(WORLD_SIZE, WORLD_SIZE);
+      for (let i = 0; i < WORLD_SIZE * WORLD_SIZE; i++) {
+        image.data[i * 4] = 16; image.data[i * 4 + 1] = 23; image.data[i * 4 + 2] = 27; image.data[i * 4 + 3] = 255;
+      }
       arenaCtx.putImageData(image, 0, 0);
     }
 
@@ -493,47 +456,53 @@
       text("organismStartEnergy", fmt(controller.startEnergy, 1));
       text("organismGenomeDistance", genomeBitDistance(previousGenome, genome));
       text("organismBodyDistance", rasterDistance(renderBody(previousGenome), body));
-      const weights = [
-        ...controller.inputHidden,
-        ...controller.recurrent,
-        ...controller.hiddenBias,
-        ...controller.hiddenOutput,
-        ...controller.outputBias
-      ];
+      const weights = [...controller.inputHidden, ...controller.recurrent, ...controller.hiddenBias, ...controller.hiddenOutput, ...controller.outputBias];
       text("organismBrainWeights", weights.map(v => (v >= 0 ? "+" : "") + fmt(v, 2)).join("  "));
       if (note) text("organismStatus", note);
     }
 
+    function clearLifetime(note) {
+      lastRun = null;
+      clearArena();
+      for (const id of ["organismScore", "organismHeldOut", "organismFood", "organismEnergy", "organismSurvival", "organismInputs", "organismHidden", "organismOutputs"]) text(id, "—");
+      text("organismStatus", note || "No lifetime result for the current organism/world/settings. Press Run lifetime to simulate it.");
+    }
+
+    function displayRun(run, held, note) {
+      lastRun = run;
+      paintArena(run);
+      text("organismScore", fmt(run.score, 2));
+      text("organismHeldOut", fmt(held.mean, 2));
+      text("organismFood", run.state.eaten);
+      text("organismEnergy", fmt(run.state.energy, 2));
+      text("organismSurvival", `${run.state.steps}/${run.maxSteps}`);
+      text("organismHidden", `[${fmt(run.state.hidden[0], 3)}, ${fmt(run.state.hidden[1], 3)}]`);
+      text("organismInputs", `[${Array.from(run.state.lastInputs).map(v => fmt(v, 2)).join(", ")}]`);
+      text("organismOutputs", `[${Array.from(run.state.lastOutputs).map(v => fmt(v, 2)).join(", ")}]`);
+      text("organismStatus", note || `Ran one deterministic lifetime in ${run.worldSeed}. Blue is trajectory; gold marks consumed food.`);
+    }
+
     function runLifetime(note) {
       const steps = Number(stepsInput.value);
-      lastRun = simulate(genome, worldInput.value, steps);
+      const run = simulate(genome, worldInput.value, steps);
       const held = heldOutMean(genome, worldInput.value, steps);
-      paintArena(lastRun);
-      text("organismScore", fmt(lastRun.score, 2));
-      text("organismHeldOut", fmt(held.mean, 2));
-      text("organismFood", lastRun.state.eaten);
-      text("organismEnergy", fmt(lastRun.state.energy, 2));
-      text("organismSurvival", `${lastRun.state.steps}/${steps}`);
-      text("organismHidden", `[${fmt(lastRun.state.hidden[0], 3)}, ${fmt(lastRun.state.hidden[1], 3)}]`);
-      text("organismInputs", `[${Array.from(lastRun.state.lastInputs).map(v => fmt(v, 2)).join(", ")}]`);
-      text("organismOutputs", `[${Array.from(lastRun.state.lastOutputs).map(v => fmt(v, 2)).join(", ")}]`);
-      text("organismStatus", note || `Ran one deterministic lifetime in ${worldInput.value}. Blue is trajectory; gold marks consumed food.`);
+      displayRun(run, held, note);
     }
 
     root.querySelector("#organismGenerate").addEventListener("click", () => {
       previousGenome = Uint8Array.from(genome);
       genome = genomeFromSeed(seedInput.value);
       generation = 0;
-      renderGenomeState("Generated a new 256-bit genome: 128 inherited bits for morphology/palette and 128 for controller/physiology.");
-      runLifetime();
+      renderGenomeState();
+      clearLifetime("Generated and decoded a new 256-bit genome. No lifetime has run; press Run lifetime to evaluate this organism.");
     });
 
     root.querySelector("#organismMutate").addEventListener("click", () => {
       previousGenome = Uint8Array.from(genome);
       const result = mutateGenome(genome, `${seedInput.value}:manual:${generation}:${genomeHex(genome)}`);
       genome = result.genome;
-      renderGenomeState(`Flipped ${result.flips} inherited genome bit${result.flips === 1 ? "" : "s"}. Any body or behavior change is a consequence of those inherited changes.`);
-      runLifetime();
+      renderGenomeState();
+      clearLifetime(`Flipped exactly ${result.flips} inherited genome bit${result.flips === 1 ? "" : "s"} and decoded the changed organism. Behavior has not been simulated yet.`);
     });
 
     root.querySelector("#organismRun").addEventListener("click", () => runLifetime());
@@ -543,43 +512,21 @@
       generation += 1;
       const result = selectGeneration(genome, worldInput.value, generation, Number(stepsInput.value));
       genome = Uint8Array.from(result.selected.genome);
-      renderGenomeState(`Generation ${generation}: evaluated parent + 8 deterministic mutants on the same world and selected candidate ${result.winner} by world score.`);
-      runLifetime(`Selected generation ${generation}. Selection used only the named world; the held-out mean is reported separately to expose environment-specific overfitting.`);
+      renderGenomeState();
+      displayRun(result.selected.train, result.selected.heldOut, `Selected generation ${generation}: parent + 8 deterministic mutants were evaluated on the same world. Candidate ${result.winner} had the highest selected-world score; held-out worlds did not affect selection.`);
     });
 
     stepsInput.addEventListener("input", () => {
       stepsOut.textContent = stepsInput.value;
+      clearLifetime("Lifetime horizon changed. Previous scores are cleared; press Run lifetime to measure the current settings.");
     });
+    worldInput.addEventListener("change", () => clearLifetime("World seed changed. Previous trajectory and scores are cleared; press Run lifetime to evaluate the current world."));
 
-    renderGenomeState("The same seed always reconstructs the same body and inherited controller.");
-    runLifetime();
+    renderGenomeState();
+    clearLifetime("Genome decoded. No lifetime has run yet; press Run lifetime to start sensing → recurrent update → action → movement → energy/food updates.");
   }
 
   if (typeof window !== "undefined") window.addEventListener("DOMContentLoaded", initBrowser);
 
-  return {
-    GENOME_BYTES,
-    MORPHOLOGY_BYTES,
-    CONTROLLER_BYTES,
-    WORLD_SIZE,
-    BODY_SIZE,
-    DEFAULT_STEPS,
-    FOOD_COUNT,
-    xorshift32,
-    hashSeed,
-    genomeFromSeed,
-    genomeHex,
-    decodeController,
-    paletteFromGenome,
-    renderBody,
-    makeWorld,
-    sensorRay,
-    controllerStep,
-    simulate,
-    heldOutMean,
-    mutateGenome,
-    genomeBitDistance,
-    rasterDistance,
-    selectGeneration
-  };
+  return { GENOME_BYTES, MORPHOLOGY_BYTES, CONTROLLER_BYTES, WORLD_SIZE, BODY_SIZE, DEFAULT_STEPS, FOOD_COUNT, xorshift32, hashSeed, genomeFromSeed, genomeHex, decodeController, paletteFromGenome, renderBody, makeWorld, sensorRay, controllerStep, simulate, heldOutMean, mutateGenome, genomeBitDistance, rasterDistance, selectGeneration };
 });
