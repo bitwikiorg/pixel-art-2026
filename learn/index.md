@@ -1,129 +1,206 @@
 ---
 layout: research
-title: Start Here
+title: Foundations
 ---
 
-# Start with one bit
+# From one bit to a computational field
 
-<div class="plain-box"><strong>Core idea:</strong> Pixel Photon Lab studies what happens when a spatial address is treated as a finite information carrier whose interpretation can be changed deliberately. We begin with a black/white bit because its information budget is exact. Only then do we add vectors, tensors, memories, neural rules, attention, and recursive fields.</div>
-
-## 1. Ground truth: a binary pixel field
-
-Take a 16×16 black/white image:
-
-```text
-black = 0
-white = 1
-16 × 16 = 256 source bits = 32 packed bytes
-```
-
-The bitmap, row-major bitstream and packed bytes are different views of the same finite object. [Open Experiment 01: Binary Pixel Carrier]({{ '/carrier/' | relative_url }}).
-
-This gives the laboratory an accounting reference. When a later experiment creates a 4,096-dimensional hypervector or a 256×256 Hopfield matrix, that additional state is visible in the ledger rather than mistaken for free information.
-
-## 2. Pixel = address + carrier state + interpretation
+A pixel can be treated as more than a color sample. Keep its spatial address, give it a finite state, and define an interpretation that determines what the state represents and what operations can act on it.
 
 ```text
 pixel = address + carrier state + interpretation
 ```
 
-An address tells us **where** the object lives. The carrier state is what is physically represented in the experiment. The interpretation says what that state means or how it participates in computation.
+That separation is the foundation of Multidimensional Pixel Fields.
 
-A binary carrier can become a signed state, coordinate/value tuple, vector, tensor, hypervector binding, neural state, token set, memory state or subfield. A richer interpretation can be computationally useful, but it does not manufacture new independent source information.
+## Begin with a field whose information is exact
 
-## 3. Why the photon analogy is useful—and where it stops
-
-“Pixel Photon” is a computational analogy. A photon is not adequately described as a colored dot; physical information systems can use degrees of freedom such as frequency, phase, polarization, momentum and path/spatial modes. Likewise, the visible value of a computational pixel need not exhaust the state associated with its address.
-
-This is **not** a claim that photons store arbitrary software state or infinite classical information. Every implementation here has finite bits, finite parameters, finite compute and finite measurements.
-
-> **One visible projection can correspond to a richer finite computational object. The architecture space is open-ended; implementations are not infinite.**
-
-## 4. The experiment sequence
+Consider a 16×16 black-and-white field. Let black be `0` and white be `1`.
 
 ```text
-01  exact carrier
-02  reliability / error correction
-03  associative memory
-04  exact motif coding
-05  distributed hypervector representation
-06  alternative pixel interpretations
-07  learned local vector field
-08  direct GPU pixel computation
-09  learned masked reconstruction
-10  controlled primitive benchmark
-11  generative Pixel Genome
-A1  original hand-designed field mechanics
+16 × 16 addresses = 256 source bits
+256 bits ÷ 8 = 32 packed bytes
 ```
 
-[Browse the Experiment Atlas]({{ '/experiment/' | relative_url }}).
+Nothing about the picture is mysterious at this stage. The same 256 bits can be displayed as black and white squares, written as a matrix of zeros and ones, serialized row by row, packed into bytes, or written as hexadecimal. Exact decoding must recover every original bit.
 
-Every experiment states its source information, interpretation, operation, evidence level, measurement and boundary. This is the defense against a visually interesting demo being mistaken for scientific evidence.
+[Binary Pixel Carrier]({{ '/carrier/' | relative_url }}) makes this identity executable.
 
-## 5. The interpretation ladder
+The binary case matters because later representations can be compared against a source whose information budget is known rather than inferred.
+
+## The address and the object at the address are different things
+
+For a binary field,
+
+```text
+B[i,j] = b_ij,   b_ij ∈ {0,1}
+```
+
+For a broader computational field,
+
+```text
+F[i,j] = O_ij
+```
+
+`(i,j)` is the outer spatial address. `O_ij` is the finite computational object stored or instantiated there.
+
+Possible objects include:
+
+- one scalar;
+- a vector such as `x_ij ∈ R^D`;
+- a tensor with explicit internal axes;
+- a bundle of high-dimensional symbolic state;
+- several latent tokens with attention between them;
+- fast and slow memory state;
+- a neural state updated by a shared rule;
+- another small field.
+
+A richer object gives the computation more structure to work with. It also costs more state, parameters, or interpreter complexity.
+
+## A visible square can be only a projection
+
+A vector-valued pixel cannot be displayed directly on a two-dimensional screen. A projection converts its internal object into something visible:
+
+```text
+visible(i,j) = P(O_ij)
+```
+
+For example, three selected vector components might be mapped to RGB. The color is then a view of the internal state, not the complete state itself.
+
+The same distinction appears in ordinary scientific visualization: a high-dimensional quantity can be inspected through selected coordinates, slices, statistics, or dimensionality-reduction projections without becoming identical to the visualization.
+
+## More dimensions do not create more independent source information
+
+Suppose one source bit is deterministically expanded into a 4,096-dimensional vector. The new vector may be easier to separate from other vectors, more tolerant of noise, or more useful for algebraic operations. But every component is still derived from the original bit plus the shared transformation.
+
+A useful accounting identity is
+
+```text
+system resources
+= source carrier
++ hidden or persistent state
++ metadata
++ codebooks / side information
++ model parameters under a declared amortization rule
+```
+
+This distinction prevents a large latent state from being mistaken for free information capacity.
+
+## Pixel type and communication are independent choices
+
+A vector pixel does not imply local communication. A transformer-like pixel does not imply global communication.
+
+Outer addresses can interact through:
+
+- nearest-neighbor or convolutional messages;
+- graph edges;
+- sparse long-range connections;
+- global or windowed attention;
+- region summaries;
+- learned routing;
+- parent/child messages across scales.
+
+Two systems with identical internal pixel state can behave very differently if their communication graphs differ.
+
+## Time is another independent choice
+
+A field may update repeatedly:
+
+```text
+F_0 → F_1 → F_2 → ... → F_T
+```
+
+Repeated local updates increase the distance over which information can propagate and can support memory or iterative computation. They also add runtime and can introduce instability.
+
+Recurrence is therefore a mechanism to test, not a definition of a computational pixel.
+
+## Memory requires persistence, not merely hidden state
+
+A hidden vector present during one forward pass is not automatically a useful memory. A memory test needs a sequence such as
+
+```text
+write → remove source → delay or interference → query
+```
+
+The measurement can then include retention time, retrieval accuracy, interference, overwrite, corruption tolerance, and stored-state cost.
+
+A classical Hopfield network provides one transparent baseline: the visible field becomes a bipolar attractor state and the weight matrix stores the associative relationships used for recall.
+
+## Compression requires fewer accounted bits for a chosen fidelity or utility
+
+A 64-dimensional state per pixel is usually larger than RGB, not smaller. Compression begins only when structure reduces the total stored description.
+
+Examples include:
+
+- reusable motif dictionaries;
+- vector quantization and codebook indices;
+- low-rank or factorized state;
+- sparse residuals;
+- predictive coding;
+- multiscale summaries;
+- entropy coding;
+- shared recursive rules.
+
+The relevant comparison is a rate–distortion or rate–utility curve: how many accounted bits are required to preserve a chosen reconstruction quality or task performance.
+
+## Several internal pixel forms answer different questions
 
 ### Scalar
-`x_ij ∈ R` — one value at one address.
-
-### Vector
-`x_ij ∈ R^D` — a multidimensional state. Neural Cellular Automata are a major prior-art family for learned vector-valued local cells.
-
-### Tensor
-`X_ij ∈ R^(A×B×C)` — a structured internal array. A meaningful test uses operations that respect those axes and compares against a flat vector under a declared resource budget.
-
-### Neural pixel
-`x_ij' = fθ(x_ij, message_ij)` — the address has state and a shared learned rule updates many addresses. Shared weights are system cost, not free information stored in each pixel.
-
-### Micro-transformer pixel
-`X_ij ∈ R^(K×D)` — several latent tokens exist **inside one address**. This differs from a field Transformer, where outer addresses are tokens and attention occurs **between** addresses.
-
-### Memory object
-A cell can maintain fast state, slow state, confidence or routing information. A real memory experiment requires write → delay/interference → query.
-
-### Subfield / recursive object
-`F_outer[i,j] = F_inner^(i,j)` — one address contains another field. “Recursive” becomes meaningful when an interface/operator is actually reused across levels; ordinary pooling is not enough.
-
-[Open Experiment 06: Pixel Interpretation Sandbox]({{ '/experiment/interpretation/' | relative_url }}).
-
-## 6. Communication is independent of pixel type
-
-What a pixel contains does not determine how pixels communicate. Candidate mechanisms include local convolution, graph messages, sparse long-range links, global/windowed attention, regional summaries, learned routing and parent/child messages in recursive fields.
-
-This separation matters. A vector pixel with global attention and a transformer pixel with only nearest-neighbor messages are different systems even if both contain high-dimensional state.
-
-## 7. Time is another independent axis
-
-A field may evolve `F_0 → F_1 → … → F_T`. Repeated updates can propagate information, maintain working state or implement iterative computation. But recurrence is one design choice, not the definition of MPF.
-
-## 8. What counts as evidence?
-
-- **EXACT** — deterministic codec/operator checked against an exact reference;
-- **DYNAMICAL / MECHANICS** — executable fixed-rule evolution, not a learned result;
-- **LEARNED** — parameters optimized against a task with held-out evaluation;
-- **BENCHMARK** — repeated controlled comparison across architectures/resources;
-- **PROCEDURAL BASELINE** — deterministic generative interpreter, not learned AI.
-
-A learned model solving a task proves only that **that model under that protocol** learned the task. It does not establish superiority until relevant controls are run.
-
-## 9. The information ledger
 
 ```text
-source carrier bits
-+ hidden / persistent state bits
-+ metadata
-+ codebook / side information
-+ shared model parameters (under a declared amortization rule)
-= accounted system resources
+x_ij ∈ R
 ```
 
-For neural experiments we also report update depth, runtime, training examples and seeds. For compression we report total stored bits and reconstruction fidelity. For memory we report recovery versus corruption. For reasoning, later tasks need known intermediate traces.
+One number occupies one address. This is the smallest continuous baseline.
 
-## 10. The research question
+### Vector
 
-> **One pixel. Many possible universes.**
+```text
+x_ij ∈ R^D
+```
 
-Technical version:
+A vector can distribute content across channels. Neural Cellular Automata are an important established example of learned vector-valued cells with shared local updates.
 
-> **What computational object should occupy an address, how should many such objects interact, and what representation, memory, compression, robustness, computation or reasoning becomes possible for the measured cost?**
+### Tensor
 
-Next: [Experiment Atlas]({{ '/experiment/' | relative_url }}).
+```text
+X_ij ∈ R^(A×B×C)
+```
+
+A tensor has explicit internal axes. It becomes meaningfully different from a flat vector only when the operations preserve or exploit those axes rather than immediately flattening them.
+
+### Internal token set
+
+```text
+X_ij ∈ R^(K×D)
+```
+
+Several latent tokens occupy one outer address. Attention can mix those tokens inside the address. This differs from a field Transformer, where outer addresses themselves are the tokens and attention connects different locations.
+
+### Memory object
+
+A cell can contain fast state, slow state, confidence, routing variables, or learned write/read gates. Its value has to be established with a persistence task.
+
+### Subfield
+
+```text
+F_outer[i,j] = F_inner^(i,j)
+```
+
+An outer address contains an active inner field. Genuine recursive structure requires a reusable interface or operator across levels; ordinary pooling alone is not enough.
+
+[Pixel Interpretation Sandbox]({{ '/experiment/interpretation/' | relative_url }}) executes small fixed-rule examples of these internal forms.
+
+## High dimensionality and hyperbolic geometry are different ideas
+
+Dimensionality asks how many coordinates a representation has. Geometry asks how distance is defined between represented points.
+
+A 4,096-dimensional Euclidean hypervector is high-dimensional but not hyperbolic. A two-dimensional Poincaré disk is hyperbolic but only two-dimensional.
+
+Hyperbolic geometry becomes relevant when the target relationships are genuinely hierarchical and should be compared against an equal-dimensional Euclidean control.
+
+## The central research question
+
+> **What finite computational object should occupy an address, how should many such objects interact, and what representation, memory, robustness, compression, computation, or learning is obtained for the measured cost?**
+
+A useful answer may be positive or negative. If a tensor, memory mechanism, routing scheme, or recursive structure adds cost without improving the measured task, that failure narrows the design space.
