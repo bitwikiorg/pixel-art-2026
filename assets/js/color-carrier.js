@@ -113,7 +113,11 @@
     return { L: lab.L, C, h };
   }
 
-  function relativeLuminance(rgb) { return rgbToXyz(rgb).y; }
+  function relativeLuminance(rgb) {
+    const c = linearRgb(rgb);
+    return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+  }
+
   function deltaE76(a, b) { return Math.hypot(a.L - b.L, a.a - b.a, a.b - b.b); }
   function oklabDistance(a, b) { return Math.hypot(a.L - b.L, a.a - b.a, a.b - b.b); }
 
@@ -169,7 +173,7 @@
       lab,
       oklab,
       oklch,
-      luminance: xyz.y,
+      luminance: relativeLuminance(rgb),
       assigned: assignedReadings(rgb)
     };
   }
@@ -198,6 +202,10 @@
       const swatchB = document.getElementById("colorSwatchB");
       if (swatchA) swatchA.style.background = a.hex;
       if (swatchB) swatchB.style.background = b.hex;
+      const labelA = colorA.closest(".color-input-row")?.querySelector("code");
+      const labelB = colorB.closest(".color-input-row")?.querySelector("code");
+      if (labelA) labelA.textContent = a.hex;
+      if (labelB) labelB.textContent = b.hex;
 
       text("storedHex", a.hex);
       text("storedRgb", `${a.rgb.r}, ${a.rgb.g}, ${a.rgb.b}`);
