@@ -48,6 +48,38 @@ Architectural ancestors are paired with measurement standards and primary techni
 - [Optical Polarization Metrology](https://www.nist.gov/programs-projects/optical-polarization-metrology)
 - [Fundamental Physical Constants](https://physics.nist.gov/cuu/Constants/introduction.html)
 
+## Procedural pixel engineering inspirations
+
+These implementations are creative mechanism references rather than performance baselines. Their value is the way compact rules, fields, palettes, and layers construct visible pixels.
+
+### Deep-Fold — SpriteGenerator
+**Relevance:** seeded spatial generation, enforced bilateral symmetry, random walks, local cellular-automaton cleanup, procedural palettes, neighborhood-conditioned color, and connected-region filling form a transparent morphogenetic pipeline.
+
+- [Source](https://github.com/Deep-Fold/SpriteGenerator)
+- [Interactive Pixel Sprite Generator](https://deep-fold.itch.io/pixel-sprite-generator)
+
+### Deep-Fold — Pixel Planets
+**Relevance:** shader-driven generation exposes seed, time, lighting, pixel scale, color arrays, and independently toggleable layers. It provides a concrete example of a shared renderer generating many raster states from a smaller structured description.
+
+- [Source](https://github.com/Deep-Fold/PixelPlanets)
+- [Interactive Pixel Planet Generator](https://deep-fold.itch.io/pixel-planet-generator)
+
+### Deep-Fold — Pixel Space Background Generator
+**Relevance:** palette control, pixel scale, compositional layers, transparency, and seamless tiling connect procedural rendering to multiscale state, alpha compositing, and periodic boundary conditions.
+
+- [Interactive generator](https://deep-fold.itch.io/space-background-generator)
+
+### Deep-Fold — StarScapes
+**Relevance:** noise-derived vector fields steer particles that deposit visible traces. The causal field and the rendered image are different state objects, making it a strong conceptual reference for vector-valued pixels and accumulated temporal output.
+
+- [Source](https://github.com/Deep-Fold/Starscapes)
+- [Interactive StarScapes](https://deep-fold.itch.io/starscapes)
+
+### Deep-Fold — Particle Soup
+**Relevance:** interacting particles produce a changing visible projection, illustrating the distinction between hidden dynamical state and raster observation.
+
+- [Interactive Particle Soup](https://deep-fold.itch.io/particle-soup)
+
 ## Local recurrent fields
 
 ### Mordvintsev et al. — Growing Neural Cellular Automata (2020)
