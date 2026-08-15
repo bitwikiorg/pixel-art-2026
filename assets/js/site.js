@@ -14,9 +14,17 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const tabs=[...document.querySelectorAll('[data-lab-tab]')];
   const sections=[...document.querySelectorAll('[data-lab-section]')];
-  tabs.forEach(tab=>tab.addEventListener('click',()=>{
-    const target=tab.dataset.labTab;
-    tabs.forEach(t=>t.classList.toggle('active',t===tab));
+  const activateLab=(target)=>{
+    if(!target||!tabs.some(tab=>tab.dataset.labTab===target))return;
+    tabs.forEach(tab=>tab.classList.toggle('active',tab.dataset.labTab===target));
     sections.forEach(section=>section.hidden=section.dataset.labSection!==target);
-  }));
+  };
+  const activateFromHash=()=>{
+    if(!location.hash)return;
+    const section=document.querySelector(location.hash);
+    if(section&&section.dataset&&section.dataset.labSection)activateLab(section.dataset.labSection);
+  };
+  tabs.forEach(tab=>tab.addEventListener('click',()=>activateLab(tab.dataset.labTab)));
+  activateFromHash();
+  window.addEventListener('hashchange',activateFromHash);
 });
