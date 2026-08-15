@@ -1,56 +1,109 @@
 ---
 layout: default
 title: Pixel Neural Net Lab
+pixel_universe: true
 field_lab: true
 neural_lab: true
 ---
 <div class="lab-shell">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Lab</span></nav>
   <header class="lab-intro">
-    <div class="eyebrow">Interactive research lab</div>
-    <h1>Watch a field compute.</h1>
-    <p class="hero-deck">This page contains two related experiments. The first is an <strong>actual trainable neural network</strong>: a shared local neural rule learns to solve a small spatial-relation problem by repeatedly updating a grid of hidden cell states. The second is a hand-designed dynamics sandbox for exploring locality, memory, hierarchy, perturbation, and visualization.</p>
-    <div class="plain-box"><strong>Plain English:</strong> instead of one big network looking at everything at once, many small cells repeatedly talk to nearby cells. Training changes the rule each cell uses. The experiment asks whether useful global information can emerge from those repeated local conversations.</div>
+    <div class="eyebrow">Interactive research laboratory</div>
+    <h1>Change what a pixel means.</h1>
+    <p class="hero-deck">The primitive in this laboratory is not a color and not one fixed neural architecture. A pixel is a spatial address whose internal interpretation can change: scalar, vector, tensor, neural unit, micro-transformer, memory object, subfield, or something recursively larger.</p>
+    <div class="plain-box"><strong>Core scope:</strong> a pixel can be interpreted as a scalar, vector, tensor, neural unit, micro-transformer, memory object, subfield, or something recursively larger. The lab compares those interpretations rather than prematurely defining MPF as one recurrent-grid architecture.</div>
+    <p class="lab-explain">The “infinite universe” language is an architectural metaphor, not a storage claim. A finite machine always has finite memory. The open-ended part is the <em>interpretation</em>: there is no requirement that one visible pixel correspond to one scalar. Human-readable visualization is always a finite projection of a richer computational state.</p>
   </header>
 
   <div class="lab-tabs" role="tablist" aria-label="Lab experiments">
-    <button class="lab-tab active" data-lab-tab="neural">01 · Trainable neural field</button>
-    <button class="lab-tab" data-lab-tab="dynamics">02 · Field dynamics sandbox</button>
-    <button class="lab-tab" data-lab-tab="methods">Methods & next experiments</button>
+    <button class="lab-tab active" data-lab-tab="universe">01 · Pixel Universe</button>
+    <button class="lab-tab" data-lab-tab="neural">02 · Learned vector field</button>
+    <button class="lab-tab" data-lab-tab="dynamics">03 · Original field dynamics</button>
+    <button class="lab-tab" data-lab-tab="methods">Experiment map</button>
   </div>
 
-  <section class="lab-section" data-lab-section="neural" id="neuralFieldLab">
+  <section class="lab-section" data-lab-section="universe" id="pixelUniverseLab">
+    <div class="section-head" style="padding-left:0;padding-right:0">
+      <div><div class="kicker">Interpretation ladder</div><h2>One address. Many possible internal worlds.</h2></div>
+      <div><p class="section-intro">Every mode below uses the same 12×12 visible grid. What changes is the object stored at each address and the rule that updates it. Click a pixel to inspect what the visible square is hiding.</p></div>
+    </div>
+
+    <div class="interpretation-ladder" aria-label="Pixel interpretation ladder">
+      <div><strong>scalar</strong><small>one value</small></div><div><strong>vector</strong><small>8D state</small></div><div><strong>tensor</strong><small>4×4 latent object</small></div><div><strong>neural unit</strong><small>shared nonlinear update</small></div><div><strong>transformer</strong><small>3 internal tokens</small></div><div><strong>memory</strong><small>fast + slow state</small></div><div><strong>subfield</strong><small>3×3 field inside a pixel</small></div>
+    </div>
+
+    <div class="pixel-universe-grid" style="margin-top:16px">
+      <aside class="panel">
+        <h2>Interpret the pixel as…</h2>
+        <p class="lab-explain">These are deliberately small executable models. They let us compare computational primitives without requiring a server, GPU, or training run.</p>
+        <div class="pixel-mode-list">
+          <button class="pixel-mode active" data-pixel-mode="scalar">Scalar</button>
+          <button class="pixel-mode" data-pixel-mode="vector">Vector</button>
+          <button class="pixel-mode" data-pixel-mode="tensor">Tensor · 4×4</button>
+          <button class="pixel-mode" data-pixel-mode="neural">Neural unit · shared MLP</button>
+          <button class="pixel-mode" data-pixel-mode="transformer">Micro-transformer · attention</button>
+          <button class="pixel-mode" data-pixel-mode="memory">Memory object</button>
+          <button class="pixel-mode" data-pixel-mode="subfield">Subfield · 3×3 inside each pixel</button>
+        </div>
+        <div class="cta-row"><button id="pixelUniverseRun" class="btn primary">Run</button><button id="pixelUniverseStepBtn" class="btn">Step</button><button id="pixelUniverseReset" class="btn">Reset</button></div>
+        <div class="cta-row"><button id="pixelUniverseInject" class="btn secondary">Inject a signal</button></div>
+      </aside>
+
+      <section class="lab-card">
+        <div class="kicker">Current interpretation</div>
+        <h2 id="pixelModeTitle" style="margin:5px 0">Scalar pixel</h2>
+        <p class="lab-explain" id="pixelModeDesc"></p>
+        <code class="universe-formula" id="pixelModeFormula"></code>
+        <div class="lab-canvas-wrap pixel-universe-canvas"><div class="overlay-label">12×12 VISIBLE ADDRESSES · STEP <span id="pixelUniverseStep">0</span></div><canvas id="pixelUniverseCanvas" aria-label="Pixel interpretation field"></canvas></div>
+        <p class="lab-explain">The canvas color is only a projection used to see changing state. It is not the storage format and it is not the full meaning of a pixel.</p>
+      </section>
+
+      <aside class="panel">
+        <h2>Inside the selected pixel</h2>
+        <div id="pixelInspector"></div>
+        <div class="metrics">
+          <div class="metric"><small>SCALARS / PIXEL</small><strong id="pixelModeDims">1</strong></div>
+          <div class="metric"><small>FIELD SCALARS</small><strong id="pixelModeScalars">144</strong></div>
+        </div>
+        <div class="plain-box" style="margin-top:16px"><strong>Important:</strong> increasing dimensionality does not automatically increase meaning. Meaning comes from the interpretation, update rule, training objective, topology, memory, and how downstream computation uses the state.</div>
+      </aside>
+    </div>
+
+    <section class="section" style="padding-left:0;padding-right:0">
+      <div class="big-question">
+        <div><div class="kicker">Carrier analogy</div><h2>A visible pixel can carry more than illumination.</h2><p>A useful analogy is a photon: perceived brightness is not its complete physical description; frequency, phase, polarization, momentum and helicity can also matter. The analogy is not literal physics. It reminds us not to confuse the <em>human-visible projection</em> with the complete state of the carrier.</p><p>Likewise, an MPF pixel can have a visible color while its computational object is a vector, tensor, token set, memory system, neural unit, or nested field.</p></div>
+        <div class="formula-box">visible pixel = projection(state)<br><br>state = interpretation(address)<br><br>interpretation ∈ { scalar, vector, tensor, network, attention, memory, field, … }</div>
+      </div>
+    </section>
+  </section>
+
+  <section class="lab-section" data-lab-section="neural" id="neuralFieldLab" hidden>
+    <div class="plain-box"><strong>Where this experiment fits:</strong> this is one specific point on the interpretation ladder: <em>vector-valued pixels + shared learned local neural update + recurrence</em>. It is a useful executable baseline, not the definition of MPF.</div>
     <div class="architecture-flow" aria-label="Neural field architecture">
       <div class="flow-node"><strong>WRITE</strong>A + B markers enter a 12×12 field</div>
+      <div class="flow-node"><strong>VECTOR PIXELS</strong>12 learned values per address</div>
       <div class="flow-node"><strong>LOCAL RULE</strong>shared 3×3 convolution</div>
       <div class="flow-node"><strong>RECURRENCE</strong>same rule repeats across time</div>
-      <div class="flow-node"><strong>POOL</strong>max-pooled field summary</div>
       <div class="flow-node"><strong>READ</strong>LEFT / RIGHT / ABOVE / BELOW</div>
     </div>
 
     <div class="neural-grid">
       <aside class="panel">
         <h2>Train the field</h2>
-        <p class="lab-explain">Training examples place a white cell A and a yellow cell B on the same row or column. The network learns the answer to: <strong>Where is B relative to A?</strong></p>
+        <p class="lab-explain">Training examples place a white cell A and a yellow cell B on the same row or column. The network learns: <strong>Where is B relative to A?</strong></p>
         <div class="control"><label><span>Training epochs</span><span data-value="epochs">18</span></label><input id="epochs" type="range" min="5" max="50" step="1" value="18"></div>
         <div class="control"><label><span>Recurrent update steps</span><span data-value="recurrentSteps">6</span></label><input id="recurrentSteps" type="range" min="2" max="10" step="1" value="6"></div>
         <div class="cta-row"><button id="trainBtn" class="btn primary">Train neural field</button><button id="resetNeuralBtn" class="btn">New weights</button></div>
         <div style="margin-top:14px" id="neuralStatus"><span class="status-dot"></span>loading TensorFlow.js…</div>
         <div class="progress" style="margin-top:10px"><span id="trainProgress"></span></div>
-        <h3 style="margin-top:22px">What is actually learned?</h3>
-        <p class="lab-explain">The learnable parameters are convolutional filters and a small readout. The <em>same</em> local filters are reused at every cell and every recurrent step. Gradient descent adjusts those weights from examples.</p>
-        <div class="metrics">
-          <div class="metric"><small>PARAMETERS</small><strong id="paramCount">—</strong></div>
-          <div class="metric"><small>RECURRENT STEPS</small><strong id="stepCountNeural">—</strong></div>
-          <div class="metric"><small>TF.JS BACKEND</small><strong id="backend">—</strong></div>
-          <div class="metric"><small>TRAIN TIME</small><strong id="trainTime">—</strong></div>
-        </div>
+        <h3 style="margin-top:22px">What is learned?</h3>
+        <p class="lab-explain">The learnable parameters are convolutional filters and a small readout. The same local filters are reused at every cell and recurrent step.</p>
+        <div class="metrics"><div class="metric"><small>PARAMETERS</small><strong id="paramCount">—</strong></div><div class="metric"><small>RECURRENT STEPS</small><strong id="stepCountNeural">—</strong></div><div class="metric"><small>TF.JS BACKEND</small><strong id="backend">—</strong></div><div class="metric"><small>TRAIN TIME</small><strong id="trainTime">—</strong></div></div>
       </aside>
 
       <section class="lab-card">
-        <div class="kicker">Hidden state projection</div>
-        <h2 style="margin-top:5px">The field through time</h2>
-        <p class="lab-explain">The colors below are a projection of the first three hidden dimensions. They are <strong>not</strong> the input colors and do not have fixed semantic meanings. White outline = A; yellow outline = B.</p>
+        <div class="kicker">Hidden state projection</div><h2 style="margin-top:5px">The vector field through time</h2>
+        <p class="lab-explain">The colors project the first three hidden dimensions. They do not have fixed semantic meanings. White outline = A; yellow outline = B.</p>
         <div class="lab-canvas-wrap" style="min-height:500px"><div class="overlay-label">12×12 CELLS · 12D/CELL · TRACE STEP <span id="traceStep">0</span></div><canvas id="neuralCanvas" aria-label="Learned neural field hidden-state projection"></canvas></div>
         <div class="control"><label><span>Inspect recurrent step</span><span>0 → current depth</span></label><input id="traceSlider" type="range" min="0" max="6" value="6"></div>
         <div class="toggle"><span>Use a longer-distance example</span><input id="farExample" type="checkbox"></div>
@@ -59,45 +112,41 @@ neural_lab: true
       </section>
 
       <aside class="panel">
-        <h2>Read the result</h2>
-        <small>MODEL PREDICTION</small><div class="prediction" id="prediction">—</div>
+        <h2>Read the result</h2><small>MODEL PREDICTION</small><div class="prediction" id="prediction">—</div>
         <p class="lab-explain">Correct answer: <strong id="truth">—</strong> · separation: <strong id="distanceReadout">—</strong> cells</p>
         <div class="class-row"><div class="class-score" id="score0">LEFT —</div><div class="class-score" id="score1">RIGHT —</div><div class="class-score" id="score2">ABOVE —</div><div class="class-score" id="score3">BELOW —</div></div>
-        <h3 style="margin-top:22px">Training measurements</h3>
-        <div class="metrics">
-          <div class="metric"><small>TRAIN ACCURACY</small><strong id="trainAcc">—</strong></div>
-          <div class="metric"><small>TRAIN LOSS</small><strong id="trainLoss">—</strong></div>
-          <div class="metric"><small>NEAR TEST</small><strong id="nearAcc">—</strong></div>
-          <div class="metric"><small>LONGER TEST</small><strong id="farAcc">—</strong></div>
-        </div>
+        <h3 style="margin-top:22px">Training measurements</h3><div class="metrics"><div class="metric"><small>TRAIN ACCURACY</small><strong id="trainAcc">—</strong></div><div class="metric"><small>TRAIN LOSS</small><strong id="trainLoss">—</strong></div><div class="metric"><small>NEAR TEST</small><strong id="nearAcc">—</strong></div><div class="metric"><small>LONGER TEST</small><strong id="farAcc">—</strong></div></div>
         <h3 style="margin-top:22px">Training log</h3><div class="training-log" id="trainingLog">This model begins with random weights. Train it, then inspect new examples.</div>
-        <div class="plain-box" style="margin-top:16px"><strong>What to notice:</strong> recurrence enlarges the effective communication range. With a local 3×3 rule, one update only moves information roughly one cell. Repeating the same rule lets information travel farther without adding a new set of weights at every step.</div>
       </aside>
     </div>
-
-    <section class="section" style="padding-left:0;padding-right:0">
-      <div class="section-head"><div><div class="kicker">Architecture grounding</div><h2>How the trainable model works.</h2></div><div><p class="section-intro">The trainable demo is a small recurrent convolutional network with weight sharing. In Neural Cellular Automata terminology, each grid location holds a vector-valued cell state and a learned local update rule is applied repeatedly. Distill describes essentially the same computational family as a recurrent residual convolutional network with per-pixel updates.</p><p><a href="https://distill.pub/2020/growing-ca/">Growing Neural Cellular Automata</a> · <a href="https://distill.pub/2020/selforg/mnist/">Self-classifying MNIST Digits</a> · <a href="https://www.tensorflow.org/js/guide/train_models">TensorFlow.js training guide</a></p></div></div>
-    </section>
   </section>
 
   <section class="lab-section" data-lab-section="dynamics" hidden>
-    <div class="plain-box"><strong>This sandbox is intentionally different from the neural demo.</strong> Its update equation is hand-designed rather than learned. That makes it useful for building intuition about field dynamics, but it should not be confused with a trained neural model.</div>
+    <div class="plain-box"><strong>Original experiment:</strong> this preserves the hand-designed multidimensional field dynamics sandbox. It is intentionally not trained. It remains useful because it lets us manipulate locality, persistence, regional feedback, permutation and damage directly.</div>
     <div class="lab-grid" style="margin-top:16px">
-      <aside class="panel"><h2>Dynamics controls</h2><div class="control"><label><span>Local coupling</span><span data-value="coupling">0.72</span></label><input id="coupling" type="range" min="0" max="1.4" step="0.01" value="0.72"></div><div class="control"><label><span>State memory</span><span data-value="memory">0.70</span></label><input id="memory" type="range" min="0" max="0.98" step="0.01" value="0.70"></div><div class="toggle"><span>Regional summary signal</span><input id="hierarchy" type="checkbox" checked></div><div class="toggle"><span>Permute cell positions each step</span><input id="shuffle" type="checkbox"></div><div class="cta-row"><button id="runBtn" class="btn primary">Run</button><button id="stepBtn" class="btn">Step</button><button id="resetBtn" class="btn">Reset</button></div><div class="cta-row"><button id="damageBtn" class="btn">Zero an 8×8 region</button></div><p class="lab-explain">Use this to see how locality, persistence and coarse regional feedback change the evolution of a vector field.</p></aside>
+      <aside class="panel"><h2>Dynamics controls</h2><div class="control"><label><span>Local coupling</span><span data-value="coupling">0.72</span></label><input id="coupling" type="range" min="0" max="1.4" step="0.01" value="0.72"></div><div class="control"><label><span>State memory</span><span data-value="memory">0.70</span></label><input id="memory" type="range" min="0" max="0.98" step="0.01" value="0.70"></div><div class="toggle"><span>Regional summary signal</span><input id="hierarchy" type="checkbox" checked></div><div class="toggle"><span>Permute cell positions each step</span><input id="shuffle" type="checkbox"></div><div class="cta-row"><button id="runBtn" class="btn primary">Run</button><button id="stepBtn" class="btn">Step</button><button id="resetBtn" class="btn">Reset</button></div><div class="cta-row"><button id="damageBtn" class="btn">Zero an 8×8 region</button></div><p class="lab-explain">This experiment exposes the field mechanics before learning is added.</p></aside>
       <section class="lab-canvas-wrap"><div class="overlay-label">32×32 CELLS · 8D/CELL · STEP <span id="stepCount">0</span></div><canvas id="fieldCanvas" aria-label="Multidimensional field dynamics visualization"></canvas></section>
-      <aside class="panel"><h2>State measurements</h2><div class="metrics"><div class="metric"><small>LOCAL COHERENCE</small><strong id="coherence">—</strong></div><div class="metric"><small>RMS ENERGY</small><strong id="energy">—</strong></div><div class="metric"><small>OCCUPANCY</small><strong id="occupancy">—</strong></div><div class="metric"><small>STEP STABILITY</small><strong id="stability">—</strong></div></div><h3 style="margin-top:22px">Interpretation</h3><p class="lab-explain"><strong>Coherence</strong> asks whether neighboring projected states look similar. <strong>Energy</strong> summarizes state magnitude. <strong>Occupancy</strong> measures average absolute activation. <strong>Stability</strong> measures how much the field-level energy changed since the prior step.</p><button id="exportBtn" class="btn secondary">Export run JSON</button></aside>
+      <aside class="panel"><h2>State measurements</h2><div class="metrics"><div class="metric"><small>LOCAL COHERENCE</small><strong id="coherence">—</strong></div><div class="metric"><small>RMS ENERGY</small><strong id="energy">—</strong></div><div class="metric"><small>OCCUPANCY</small><strong id="occupancy">—</strong></div><div class="metric"><small>STEP STABILITY</small><strong id="stability">—</strong></div></div><h3 style="margin-top:22px">Interpretation</h3><p class="lab-explain"><strong>Coherence</strong> asks whether neighboring projected states look similar. <strong>Energy</strong> summarizes state magnitude. <strong>Occupancy</strong> measures average absolute activation. <strong>Stability</strong> measures how much field-level energy changed.</p><button id="exportBtn" class="btn secondary">Export run JSON</button></aside>
     </div>
   </section>
 
   <section class="lab-section" data-lab-section="methods" hidden>
-    <div class="card-grid two">
-      <article class="learn-card"><span class="level">Current browser model</span><h3>Relational neural field</h3><p>12×12 cells, 12 hidden dimensions, shared local convolution, recurrent residual updates, global-max readout. It learns a controlled left/right/above/below task directly in the browser.</p></article>
-      <article class="learn-card"><span class="level">Reference implementation</span><h3>PyTorch MPF-Local</h3><p>The repository includes a more explicit research prototype intended for repeatable runs, larger batches, baselines and saved results.</p><a class="card-link" href="https://github.com/bitwikiorg/pixel-art-2026/tree/main/experiments">Open experiment code →</a></article>
-      <article class="learn-card"><span class="level">Next comparison</span><h3>Stable grid vs changing permutation</h3><p>Train matched models and compare a persistent spatial field with a version whose cell identities are remapped between recurrent updates. This isolates the value of stable addressability.</p></article>
-      <article class="learn-card"><span class="level">Next architecture</span><h3>Multiresolution field</h3><p>Add region summaries at 3 scales, then send coarse information back into fine cells. Compare against a flat field and randomly grouped regions.</p></article>
-      <article class="learn-card"><span class="level">Next reasoning task</span><h3>Shortest-path propagation</h3><p>A maze supplies a ground-truth wavefront. That creates a direct correspondence between an algorithmic reasoning step and a recurrent field update.</p></article>
-      <article class="learn-card"><span class="level">Later</span><h3>Quantization, hyperbolic state, semantic albums</h3><p>These become useful only after the basic field demonstrates interesting behavior. They are separate research directions, not requirements for understanding MPF.</p></article>
+    <div class="section-head" style="padding-left:0;padding-right:0"><div><div class="kicker">Experimental program</div><h2>From pixel primitive to systems.</h2></div><p class="section-intro">The project should compare interpretations at equal resource budgets, then compose the useful ones into larger architectures. Not every experiment needs to be a recurrent grid.</p></div>
+    <div class="card-grid">
+      <article class="learn-card"><span class="level">RUNNING NOW</span><h3>Pixel complexity ladder</h3><p>Scalar → vector → tensor → neural unit → micro-transformer → memory → subfield. Same visible addresses, different internal computational objects.</p></article>
+      <article class="learn-card"><span class="level">RUNNING NOW</span><h3>Learned vector field</h3><p>Trainable TensorFlow.js/PyTorch model: vector-valued pixels, shared local convolution and recurrent updates.</p></article>
+      <article class="learn-card"><span class="level">RUNNING NOW</span><h3>Original dynamics</h3><p>Hand-designed multidimensional field for locality, hierarchy, permutation, persistence and damage experiments.</p></article>
+      <article class="learn-card"><span class="level">NEXT TRAINED MODEL</span><h3>Tensor-pixel network</h3><p>Give each pixel a structured latent tensor and compare it with an equal-scalar-count flat vector. Ask whether internal axes or factorizations help.</p></article>
+      <article class="learn-card"><span class="level">NEXT TRAINED MODEL</span><h3>Transformer-pixel field</h3><p>Give every pixel several internal tokens and a shared micro-transformer, then compare attention inside pixels with attention between pixels.</p></article>
+      <article class="learn-card"><span class="level">COMPARISON</span><h3>Field Transformer</h3><p>Treat each pixel as a token and perform attention across addresses. This is the opposite factorization from a micro-transformer inside every pixel.</p></article>
+      <article class="learn-card"><span class="level">RECURSION</span><h3>Field inside field</h3><p>A pixel contains a subfield; regions contain subregions; shared rules may operate across scales. This is the experiment that can make “recursive” concrete.</p></article>
+      <article class="learn-card"><span class="level">MEMORY</span><h3>Persistent semantic object</h3><p>Write information, remove the input, save/restore state, query it later, damage it, and measure what persists or regenerates.</p></article>
+      <article class="learn-card"><span class="level">COMPRESSION</span><h3>Quantized pixel universe</h3><p>Replace float state with learned codes, sparse state or product VQ and measure utility per stored bit across pixel interpretations.</p></article>
+      <article class="learn-card"><span class="level">TOPOLOGY</span><h3>Learned semantic geography</h3><p>Compare fixed 2D address, learned placement, graph neighborhoods and self-organizing layouts. Ask whether where information lives becomes useful.</p></article>
+      <article class="learn-card"><span class="level">GEOMETRY</span><h3>Hyperdimensional / hyperbolic state</h3><p>Separate dimensionality from geometry. Test very high-dimensional compositional state and hyperbolic metrics where hierarchy predicts an advantage.</p></article>
+      <article class="learn-card"><span class="level">ALBUM</span><h3>Fields of fields</h3><p>Let persistent fields retrieve, communicate with and consolidate into other fields. The unit of computation can become a whole field, not only a pixel.</p></article>
     </div>
-    <div class="method-box" style="margin-top:18px"><strong>Methodology:</strong> matched parameter counts, measured compute, topology permutations, decoder-strength controls, bit accounting and causal interventions help distinguish which part of a model is responsible for an observed effect.</div>
+    <div class="method-box" style="margin-top:18px"><strong>Resource discipline:</strong> browser experiments stay small and inspectable. Trained tensor/transformer variants belong in the repository reference experiments when they exceed safe browser compute. Comparisons should report parameter count, scalar state, approximate compute, stored bits where relevant, and task performance.</div>
+    <p><a class="btn primary" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Open the full experimental program</a></p>
   </section>
 </div>
