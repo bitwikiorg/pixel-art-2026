@@ -1,57 +1,72 @@
 ---
 layout: default
 title: Pixel Photon Lab
-description: Computational pixels as finite spatial addresses whose stored state, derived measurements, physical context, generative process, and computational interpretation can be separated and tested.
+description: Multidimensional Pixel Fields: computational pixels studied as finite spatial addresses with explicit state, interpretation, dynamics, memory, learning, generation, and resource accounting.
 ---
-<section class="hero">
-  <div class="eyebrow">Representation · memory · computation · compression</div>
-  <h1>A pixel is an address whose state can change type.</h1>
-  <p class="hero-deck">Black and white give the smallest visible carrier: one bit per address. Color expands the finite state alphabet. Vectors, tensors, token sets, memory, and other computational objects extend it further. Pixels can also be constructed by shared programs, layers, fields, and dynamics. Each extension has an explicit storage cost, interpretation, and measurable effect.</p>
-  <div class="hero-actions"><a class="btn primary" href="{{ '/learn/' | relative_url }}">Foundations</a><a class="btn" href="{{ '/experiment/color-carrier/' | relative_url }}">Color carrier</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Experiments</a></div>
+<section class="hero home-hero">
+  <div class="eyebrow">Multidimensional Pixel Fields · representation · memory · computation · generation</div>
+  <h1>What if a pixel were a computational address, not just a color?</h1>
+  <p class="hero-deck">A conventional image pixel stores a small visible value such as RGB. A computational pixel keeps the spatial address but allows the finite object at that address to be a bit, color, integer, vector, tensor, token set, memory state, local program, or another explicitly defined structure. Multidimensional Pixel Fields ask what those choices buy in representation, reliability, memory, computation, learning, compression, and generative systems.</p>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/carrier/' | relative_url }}">Start with one bit</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Open experiments</a><a class="btn" href="{{ '/research/00-research-thesis/' | relative_url }}">Research thesis</a></div>
+
+  <div class="home-definition" aria-label="Core definition">
+    <div><small>ADDRESS</small><strong>Where is the state?</strong><p>A stable coordinate or node identity such as <code>(x,y)</code>. Address and stored value are separate concepts.</p></div>
+    <div><small>CARRIER STATE</small><strong>What finite data exists there?</strong><p>One bit, 24 RGB bits, a vector, a tensor, a token set, recurrent memory, or another counted object.</p></div>
+    <div><small>INTERPRETATION</small><strong>What do those values mean?</strong><p>The same finite bits can be interpreted as color, an integer, an index, a class ID, a control value, or encoded data.</p></div>
+    <div><small>FIELD</small><strong>How do addresses interact?</strong><p>Neighborhood rules, recurrent updates, graph messages, attention, memory operations, shaders, or learned operators can transform the state.</p></div>
+  </div>
+  <div class="home-equation">computational pixel = address + finite carrier state + interpretation</div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div class="kicker">Carrier progression</div><h2>Binary establishes the baseline. Color opens a larger state space.</h2></div>
-  <div class="progression">
-    <article class="progression-card"><small>01 · BINARY</small><h3>Black or white</h3><p>One address stores one bit: `0` or `1`. Packing, decoding, corruption, and recovery can be tested exactly.</p></article>
-    <article class="progression-card color-stage"><small>02 · COLOR</small><h3>Finite color state</h3><div class="color-bar" aria-hidden="true"></div><p>RGB888 stores 24 bits per address. Indexed color stores a smaller index plus palette information. Hue, Lab, XYZ, and other coordinates may describe the same color state without adding independent source information. <a href="{{ '/experiment/color-carrier/' | relative_url }}">Inspect one color →</a></p></article>
-    <article class="progression-card"><small>03 · COMPUTATIONAL OBJECT</small><h3>Structured internal state</h3><p>An address can hold an integer, hash fragment, vector, tensor, token set, memory state, or another finite object when its representation and cost are defined.</p></article>
+  <div class="section-head"><div class="kicker">Experimental progression</div><h2>Start with information that can be counted exactly, then add one mechanism at a time.</h2></div>
+  <nav class="home-route" aria-label="Recommended experiment progression">
+    <a href="{{ '/carrier/' | relative_url }}"><span class="route-number">01</span><span><small>EXACT CARRIER</small><strong>Binary Pixel Carrier</strong><span>256 visible addresses are exactly 256 source bits. Image, bitstream, bytes, and hex are alternate views of one finite object.</span></span></a>
+    <a href="{{ '/experiment/color-carrier/' | relative_url }}"><span class="route-number">02</span><span><small>RICHER CARRIER</small><strong>Color Pixel Carrier</strong><span>Separate the 24 stored RGB bits from deterministic color coordinates, relational measurements, palette coding, and physical quantities RGB cannot recover.</span></span></a>
+    <a href="{{ '/experiment/interpretation/' | relative_url }}"><span class="route-number">03</span><span><small>STATE TYPE</small><strong>Pixel Interpretation Sandbox</strong><span>Keep the outer grid fixed while the object at every address changes among scalar, vector, tensor, token, memory, and nested forms.</span></span></a>
+    <a href="{{ '/experiment/memory/' | relative_url }}"><span class="route-number">04</span><span><small>DYNAMICS</small><strong>Memory & computation</strong><span>Test error correction, associative recall, distributed hypervectors, fixed field dynamics, and GPU field operators with explicit measurements.</span></span></a>
+    <a href="{{ '/experiment/pixel-organism/' | relative_url }}"><span class="route-number">05</span><span><small>LEARNING + GENERATION</small><strong>Fields that learn or generate</strong><span>Train local fields, reconstruct hidden pixels, compare internal primitives, generate phenotypes, and connect inherited state to behavior.</span></span></a>
+  </nav>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Complete experiment atlas</div><h2>Each experiment isolates a different mechanism and states what its result can and cannot support.</h2></div>
+  <div class="home-map">
+    {% for group in site.data.experiment_groups %}
+    <section class="home-map-group">
+      <header><small class="home-map-label">0{{ forloop.index }}</small><h3>{{ group.title }}</h3><p>{{ group.short }}</p></header>
+      <div class="home-map-links">
+        {% for id in group.ids %}{% assign exp = site.data.experiments | where: "id", id | first %}
+        <a href="{{ exp.url | relative_url }}"><small>{{ exp.id }}</small><span><strong>{{ exp.title }}</strong><span>{{ exp.status_label }} · {{ exp.measure }}</span></span></a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div class="kicker">State layers</div><h2>Not every property belongs to the same layer.</h2></div>
-  <div class="family-list">
-    <div class="family-row"><h3>Stored digital state</h3><p>Bits physically carried by the computational representation: RGB channels, alpha, palette indices, integers, vectors, tensors, token IDs, memory values.</p></div>
-    <div class="family-row"><h3>Derived coordinates</h3><p>Values computed from other state: HSL, Lab, LCH, chromaticity, hue angle, luminance-related coordinates, gradients, color differences. They add storage only when explicitly cached or transmitted.</p></div>
-    <div class="family-row"><h3>Physical measurements</h3><p>Spectral power distribution, wavelength content, radiance, irradiance, polarization, reflectance, illumination direction, material response, and other properties of real optical systems.</p></div>
-    <div class="family-row"><h3>Assigned semantics</h3><p>Meanings deliberately encoded into finite state: class, probability, confidence, token ID, relation, hierarchy level, instruction, memory address, uncertainty, hash, or compressed payload.</p></div>
-  </div>
-  <p class="core-note"><a href="{{ '/research/11-color-light-state/' | relative_url }}">Color, Light, and Pixel State →</a> separates perceptual, colorimetric, optical, spatial, temporal, material, and computational properties with explicit definitions and accounting.</p>
-</section>
-
-<section class="section">
-  <div class="section-head"><div class="kicker">Architectural parallel</div><h2>Encoding a pixel can play a tokenizer-like role.</h2></div>
-  <div class="parallel-schema">
-    <div class="schema-label">TEXT</div><div><strong>Source</strong>characters or bytes</div><div><strong>Tokenizer</strong>finite token IDs</div><div><strong>Network</strong>distributed computation</div><div><strong>Output</strong>tokens or decisions</div>
-    <div class="schema-label">PIXEL FIELD</div><div><strong>Source</strong>bits, color, measurements</div><div><strong>Pixel encoder</strong>finite local state</div><div><strong>Field operator</strong>local, recurrent, graph, attention, memory</div><div><strong>Output</strong>image, data, decision, action</div>
-  </div>
-  <p class="parallel-note">The parallel is exact only at the mechanism level. A tokenizer performs a finite mapping into tokens or codewords. A raw RGB tuple or floating-point vector is simply stored state unless an explicit encoder or quantizer gives it token-like semantics. A pixel is self-similar to the larger computation only when its internal object actually repeats meaningful structure, such as a micro-network, internal token set, recurrent cell, or recursively reused subfield.</p>
-</section>
-
-<section class="section">
-  <div class="section-head"><div class="kicker">Measured capability</div><h2>Richer state matters only when it changes a measured outcome.</h2></div>
-  <div class="concept-stack">
-    <div class="concept-row"><div class="concept-key">ROBUSTNESS</div><div><h3>Redundancy can repair corruption.</h3><p>Error correction improves recovery by carrying additional coded state. The extra bits are part of the cost.</p></div></div>
-    <div class="concept-row"><div class="concept-key">MEMORY</div><div><h3>Persistent state can support retrieval.</h3><p>Memory requires successful write, delay or interference, and later query—not merely hidden activation during one forward pass.</p></div></div>
-    <div class="concept-row"><div class="concept-key">COMPUTATION</div><div><h3>Spatial relationships can participate causally.</h3><p>Neighborhoods, regions, direction, scale, and topology become useful only when controlled interventions show that those relationships affect the result.</p></div></div>
-    <div class="concept-row"><div class="concept-key">GENERATION</div><div><h3>Programs and fields can construct pixels.</h3><p>Seeds, symmetry, cellular rules, vector fields, shaders, palettes, layers, and time can generate a raster from smaller persistent state plus a shared decoder. <a href="{{ '/research/12-generative-pixel-engineering/' | relative_url }}">Generative pixel engineering →</a></p></div></div>
-    <div class="concept-row"><div class="concept-key">LEARNING</div><div><h3>Operators can be optimized from data.</h3><p>Learned fields are compared on held-out tasks with resource controls, repeated seeds, and baselines. More dimensions alone do not establish an advantage.</p></div></div>
-    <div class="concept-row"><div class="concept-key">COMPRESSION</div><div><h3>Useful structure can reduce total description cost.</h3><p>Carrier bits, codebooks, palettes, metadata, model parameters, hidden state, and interpreters must all be counted under a declared accounting rule.</p></div></div>
+  <div class="section-head"><div class="kicker">Research map</div><h2>The experiments sit inside a larger set of questions about information, architecture, memory, geometry, learning, and artificial life.</h2></div>
+  <div class="home-library-grid">
+    <article class="home-library-card"><small class="home-map-label">FOUNDATIONS</small><h3>What is being proposed and how is it measured?</h3><p>Definitions, falsifiable questions, information accounting, optical boundaries, and experimental controls.</p><nav><a href="{{ '/research/00-research-thesis/' | relative_url }}">Research thesis</a><a href="{{ '/research/02-experiment-protocol/' | relative_url }}">Experimental method</a><a href="{{ '/research/11-color-light-state/' | relative_url }}">Color, light & pixel state</a><a href="{{ '/research/04-references/' | relative_url }}">Academic & technical references</a></nav></article>
+    <article class="home-library-card"><small class="home-map-label">REPRESENTATION</small><h3>What can occupy one address?</h3><p>Bits, colors, vectors, tensors, token sets, memory objects, hypervectors, nested state, and the operators that act on them.</p><nav><a href="{{ '/research/10-pixel-photon-primitives/' | relative_url }}">Pixel primitive map</a><a href="{{ '/research/01-prior-art/' | relative_url }}">Related architectures</a><a href="{{ '/research/05-neural-architecture/' | relative_url }}">Local neural architecture</a></nav></article>
+    <article class="home-library-card"><small class="home-map-label">MEMORY + GEOMETRY</small><h3>When does spatial organization matter?</h3><p>Persistence, retrieval, compression accounting, distributed symbolic state, semantic distance, hierarchy, and topology controls.</p><nav><a href="{{ '/research/07-memory-compression/' | relative_url }}">Memory & compression</a><a href="{{ '/research/08-geometry-vsa/' | relative_url }}">Geometry & VSA</a><a href="{{ '/research/03-concepts-to-explore/' | relative_url }}">Open mechanisms</a></nav></article>
+    <article class="home-library-card"><small class="home-map-label">GENERATION + LIFE</small><h3>Can compact state generate pixels, bodies, and behavior?</h3><p>Genotype-to-phenotype mappings, procedural fields, recurrent controllers, environments, damage, selection, and causal interventions.</p><nav><a href="{{ '/research/12-generative-pixel-engineering/' | relative_url }}">Generative pixel engineering</a><a href="{{ '/research/13-pixel-organisms-artificial-life/' | relative_url }}">Pixel organisms & artificial life</a></nav></article>
+    <article class="home-library-card"><small class="home-map-label">LEARNING + FRONTIER</small><h3>What survives comparison with established models?</h3><p>Optimization, repeated seeds, matched resources, recurrent depth, Neural Cellular Automata, controlled reasoning tasks, and stronger baselines.</p><nav><a href="{{ '/research/06-learning-and-training/' | relative_url }}">Learning & training</a><a href="{{ '/research/09-current-frontier/' | relative_url }}">Current frontier</a><a href="{{ '/glossary/' | relative_url }}">Glossary with external sources</a></nav></article>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div class="kicker">Pixel Photon</div><h2>Visible color can be only one projection of a richer state.</h2></div>
-  <p class="core-note">The photon analogy is limited and physical quantities stay physically defined. Frequency, spectrum, polarization, phase coherence, direction, and radiometric quantities describe optical systems; they are not automatically present in an RGB value. The computational parallel is that a visible pixel may expose only one projection of a larger finite state.</p>
+  <div class="section-head"><div class="kicker">Information boundary</div><h2>A richer pixel can perform more computation without containing free information.</h2></div>
+  <div class="home-boundary">
+    <div><strong>Stored and derived are different.</strong><p>RGB, HSL, Lab, OKLab, and luminance may all describe one color, but deterministic transforms of the same RGB codeword do not multiply its independent information.</p></div>
+    <div><strong>Shared machinery still has a cost.</strong><p>Codebooks, palettes, model parameters, decoders, recurrent weights, memory matrices, and procedural interpreters must be counted or explicitly amortized.</p></div>
+    <div><strong>Visible pixels may be projections.</strong><p>A rendered RGB field can expose only part of a larger state containing memory, vectors, controller variables, physical measurements, or generated structure.</p></div>
+    <div><strong>Spatial claims need topology controls.</strong><p>A result caused by recurrence, parameter count, graph connectivity, or attention cannot be attributed to Cartesian pixel geometry until competing explanations are controlled.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Pixel Photon analogy</div><h2>Use the analogy to ask richer state questions; keep the physics literal.</h2></div>
+  <p class="core-note">Real photons have physically defined properties such as frequency, phase, polarization, momentum, and spatial mode. Ordinary RGB pixels do not secretly contain those quantities. The useful computational analogy is narrower: visible color can be one observable projection while a computational address carries additional finite state whose storage and interpretation are explicitly defined.</p>
 </section>
