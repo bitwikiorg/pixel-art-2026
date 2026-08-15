@@ -30,10 +30,11 @@
   </header>
   <main id="main-content">{{ content }}</main>
   <footer class="site-footer">
-    <div><strong>Pixel Neural Net Lab</strong><br><span>Learn the idea, inspect the mechanisms, run experiments, read the literature.</span></div>
+    <div><strong>Pixel Neural Net Lab</strong><br><span>Interpret the pixel differently. Build the field differently. Measure what changes.</span></div>
     <div class="footer-links"><a href="{{ '/learn/' | relative_url }}">Start here</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="https://github.com/bitwikiorg/pixel-art-2026/issues">Research log</a></div>
   </footer>
   <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
+  {% if page.pixel_universe %}<script src="{{ '/assets/js/pixel-universe.js' | relative_url }}" defer></script>{% endif %}
   {% if page.field_lab %}<script src="{{ '/assets/js/field.js' | relative_url }}" defer></script>{% endif %}
   {% if page.neural_lab %}<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script><script src="{{ '/assets/js/neural-field.js' | relative_url }}" defer></script>{% endif %}
 </body>
