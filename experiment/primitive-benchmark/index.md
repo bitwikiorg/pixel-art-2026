@@ -25,7 +25,7 @@ technical: |
 
   The completed equal-state audit uses 16 scalar state values per pixel, six recurrent updates, 12 epochs, 1,536 train examples, 384 test examples, and seeds 7, 17, and 29. Sample standard deviation is reported because three independent optimization runs can differ sharply at this scale.
 
-  The equal-parameter JSON is deliberately a short six-epoch smoke test with 768 train examples and 192 test examples near a 4,000-parameter target. Most models remain undertrained, so it validates the matching machinery rather than providing an architecture ranking.
+  The equal-parameter JSON is deliberately a short six-epoch smoke test with 768 train examples and 192 test examples near a 4,000-parameter target. Its standard deviations are also sample standard deviations recomputed from the three recorded seed runs. Most models remain undertrained, so it validates the matching machinery rather than providing an architecture ranking.
 ---
 
 ## Different budgets answer different scientific questions
@@ -60,11 +60,11 @@ Protocol: **6 recurrent steps · 6 epochs · 768 train · 192 test · seeds 7/17
 
 | Cell interpretation | State | Parameters | Distance 2–4 | Distance 5–8 | Inference µs/example | Train seconds |
 |---|---:|---:|---:|---:|---:|---:|
-| vector | 16 | 4,036 | 35.1% ± 7.0 | 38.0% ± 3.0 | 62.9 | 1.26 |
-| tensor | 16 | 4,588 | 30.0% ± 1.1 | 37.2% ± 4.7 | 128.4 | 2.02 |
-| inner-token · 2×9D | 18 | 4,261 | 28.8% ± 2.8 | 31.1% ± 4.3 | 311.9 | 5.20 |
+| vector | 16 | 4,036 | 35.1% ± 8.6 | 38.0% ± 3.6 | 62.9 | 1.26 |
+| tensor | 16 | 4,588 | 30.0% ± 1.3 | 37.2% ± 5.7 | 128.4 | 2.02 |
+| inner-token · 2×9D | 18 | 4,261 | 28.8% ± 3.5 | 31.1% ± 5.3 | 311.9 | 5.20 |
 
-Most runs remain near chance or poorly optimized. The useful result is diagnostic: parameter matching alone does not rescue an undertrained protocol, and unstable optimization should not be converted into a winner table.
+Most runs remain near chance or poorly optimized. The useful result is therefore diagnostic: parameter matching alone does not rescue an undertrained protocol, and unstable optimization should not be converted into a winner table.
 
 ## Exact reproduction commands
 
