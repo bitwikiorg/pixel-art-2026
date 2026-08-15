@@ -30,10 +30,14 @@ jobs:
           node --check assets/js/field.js
           node --check assets/js/neural-field.js
           node --check assets/js/pixel-universe.js
+          node --check assets/js/binary-carrier.js
           node --check scripts/test-pixel-universe.js
+          node --check scripts/test-binary-carrier.js
 
-      - name: Run Pixel Universe smoke test
-        run: node scripts/test-pixel-universe.js
+      - name: Run browser-primitive smoke tests
+        run: |
+          node scripts/test-pixel-universe.js
+          node scripts/test-binary-carrier.js
 
       - name: Check Python experiment syntax
         run: |
