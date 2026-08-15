@@ -13,11 +13,21 @@
   const ctx = canvas.getContext('2d');
   canvas.width = N; canvas.height = N;
   let model = null, layers = null, currentExample = null, currentTrace = [], currentProbs = null;
-  let modelSeed = 7, exampleCounter = 0;
+  let modelSeed = 7, exampleCounter = 0, training = false;
 
   function setStatus(text, kind = 'ready') { q('#neuralStatus').innerHTML = `<span class="status-dot ${kind}"></span>${text}`; }
   function log(text) { const box = q('#trainingLog'); box.textContent += `${text}\n`; box.scrollTop = box.scrollHeight; }
   function clearLog() { q('#trainingLog').textContent = ''; }
+  function clearMeasurements(reason = '') {
+    q('#trainProgress').style.width = '0';
+    for (const id of ['nearAcc','farAcc','trainAcc','trainLoss','trainTime']) q(`#${id}`).textContent = '—';
+    q('#distanceProfile').textContent = 'Train the current model to measure held-out accuracy separately at each distance.';
+    if (reason) setStatus(reason, 'ready');
+  }
+  function lockTrainingControls(locked) {
+    training = locked;
+    for (const selector of ['#trainBtn','#newExampleBtn','#resetNeuralBtn','#epochs','#recurrentSteps','#farExample','#neuralShuffle']) q(selector).disabled = locked;
+  }
 
   function init(seed, offset) { return tf.initializers.glorotUniform({ seed: seed + offset }); }
   function makeModel(steps = 6) {
@@ -126,8 +136,10 @@
   }
 
   async function train() {
-    q('#trainBtn').disabled = true; q('#newExampleBtn').disabled = true; clearLog(); setStatus(`training seeded model ${modelSeed}`, 'busy');
-    const epochs = +q('#epochs').value, trainData = tensorDataset(768, 2, 4, 400000 + modelSeed), started = performance.now();
+    if (training) return;
+    lockTrainingControls(true); clearLog(); clearMeasurements(); setStatus(`training seeded model ${modelSeed}`, 'busy');
+    const epochs = +q('#epochs').value, steps = layers.steps;
+    const trainData = tensorDataset(768, 2, 4, 400000 + modelSeed), started = performance.now();
     try {
       await model.fit(trainData.x, trainData.y, { epochs, batchSize: 32, shuffle: false, callbacks: {
         onEpochEnd: async (epoch, logs) => {
@@ -141,27 +153,31 @@
       await distanceProfile();
       q('#trainTime').textContent = `${((performance.now() - started) / 1000).toFixed(1)} s`;
       log('held-out distance profile computed with deterministic balanced datasets');
-      setStatus(`trained · seed ${modelSeed}`, 'ready'); await newExample();
+      setStatus(`trained · seed ${modelSeed} · ${epochs} epochs · ${steps} recurrent steps`, 'ready'); await newExample();
     } catch (err) {
       console.error(err); log(`error: ${err.message}`); setStatus('training error — see log', 'error');
     } finally {
-      trainData.x.dispose(); trainData.y.dispose(); q('#trainBtn').disabled = false; q('#newExampleBtn').disabled = false;
+      trainData.x.dispose(); trainData.y.dispose(); lockTrainingControls(false);
     }
   }
 
   q('#trainBtn').addEventListener('click', train);
   q('#newExampleBtn').addEventListener('click', newExample);
   q('#resetNeuralBtn').addEventListener('click', async () => {
-    modelSeed += 1; exampleCounter = 0; makeModel(+q('#recurrentSteps').value); q('#trainProgress').style.width = '0';
-    for (const id of ['nearAcc','farAcc','trainAcc','trainLoss']) q(`#${id}`).textContent = '—';
-    q('#distanceProfile').textContent = 'Train the model to measure held-out accuracy separately at each distance.';
-    clearLog(); setStatus(`new deterministic initialization · seed ${modelSeed}`, 'ready'); await newExample();
+    if (training) return;
+    modelSeed += 1; exampleCounter = 0; makeModel(+q('#recurrentSteps').value); clearLog(); clearMeasurements(`new deterministic initialization · seed ${modelSeed} · train to produce measurements`); await newExample();
   });
   q('#traceSlider').addEventListener('input', e => renderTrace(+e.target.value));
   q('#neuralShuffle').addEventListener('change', newExample); q('#farExample').addEventListener('change', newExample);
-  q('#epochs').addEventListener('input', e => q('[data-value="epochs"]').textContent = e.target.value);
+  q('#epochs').addEventListener('input', e => {
+    q('[data-value="epochs"]').textContent = e.target.value;
+    if (!training) clearMeasurements(`epoch setting changed to ${e.target.value} · train again to produce measurements`);
+  });
   q('#recurrentSteps').addEventListener('input', e => q('[data-value="recurrentSteps"]').textContent = e.target.value);
-  q('#recurrentSteps').addEventListener('change', async e => { makeModel(+e.target.value); clearLog(); setStatus(`architecture rebuilt · seed ${modelSeed}`, 'ready'); await newExample(); });
+  q('#recurrentSteps').addEventListener('change', async e => {
+    if (training) return;
+    makeModel(+e.target.value); clearLog(); clearMeasurements(`architecture rebuilt at ${e.target.value} recurrent steps · train to produce measurements`); await newExample();
+  });
 
-  tf.ready().then(async () => { q('#backend').textContent = tf.getBackend(); makeModel(+q('#recurrentSteps').value); setStatus(`ready · deterministic seed ${modelSeed}`, 'ready'); await newExample(); });
+  tf.ready().then(async () => { q('#backend').textContent = tf.getBackend(); makeModel(+q('#recurrentSteps').value); clearMeasurements(`ready · deterministic seed ${modelSeed} · untrained`); await newExample(); });
 })();
