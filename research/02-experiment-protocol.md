@@ -7,11 +7,22 @@ title: Experimental Program
 
 <div class="plain-box"><strong>Plain English:</strong> the lab does not assume that a pixel is one specific neural object. It compares multiple interpretations—scalar, vector, tensor, neural unit, attention module, memory object, subfield and beyond—then asks which combinations actually help representation, computation, memory, compression or reasoning.</div>
 
-The experiments are organized as a **family**, not a single linear architecture. Some run entirely in the browser; some need trained reference implementations; some belong later because they require larger compute or more careful benchmarks.
+The experiments are organized as a **family**, not a single linear architecture. Some run entirely in the browser; some have trainable CPU reference implementations; some belong later because they require larger compute or more careful benchmarks.
+
+## Status vocabulary
+
+```text
+LIVE / DYNAMICS       executable in the browser; not trained
+LIVE / TRAINED        trainable directly in the browser
+REFERENCE / TRAINED   executable training code in the repository
+PLANNED               specified research experiment, not yet implemented
+```
+
+That distinction matters. A working visualization demonstrates a mechanism; a trained reference demonstrates end-to-end learnability; neither is automatically a research result.
 
 ## Experiment 0 — Original multidimensional field dynamics
 
-**Status:** live in browser · hand-designed · no training required
+**Status:** LIVE / DYNAMICS
 
 The original 32×32 multidimensional field remains a useful mechanical laboratory.
 
@@ -27,11 +38,11 @@ It exposes:
 
 This experiment does not attempt to learn semantics. Its value is that every mechanism is visible and controllable.
 
-[Run the original field]({{ '/experiment/' | relative_url }}).
+[Run the original field]({{ '/experiment/#originalFieldLab' | relative_url }}).
 
 ## Experiment 1 — Pixel interpretation ladder
 
-**Status:** live in browser · pure JavaScript · no external ML runtime
+**Status:** LIVE / DYNAMICS · pure JavaScript · no external ML runtime
 
 Keep the visible grid fixed at 12×12 while changing the object stored at each address:
 
@@ -39,24 +50,24 @@ Keep the visible grid fixed at 12×12 while changing the object stored at each a
 |---|---:|---|
 | scalar | 1 value | local scalar diffusion |
 | vector | 8 values | coupled multidimensional state |
-| tensor | 4×4 = 16 values | internal tensor-neighborhood mixing + field messages |
+| tensor | 4×4 = 16 values | internal tensor-axis mixing + field messages |
 | neural unit | 8 values | shared tiny nonlinear network |
 | micro-transformer | 3 tokens × 6D | internal self-attention + neighbor message |
 | memory object | 8 fast + 8 slow | gated persistent state |
 | subfield | 3×3 inner field | internal diffusion + outer-field communication |
 
-The point is not to declare a winner from these hand-designed dynamics. The point is to make the **computational primitive itself experimentally variable**.
+The point is not to declare a winner from hand-designed dynamics. The point is to make the **computational primitive itself experimentally variable**.
 
 [Run the Pixel Universe]({{ '/experiment/#pixelUniverseLab' | relative_url }}).
 
 ## Experiment 2 — Learned vector field
 
-**Status:** live TensorFlow.js model + PyTorch reference implementation
+**Status:** LIVE / TRAINED in TensorFlow.js · REFERENCE / TRAINED in PyTorch
 
-This is the current trained baseline:
+This is the current trained vector baseline:
 
 ```text
-pixel = 12D learned vector
+pixel = learned vector
 communication = shared 3×3 convolution
 computation = recurrent local updates
 readout = global max pooling + classifier
@@ -68,38 +79,45 @@ This experiment answers a narrow question: can useful computation emerge from le
 
 It does **not** define MPF.
 
+[Train the browser vector field]({{ '/experiment/#neuralFieldLab' | relative_url }}).
+
 ## Experiment 3 — Flat vector versus tensor pixel
 
-**Status:** next trained comparison
+**Status:** REFERENCE / TRAINED prototype available · controlled multi-seed benchmark still planned
 
 Give each pixel the same number of scalar values but organize them differently.
 
-For example:
+The current CPU reference comparison uses:
 
 ```text
-Model A: x_ij ∈ R^64
-Model B: x_ij ∈ R^(8×8)
+Model A: 16D flat vector
+Model B: 4×4 latent tensor
 ```
 
-Match:
+The tensor update explicitly mixes its two internal axes as well as communicating over the outer field. It therefore does not merely rename 16 flat channels as a tensor.
+
+A stronger benchmark should match or report:
 
 - total scalar state;
-- trainable parameter count as closely as practical;
+- trainable parameter count;
 - update count;
-- task;
-- readout strength.
+- inference compute;
+- task and data;
+- readout strength;
+- multiple random seeds.
 
 Questions:
 
 - Does explicit internal factorization help?
-- Does the tensor develop interpretable rows/columns/subspaces?
+- Does the tensor develop interpretable rows, columns or factors?
 - Can structured operations beat flattening when storage is equal?
+- Does tensor structure support lower-rank or more efficient compression later?
 
-If the tensor is immediately flattened and processed identically to the vector, the experiment is meaningless. The tensor model needs operations that respect its internal axes.
+[Open the trainable primitive code](https://github.com/bitwikiorg/pixel-art-2026/blob/main/experiments/pixel_primitives.py).
 
 ## Experiment 4 — Neural-unit pixel
 
-**Status:** browser dynamics live · trained version next
+**Status:** LIVE / DYNAMICS · trained comparison planned
 
 Every pixel uses the same compact nonlinear update network.
 
@@ -117,7 +135,7 @@ This asks whether a location can become a **purposeful computational unit**, not
 
 ## Experiment 5 — Micro-transformer pixel
 
-**Status:** browser attention dynamics live · trained version next
+**Status:** LIVE / DYNAMICS + REFERENCE / TRAINED prototype · controlled comparison still planned
 
 Each pixel contains a small token set:
 
@@ -125,23 +143,42 @@ Each pixel contains a small token set:
 X_ij ∈ R^(K×D)
 ```
 
-Self-attention occurs inside the pixel. A compressed message connects it to neighbors.
+Self-attention occurs inside the pixel. A message connects it to other outer addresses.
 
-The first trained version should remain intentionally small, for example:
+The browser version uses three 6D internal tokens with tiny deterministic shared attention matrices so it remains fast and dependency-free.
+
+The CPU trainable reference uses:
 
 ```text
 12×12 outer field
-3–4 internal tokens / pixel
-16–32 dimensions / token
-1 shared attention block
-local outer communication
+2 internal tokens / pixel
+8 dimensions / token
+16 scalar state values / pixel
+shared tiny self-attention
+outer 3×3 communication
 ```
 
-The browser implementation uses tiny fixed shared Q/K/V/O matrices so the mechanism can run without training or a GPU. A research result requires learning those weights and comparing against matched controls.
+The reference uses a vectorized tiny attention implementation rather than launching a heavyweight Transformer for every pixel, keeping the experiment practical on CPU.
+
+[Open the trainable primitive code](https://github.com/bitwikiorg/pixel-art-2026/blob/main/experiments/pixel_primitives.py).
+
+## Current trainable primitive smoke test
+
+One fixed-seed CPU smoke run used the same 12×12 task, **16 scalar state values per pixel**, six recurrent updates, 15 epochs and 2,048 training examples.
+
+| Pixel interpretation | Parameters | Near-distance | Longer-distance | CPU train time* |
+|---|---:|---:|---:|---:|
+| flat 16D vector | 4,036 | 100.0% | 35.5% | 7.8 s |
+| 4×4 tensor | 4,588 | 91.8% | 28.1% | 12.9 s |
+| 2×8D micro-transformer | 3,396 | 88.3% | 48.8% | 22.0 s |
+
+\*Environment-specific wall-clock measurements.
+
+These numbers are **implementation smoke tests, not comparative conclusions**. The scalar state budget is matched, but parameters and compute are not yet matched and only one seed was run. The useful result is that all three interpretations train end-to-end under small CPU limits. The transformer run's stronger longer-distance score is now a specific hypothesis to investigate under repeated, matched experiments rather than a result to generalize from.
 
 ## Experiment 6 — Field Transformer: attention between pixels
 
-**Status:** planned comparison
+**Status:** PLANNED
 
 Invert Experiment 5.
 
@@ -166,7 +203,7 @@ Measure memory and compute carefully because global attention scales differently
 
 ## Experiment 7 — Hybrid pixel
 
-**Status:** planned after Experiments 3–6
+**Status:** PLANNED after Experiments 3–6
 
 Combine:
 
@@ -186,11 +223,11 @@ inside-pixel update
 → repeat
 ```
 
-This is closer to a general-purpose architecture than the current MPF-Local model, but it should only be introduced after the simpler factorizations are understood.
+This is closer to a general-purpose architecture than the current MPF-Local model, but the simpler factorizations should be understood first.
 
 ## Experiment 8 — Recursive pixel / field inside field
 
-**Status:** browser subfield dynamics live · trained recursive model planned
+**Status:** LIVE / DYNAMICS for a 3×3 subfield pixel · trained recursive model PLANNED
 
 The explicit recursive object is:
 
@@ -210,7 +247,7 @@ This is what can eventually make “recursive” or “fractal” operationally 
 
 ## Experiment 9 — Persistent memory pixel
 
-**Status:** fast/slow browser dynamics live · trained task planned
+**Status:** LIVE / DYNAMICS for fast/slow state · trained memory task PLANNED
 
 Separate state into components such as:
 
@@ -229,9 +266,9 @@ Then test selective forgetting, overwrite, interference and memory consolidation
 
 ## Experiment 10 — Learned semantic geography
 
-**Status:** planned
+**Status:** PLANNED
 
-The earlier experiments mostly assume where information enters the field. This experiment lets the model learn the placement or connectivity.
+The earlier experiments mostly assume where information enters the field. This experiment lets the model learn placement or connectivity.
 
 Compare:
 
@@ -246,7 +283,7 @@ The central question is whether **where information lives** becomes computationa
 
 ## Experiment 11 — Topology persistence
 
-**Status:** partially available now
+**Status:** controls partly LIVE now; matched trained comparison supported by the vector reference
 
 Compare:
 
@@ -255,13 +292,13 @@ Compare:
 | persistent grid | address + neighborhood | full spatial organization |
 | one fixed permutation | stable address, changed geometry | addressability versus Cartesian layout |
 | fresh permutation each step | no stable identity | dependence on persistent location |
-| random fixed graph | stable non-grid structure | whether “pixel” geometry is specifically useful |
+| random fixed graph | stable non-grid structure | whether specifically grid-like geometry is useful |
 
-The existing browser experiments already expose permutation controls; the stronger study trains matched models under each topology.
+The existing browser experiments expose permutation controls; the PyTorch vector model includes persistent, fixed-remapping and per-step-remapping modes.
 
 ## Experiment 12 — Recurrence and computational depth
 
-**Status:** current vector model supports depth changes
+**Status:** current vector and primitive references support depth changes
 
 For architectures that update repeatedly, measure:
 
@@ -281,7 +318,7 @@ Recurrence is one axis of the laboratory, not the defining axis.
 
 ## Experiment 13 — Ground-truth reasoning traces
 
-**Status:** planned
+**Status:** PLANNED
 
 Use tasks where intermediate computation is known.
 
@@ -296,7 +333,7 @@ This lets us compare field state through time with an explicit algorithmic trace
 
 ## Experiment 14 — Quantized pixel universe
 
-**Status:** planned reference implementation
+**Status:** PLANNED reference implementation
 
 Apply storage constraints to several pixel interpretations:
 
@@ -319,7 +356,7 @@ Richer pixels do not automatically compress information. In raw form they usuall
 
 ## Experiment 15 — Hyperdimensional and vector-symbolic pixel state
 
-**Status:** planned
+**Status:** PLANNED
 
 Use very high-dimensional distributed representations inside cells or regions and test operations such as binding, bundling and permutation.
 
@@ -333,7 +370,7 @@ This experiment concerns **dimensionality and representation algebra**.
 
 ## Experiment 16 — Hyperbolic semantic state
 
-**Status:** planned after hierarchy tasks exist
+**Status:** PLANNED after hierarchy tasks exist
 
 Hyperbolic geometry is a separate axis from dimensionality.
 
@@ -341,7 +378,7 @@ The first defensible test is to apply hyperbolic geometry only to hierarchy-rela
 
 ## Experiment 17 — Damage, repair and semantic regeneration
 
-**Status:** original browser field already supports damage
+**Status:** damage mechanism LIVE in the original browser field · trained semantic version PLANNED
 
 Damage a region or selected internal objects after useful state has formed.
 
@@ -357,7 +394,7 @@ Extend the test across vector, memory and recursive fields. Recovery of semantic
 
 ## Experiment 18 — Semantic Album
 
-**Status:** later-stage system experiment
+**Status:** PLANNED later-stage system experiment
 
 Make the persistent field itself a unit in a larger system.
 
@@ -387,21 +424,10 @@ The website should run mechanisms that remain responsive and inspectable on ordi
 - small grids;
 - small tensors;
 - tiny attention modules;
-- deterministic or hand-designed dynamics when training would be too expensive;
+- deterministic or hand-designed dynamics when browser training would be unnecessarily expensive;
 - one small TensorFlow.js trainable vector-field model.
 
-Training larger tensor, transformer, recursive and compression models belongs in the repository's Python experiments, where runs can be reproduced and logged without freezing the browser.
-
-The site should clearly label which experiments are:
-
-```text
-LIVE / TRAINED
-LIVE / DYNAMICS ONLY
-REFERENCE CODE
-PLANNED RESEARCH
-```
-
-so an executable visualization is never mistaken for an empirical result.
+The Python reference layer now covers trainable vector, tensor and micro-transformer pixels on CPU. Larger recursive, compression and benchmark models belong in the repository reference experiments, where runs can be reproduced and logged without freezing the browser.
 
 ## Measurements across the experiment family
 
@@ -410,28 +436,30 @@ Different pixel interpretations spend resources differently. For serious compari
 1. task performance;
 2. trainable parameters;
 3. scalar state per pixel and per field;
-4. approximate inference computation;
+4. inference computation / measured runtime;
 5. recurrent/update depth when relevant;
 6. actual stored bits for memory/compression experiments;
 7. robustness to topology changes or damage;
 8. out-of-distribution generalization;
-9. causal interventions on cells, regions or internal pixel components.
+9. causal interventions on cells, regions or internal pixel components;
+10. repeated random seeds.
 
-## A practical research sequence
+## Practical research sequence
 
-The current executable base is:
+The current executable base is now:
 
 ```text
 Original dynamics
 + Pixel interpretation ladder
 + Learned vector field
++ Trainable vector/tensor/micro-transformer CPU references
 ```
 
-The next three trained comparisons should be:
+The next controlled comparisons are:
 
 ```text
-1. flat vector vs tensor pixel
-2. neural-unit vs micro-transformer pixel
+1. flat vector vs tensor with matched parameter / compute views
+2. neural-unit pixel vs micro-transformer pixel
 3. attention inside pixels vs attention between pixels
 ```
 
@@ -443,7 +471,7 @@ persistent memory
 → learned semantic topology
 → quantization
 → hyperdimensional / hyperbolic representation
-→ semantic albums
+→ Semantic Albums
 ```
 
 That sequence preserves the full scope while keeping each experiment small enough to understand.
