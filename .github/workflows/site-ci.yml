@@ -3,7 +3,7 @@ name: Validate MPF Research Site
 on:
   push:
     branches:
-      - audit/site-render
+      - main
   pull_request:
     branches:
       - main
