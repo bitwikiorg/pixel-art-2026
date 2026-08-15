@@ -5,7 +5,48 @@ title: References
 
 # References
 
-Architectural ancestors come first, followed by memory, organization, discrete representation, geometry, vector-symbolic computing, recurrence, and recent reasoning work. Primary papers are paired with accessible technical sources where useful.
+Architectural ancestors are paired with measurement standards and primary technical sources where useful.
+
+## Color, colorimetry, light, and compositing
+
+### CIE — Colorimetry, 4th Edition (CIE 015:2018)
+**Relevance:** standard basis for tristimulus colorimetry, chromaticity, reference conditions, and color-difference work.
+
+- [CIE publication](https://www.cie.co.at/publications/colorimetry-4th-edition)
+
+### ISO/CIE 11664 series
+**Relevance:** standardized definitions and formulae for CIE tristimulus values, CIELAB, CIELUV, chromaticity coordinates, and CIEDE2000 color differences.
+
+- [CIE tristimulus values — ISO/CIE 11664-3](https://www.cie.co.at/publications/colorimetry-part-3-cie-tristimulus-values-2)
+- [CIELUV and u′,v′ — ISO/CIE 11664-5](https://www.cie.co.at/publications/colorimetry-part-5-cie-1976-luv-colour-space-and-u-v-uniform-chromaticity-scale-1)
+- [CIEDE2000 — ISO/CIE 11664-6](https://www.cie.co.at/publications/colorimetry-part-6-ciede2000-colour-difference-formula-1)
+
+### CIE International Lighting Vocabulary
+**Relevance:** controlled terminology for hue, lightness, chroma, saturation, radiometry, photometry, wavelength, transmittance, and related optical quantities.
+
+- [CIE e-ILV](https://www.cie.co.at/e-ilv)
+
+### W3C — CSS Color Module Level 4
+**Relevance:** explicit modern computational definitions and conversions among sRGB, linear RGB, HSL, HWB, Lab, LCH, OKLab, OKLCH, XYZ, alpha, and gamut handling.
+
+- [W3C Recommendation-track specification](https://www.w3.org/TR/css-color-4/)
+
+### W3C — Compositing and Blending Level 1
+**Relevance:** alpha compositing, premultiplied color, source/backdrop roles, layer order, and blend operations.
+
+- [W3C specification](https://www.w3.org/TR/compositing-1/)
+
+### NIST — CIE Fundamentals for Color Measurements
+**Relevance:** measurement-oriented treatment of colorimetry and the connection from physical spectral measurements to CIE coordinates.
+
+- [NIST publication](https://www.nist.gov/publications/cie-fundamentals-color-measurements-0)
+
+### NIST — Optical radiometry and polarization metrology
+**Relevance:** rigorous definitions and measurement practices for radiometric quantities and polarization, which must remain distinct from ordinary RGB state.
+
+- [Principles of Optical Radiometry and Measurement Uncertainty](https://www.nist.gov/publications/principles-optical-radiometry-and-measurement-uncertainty)
+- [Optical Polarization Metrology](https://www.nist.gov/programs-projects/optical-polarization-metrology)
+- [Fundamental Physical Constants](https://physics.nist.gov/cuu/Constants/introduction.html)
 
 ## Local recurrent fields
 
