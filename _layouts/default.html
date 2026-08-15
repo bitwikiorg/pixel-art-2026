@@ -11,13 +11,14 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/atlas.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/clarity.css' | relative_url }}">
   {% if page.styles %}{% for style in page.styles %}<link rel="stylesheet" href="{{ style | relative_url }}">{% endfor %}{% endif %}
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="site-header"><div class="header-inner"><a class="brand" href="{{ '/' | relative_url }}" aria-label="Pixel Photon Lab home"><span class="brand-mark" aria-hidden="true"></span><span><strong>PIXEL PHOTON LAB</strong><small>Multidimensional Pixel Fields · 2026</small></span></a><nav class="top-nav" aria-label="Primary"><a href="{{ '/learn/' | relative_url }}">Start here</a><a href="{{ '/experiment/' | relative_url }}">Experiments</a><a href="{{ '/research/' | relative_url }}">Research</a><a href="{{ '/glossary/' | relative_url }}">Glossary</a><a href="https://github.com/bitwikiorg/pixel-art-2026">Code</a></nav></div></header>
+  <header class="site-header"><div class="header-inner"><a class="brand" href="{{ '/' | relative_url }}" aria-label="Pixel Photon Lab home"><span class="brand-mark" aria-hidden="true"></span><span><strong>PIXEL PHOTON LAB</strong><small>Multidimensional Pixel Fields · 2026</small></span></a><nav class="top-nav" aria-label="Primary"><a href="{{ '/learn/' | relative_url }}">Foundations</a><a href="{{ '/experiment/' | relative_url }}">Experiments</a><a href="{{ '/research/' | relative_url }}">Research</a><a href="{{ '/glossary/' | relative_url }}">Glossary</a><a href="https://github.com/bitwikiorg/pixel-art-2026">Code</a></nav></div></header>
   <main id="main-content">{{ content }}</main>
-  <footer class="site-footer"><div><strong>Pixel Photon Lab</strong><br><span>Carrier → interpretation → computation. Account for every stored bit and learned parameter.</span></div><div class="footer-links"><a href="{{ '/experiment/' | relative_url }}">Experiment Atlas</a><a href="{{ '/learn/' | relative_url }}">Start here</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="https://github.com/bitwikiorg/pixel-art-2026/issues">Research log</a></div></footer>
+  <footer class="site-footer"><div><strong>Pixel Photon Lab</strong><br><span>pixel = address + finite carrier state + interpretation</span></div><div class="footer-links"><a href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a href="{{ '/experiment/' | relative_url }}">Experiments</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="https://github.com/bitwikiorg/pixel-art-2026">Source</a></div></footer>
   <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
   {% if page.tfjs %}<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>{% endif %}
   {% if page.scripts %}{% for script in page.scripts %}<script src="{{ script | relative_url }}" defer></script>{% endfor %}{% endif %}
