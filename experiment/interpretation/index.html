@@ -4,36 +4,54 @@ title: Pixel Interpretation Sandbox
 exp_id: "06"
 status: "FIXED RULES · LIVE"
 category: "Representation"
-question: "What changes when the outer spatial address stays fixed but the mathematical object stored at each address changes?"
-explanation: "A 12×12 outer field is reused while one address is interpreted in seven different ways: scalar, vector, tensor, fixed neural state, internal token set, fast/slow memory, or a 3×3 inner field. The purpose is to make the representational differences concrete before comparing learned models."
-deck: "Hold the outer address space fixed and change the object associated with every address."
+question: "What changes when the outer spatial address stays fixed but the finite object stored at each address changes?"
+explanation: "The first layer compares concrete data types—bit, integer, RGB tuple, indexed color, hash fragment, float vector, tensor, token set, and memory state—with explicit raw state costs. The live mechanics layer then keeps a 12×12 outer field fixed while changing the active object and update factorization at every address."
+deck: "Hold the outer address space fixed and change the finite object associated with every address."
 source: "12×12 visible addresses with seeded initial state"
-interpretation: "seven alternative cell types"
+interpretation: "finite data types + seven active cell structures"
 learned: "No · all matrices/rules are fixed and seeded"
-measure: "stored scalar count and inspectable state evolution"
-shows: "The computational object at a spatial address can be factored in genuinely different ways."
-does_not_show: "Usefulness, learning, compression, semantic specialization or reasoning. This is a mechanics demonstrator."
+measure: "state cost, internal organization, and inspectable dynamics"
+shows: "Different finite mathematical objects and update factorizations can occupy the same outer address under explicit accounting."
+does_not_show: "Learning, superiority, compression, semantic specialization or reasoning. This is a representation and mechanics demonstrator."
 steps:
-  - label: "Choose an internal object"
-    text: "Keep the 144 outer addresses fixed while changing the shape and operator inside every address."
-  - label: "Inspect one address"
-    text: "Read the actual stored scalar count, internal matrix or token structure, and the visible projection used to draw the field."
-  - label: "Apply fixed dynamics"
-    text: "Run seeded hand-written update rules and compare state evolution without attributing the behavior to training."
+  - label: "Compare finite states"
+    text: "Keep one address conceptually fixed while changing its stored object and raw bit/state cost: binary, integer, color, identifiers, vectors, tensors, tokens, or memory."
+  - label: "Choose an active object"
+    text: "Keep all 144 outer addresses fixed while changing the shape and operator used by the live field."
+  - label: "Inspect state and projection"
+    text: "Read the stored scalar count and internal structure, then compare it with the RGB projection used to draw that richer state on screen."
 technical: |
-  A vector with eight components and a 4×4 tensor with sixteen components differ both in scalar count and internal factorization. A fair performance comparison therefore requires separate equal-state and equal-resource protocols; the sandbox only exposes mechanics.
+  A data type and an active computational architecture are related but not identical. An RGB888 pixel is a 24-bit stored tuple. A 4×4 fp16 tensor is 256 raw state bits. A three-token, six-dimensional fp16 token set is 288 raw bits before any model parameters are counted.
 
-  The neural mode executes a shared deterministic nonlinear transform. The token mode executes real attention mathematics over three internal six-dimensional tokens. Their weights are seeded constants, so neither mode demonstrates learning.
+  Indexed color demonstrates shared side information directly: a 2-bit pixel can select one of four colors, but an instance-specific four-entry RGB888 palette costs another 96 bits. If the palette is universal or deterministically derived from already-counted state, that cost is shared or derived rather than new independent source information.
 
-  The subfield mode makes the nesting explicit: one outer address contains a 3×3 inner grid. That is a useful structural primitive, but genuine recursive architecture would additionally reuse a common interface or operator across levels and measure whether the reuse improves generalization, computation, or storage.
+  The live neural mode executes a shared deterministic nonlinear transform. The token mode executes real attention mathematics over three internal six-dimensional tokens. Their weights are seeded constants, so neither mode demonstrates learning.
+
+  The subfield mode makes nesting explicit: one outer address contains a 3×3 inner grid. Genuine recursive architecture would additionally reuse a common interface or operator across levels and measure whether that reuse improves generalization, computation, or storage.
 scripts:
   - /assets/js/pixel-universe.js
 ---
 <section>
+  <div class="section-head"><div class="kicker">Finite state at one address</div><h2>One coordinate can carry many explicitly bounded objects.</h2></div>
+  <div class="state-specimen-grid">
+    <article class="state-specimen"><div class="specimen-top"><h3>bit</h3><span class="state-cost">1 bit</span></div><div class="state-value">1</div><p>Two possible stored states.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>uint8 integer</h3><span class="state-cost">8 bits</span></div><div class="state-value">173</div><p>256 possible integer values at the same address.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>RGB888 tuple</h3><span class="state-cost">24 bits</span></div><div class="state-value rgb-visual"></div><p>`(44, 167, 145)` is three stored 8-bit channels, not a projection.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>indexed color</h3><span class="state-cost">2 bits + palette</span></div><div class="state-value index-visual">{% for i in (1..16) %}<i></i>{% endfor %}</div><p>Index `2` selects one of four colors. An instance-specific RGB palette would add 96 bits.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>hash fragment</h3><span class="state-cost">16 bits</span></div><div class="state-value">0xA6F3</div><p>A fixed-width identifier fragment can support lookup or routing without pretending to be a full hash.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>float vector</h3><span class="state-cost">8×fp32 = 256 bits</span></div><div class="state-value vector-visual"></div><p>Eight continuous components; a visible RGB square can show only a projection.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>tensor</h3><span class="state-cost">4×4×fp16 = 256 bits</span></div><div class="state-value tensor-visual">{% for i in (1..16) %}<i></i>{% endfor %}</div><p>Sixteen values with explicit 2D internal factorization.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>token set</h3><span class="state-cost">3×6×fp16 = 288 bits</span></div><div class="state-value token-visual"><i></i><i></i><i></i></div><p>Three internal tokens can interact before emitting an outer message.</p></article>
+    <article class="state-specimen"><div class="specimen-top"><h3>memory state</h3><span class="state-cost">16×fp16 = 256 bits</span></div><div class="state-value">[ fast₈ | slow₈ ]</div><p>Two temporal roles share one spatial address.</p></article>
+  </div>
+</section>
+
+<section style="margin-top:48px">
+  <div class="section-head"><div class="kicker">Active mechanics</div><h2>Richer objects can also carry their own internal computation.</h2></div>
   <div class="interpretation-ladder" aria-label="Pixel interpretation ladder"><div><strong>scalar</strong><small>1 value</small></div><div><strong>vector</strong><small>8D</small></div><div><strong>tensor</strong><small>4×4</small></div><div><strong>neural</strong><small>shared fixed MLP</small></div><div><strong>tokens</strong><small>3×6D attention</small></div><div><strong>memory</strong><small>8 fast + 8 slow</small></div><div><strong>subfield</strong><small>3×3 inner grid</small></div></div>
 </section>
 <section class="pixel-universe-grid" style="margin-top:18px">
   <aside class="panel"><h2>Internal object</h2><div class="pixel-mode-list"><button class="pixel-mode active" data-pixel-mode="scalar">Scalar</button><button class="pixel-mode" data-pixel-mode="vector">Vector</button><button class="pixel-mode" data-pixel-mode="tensor">Tensor · 4×4</button><button class="pixel-mode" data-pixel-mode="neural">Fixed neural unit</button><button class="pixel-mode" data-pixel-mode="transformer">Fixed micro-transformer</button><button class="pixel-mode" data-pixel-mode="memory">Fast/slow memory</button><button class="pixel-mode" data-pixel-mode="subfield">3×3 subfield</button></div><div class="cta-row"><button id="pixelUniverseRun" class="btn primary">Run</button><button id="pixelUniverseStepBtn" class="btn">Step</button><button id="pixelUniverseReset" class="btn">Reset</button><button id="pixelUniverseInject" class="btn secondary">Inject signal</button></div></aside>
-  <section class="lab-card"><div class="kicker">Selected primitive</div><h2 id="pixelModeTitle">Scalar pixel</h2><p id="pixelModeDesc" class="lab-explain"></p><code id="pixelModeFormula" class="universe-formula"></code><div class="lab-canvas-wrap pixel-universe-canvas"><div class="overlay-label">12×12 ADDRESSES · STEP <span id="pixelUniverseStep">0</span></div><canvas id="pixelUniverseCanvas"></canvas></div><p class="lab-explain">Color is a low-dimensional projection of the stored state.</p></section>
+  <section class="lab-card"><div class="kicker">Selected primitive</div><h2 id="pixelModeTitle">Scalar pixel</h2><p id="pixelModeDesc" class="lab-explain"></p><code id="pixelModeFormula" class="universe-formula"></code><div class="lab-canvas-wrap pixel-universe-canvas"><div class="overlay-label">12×12 ADDRESSES · STEP <span id="pixelUniverseStep">0</span></div><canvas id="pixelUniverseCanvas"></canvas></div><p class="lab-explain">The RGB square is a projection of the active state. It is not the complete vector, tensor, token set, memory object, or subfield.</p></section>
   <aside class="panel"><h2>Selected address</h2><div id="pixelInspector"></div><div class="metrics"><div class="metric"><small>SCALARS / PIXEL</small><strong id="pixelModeDims">1</strong></div><div class="metric"><small>FIELD SCALARS</small><strong id="pixelModeScalars">144</strong></div></div><div class="method-box" style="margin-top:14px"><strong>Fixed parameters.</strong> Neural and attention modes perform nonlinear computation with deterministic seeded weights. No objective or training data selected those weights.</div></aside>
 </section>
