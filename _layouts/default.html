@@ -27,7 +27,7 @@
       <nav id="primary-navigation" class="top-nav" aria-label="Primary">
         <a href="{{ '/learn/' | relative_url }}"{% if page.url contains '/learn/' %} class="active" aria-current="page"{% endif %}>Foundations</a>
         <a href="{{ '/experiment/' | relative_url }}"{% if page.url contains '/experiment/' or page.url == '/carrier/' %} class="active" aria-current="page"{% endif %}>Experiments</a>
-        <a href="{{ '/research/' | relative_url }}"{% if page.url contains '/research/' and page.url contains '/research/04-references/' == false %} class="active" aria-current="page"{% endif %}>Research</a>
+        <a href="{{ '/research/' | relative_url }}"{% if page.url contains '/research/' %}{% unless page.url contains '/research/04-references/' %} class="active" aria-current="page"{% endunless %}{% endif %}>Research</a>
         <a href="{{ '/glossary/' | relative_url }}"{% if page.url contains '/glossary/' %} class="active" aria-current="page"{% endif %}>Glossary</a>
         <a href="{{ '/research/04-references/' | relative_url }}"{% if page.url contains '/research/04-references/' %} class="active" aria-current="page"{% endif %}>References</a>
         <a class="nav-code" href="https://github.com/bitwikiorg/pixel-art-2026">Code</a>
