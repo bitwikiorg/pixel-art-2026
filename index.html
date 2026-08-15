@@ -1,11 +1,48 @@
 ---
 layout: default
 title: Pixel Photon Lab
-description: One pixel, many possible computational interpretations—tested from exact binary carriers through learned and recursive fields.
+description: Computational pixels as finite spatial addresses whose state and interpretation can be changed, measured, and compared.
 ---
-<section class="hero"><div class="eyebrow">Open research laboratory · representation · computation · memory</div><h1>One pixel. Many possible universes.</h1><p class="hero-deck">Pixel Photon Lab studies a precise question: what happens when a pixel is treated as a general-purpose information carrier and computational address rather than being defined in advance as only a color value? The object at an address may be a bit, vector, tensor, memory, token set, neural process or nested field—but every real implementation has finite bits, parameters and compute.</p><div class="hero-actions"><a class="btn primary" href="{{ '/carrier/' | relative_url }}">Start with 256 real bits</a><a class="btn secondary" href="{{ '/experiment/' | relative_url }}">Open Experiment Atlas</a><a class="btn" href="{{ '/research/' | relative_url }}">Research library</a></div></section>
-<section class="section"><div class="big-question"><div><div class="kicker">The invariant</div><h2>Address + carrier + interpretation.</h2><p class="scope-statement">A visible pixel is an address. The carrier state at that address is finite. An interpreter determines what that state means and how it participates in a larger system.</p><p>The laboratory changes one layer at a time so we can tell whether an effect comes from encoding, representation, topology, computation, memory or learning.</p></div><div class="formula-box">pixel = address + carrier state + interpretation<br><br>bit → vector → tensor → hypervector → token set → memory → subfield<br><br>visible RGB/BW = one projection, not the accounting ledger</div></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">Scientific progression</div><h2>Do not jump from a colored square to “reasoning.”</h2></div><p class="section-intro">The site now follows one continuous chain. Each stage adds a capability that can be measured independently.</p></div><div class="path-strip"><a class="path-step" href="{{ '/carrier/' | relative_url }}"><span>01</span><strong>bit → carrier</strong></a><a class="path-step" href="{{ '/experiment/reliability/' | relative_url }}"><span>02</span><strong>carrier → robust channel</strong></a><a class="path-step" href="{{ '/experiment/hypervector/' | relative_url }}"><span>05</span><strong>carrier → representation</strong></a><a class="path-step" href="{{ '/experiment/webgpu/' | relative_url }}"><span>08</span><strong>representation → computation</strong></a><a class="path-step" href="{{ '/experiment/memory/' | relative_url }}"><span>03</span><strong>state → memory</strong></a></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">Evidence labels</div><h2>Every experiment says what kind of evidence it is.</h2></div><p class="section-intro">Mechanics demos are useful, but they are not trained results. Learned models are useful, but task accuracy is not automatically evidence for MPF. Exact codecs and GPU operators have different correctness criteria again.</p></div><div class="card-grid"><article class="concept-card"><span class="num">EXACT</span><h3>Codec / deterministic identity</h3><p>Round-trip or CPU↔GPU correctness can be asserted exactly.</p></article><article class="concept-card"><span class="num">LEARNED</span><h3>Train / test protocol</h3><p>Held-out metrics, seeds, baselines and resource counts are required.</p></article><article class="concept-card"><span class="num">MECHANICS</span><h3>Visualization only</h3><p>Shows how an operator behaves; never presented as evidence of usefulness.</p></article></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">Experiment Atlas</div><h2>The zoo, organized.</h2></div><p class="section-intro">Independent pages prevent a codec, memory system, neural model and hand-designed dynamics toy from being mistaken for one architecture.</p></div><div class="atlas-grid">{% for exp in site.data.experiments limit:6 %}<article class="atlas-card"><div class="experiment-meta"><span class="exp-number">{{ exp.id }}</span><span class="exp-status">{{ exp.status_label }}</span></div><h3>{{ exp.title }}</h3><p>{{ exp.shows }}</p><div class="atlas-fact"><strong>Measure:</strong> {{ exp.measure }}</div><a class="card-link" href="{{ exp.url | relative_url }}">Open →</a></article>{% endfor %}</div><div class="hero-actions"><a class="btn primary" href="{{ '/experiment/' | relative_url }}">See all experiments</a></div></section>
-<section class="section"><div class="plain-box"><strong>Pixel Photon is a computational analogy, not a claim about photon physics.</strong> The useful analogy is only that an observed projection need not exhaust the state used by a system. “Many possible universes” means an open-ended architecture/type space—not infinite physical storage.</div></section>
+<section class="hero">
+  <div class="eyebrow">Representation · memory · computation · compression</div>
+  <h1>One pixel. Many possible computational objects.</h1>
+  <p class="hero-deck">A conventional pixel stores a display value at a position. A computational pixel keeps the position but allows the finite object at that address to change: a bit, vector, tensor, distributed code, memory state, token set, neural state, or nested field.</p>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Experiments</a><a class="btn" href="{{ '/research/00-research-thesis/' | relative_url }}">Research thesis</a></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Computational pixel</div><h2>Address + finite state + interpretation.</h2></div>
+  <p class="core-note">The address says <em>where</em> the object lives. The carrier state says <em>what is physically represented</em>. The interpretation determines <em>what that state means and what operations can act on it</em>. Changing the interpretation can change the computation without changing the outer spatial address.</p>
+  <div class="equation">pixel = address + carrier state + interpretation<br><br>F[i,j] = O_ij<br><br>O_ij ∈ {bit, scalar, vector, tensor, hypervector, token set, memory, neural state, subfield, ...}</div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Finite ground truth</div><h2>A 16×16 black-and-white field contains 256 source bits.</h2></div>
+  <p class="core-note">Black can represent 0 and white can represent 1. Reading the 256 addresses in row-major order produces a 256-bit stream, which packs into 32 bytes. The bitmap, bit matrix, byte sequence, and hexadecimal string are losslessly related descriptions of the same finite object.</p>
+  <div class="concept-stack">
+    <div class="concept-row"><div class="concept-key">16 × 16</div><div><h3>256 binary addresses</h3><p>Each address contributes exactly one source bit. No hidden dimensions or learned parameters are required.</p></div></div>
+    <div class="concept-row"><div class="concept-key">256 bits</div><div><h3>32 packed bytes</h3><p>Eight adjacent bits form one byte. Exact packing and unpacking give a reference case where information accounting is unambiguous.</p></div></div>
+    <div class="concept-row"><div class="concept-key">same source</div><div><h3>Image, data, or computational field</h3><p>The source bits do not change when their interpretation changes. A visible pattern is one projection of the same addressable information.</p></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Added capability</div><h2>Every added mechanism has a measurable cost and effect.</h2></div>
+  <div class="concept-stack">
+    <div class="concept-row"><div class="concept-key">Robustness</div><div><h3>Redundancy can repair corrupted bits.</h3><p>Hamming(7,4) expands four source bits to seven transmitted bits. Recovery improves because extra coded bits are carried through the channel.</p></div></div>
+    <div class="concept-row"><div class="concept-key">Representation</div><div><h3>A field can be recoded into distributed state.</h3><p>Coordinate and value bindings can be bundled into a high-dimensional hypervector. Retrieval accuracy and storage grow with dimension; the original source information does not.</p></div></div>
+    <div class="concept-row"><div class="concept-key">Memory</div><div><h3>A field can become an attractor state.</h3><p>A Hopfield memory stores relationships in its weight matrix and can move a corrupted state toward a stored pattern. The weights are part of the memory cost.</p></div></div>
+    <div class="concept-row"><div class="concept-key">Computation</div><div><h3>Spatial state can be operated on directly.</h3><p>Binary neighborhood operators such as dilation and edge detection can run over the same address field on a CPU reference or a WebGPU compute shader.</p></div></div>
+    <div class="concept-row"><div class="concept-key">Learning</div><div><h3>Update rules can be optimized from data.</h3><p>Learned local fields and masked reconstruction models are evaluated on held-out examples. Accuracy measures the trained model under its protocol, not automatic superiority of the pixel representation.</p></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div class="kicker">Accounting</div><h2>More state is not more source information.</h2></div>
+  <p class="core-note">A deterministic expansion from 256 source bits to a 4,096-dimensional representation may improve separability, robustness, retrieval, or computation. It does not create 4,096 independent source bits. Storage and computation must include hidden state, metadata, codebooks, shared parameters, and other side information.</p>
+  <div class="equation">system cost = carrier + hidden state + metadata + side information + model cost</div>
+</section>
+
+<section class="section">
+  <div class="plain-box"><strong>Pixel Photon is a computational analogy.</strong> Photons can be characterized by properties such as frequency, phase, polarization, momentum, helicity, path, and spatial mode. The analogy is limited to the idea that an observed projection need not exhaust the state used by an information-processing system. Every computational implementation here remains finite.</div>
+</section>
