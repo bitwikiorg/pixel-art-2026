@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Research Library
-description: Research on Pixel Photon carriers and Multidimensional Pixel Fields: representation, computation, memory, compression, scale, geometry, generation and reasoning.
+description: "Research on Pixel Photon carriers and Multidimensional Pixel Fields: representation, computation, memory, compression, scale, geometry, generation and reasoning."
 ---
 <div class="page-shell">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Research</span></nav>
