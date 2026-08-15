@@ -1,20 +1,20 @@
 ---
 layout: default
 title: Pixel Photon Lab
-description: Computational pixels as finite spatial addresses whose stored state, derived measurements, physical context, and computational interpretation can be separated and tested.
+description: Computational pixels as finite spatial addresses whose stored state, derived measurements, physical context, generative process, and computational interpretation can be separated and tested.
 ---
 <section class="hero">
   <div class="eyebrow">Representation · memory · computation · compression</div>
   <h1>A pixel is an address whose state can change type.</h1>
-  <p class="hero-deck">Black and white give the smallest visible carrier: one bit per address. Color expands the finite state alphabet. Vectors, tensors, token sets, memory, and other computational objects extend it further. Each extension has an explicit storage cost, interpretation, and measurable effect.</p>
-  <div class="hero-actions"><a class="btn primary" href="{{ '/learn/' | relative_url }}">Foundations</a><a class="btn" href="{{ '/research/11-color-light-state/' | relative_url }}">Color & light</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Experiments</a></div>
+  <p class="hero-deck">Black and white give the smallest visible carrier: one bit per address. Color expands the finite state alphabet. Vectors, tensors, token sets, memory, and other computational objects extend it further. Pixels can also be constructed by shared programs, layers, fields, and dynamics. Each extension has an explicit storage cost, interpretation, and measurable effect.</p>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/learn/' | relative_url }}">Foundations</a><a class="btn" href="{{ '/experiment/color-carrier/' | relative_url }}">Color carrier</a><a class="btn" href="{{ '/experiment/' | relative_url }}">Experiments</a></div>
 </section>
 
 <section class="section">
   <div class="section-head"><div class="kicker">Carrier progression</div><h2>Binary establishes the baseline. Color opens a larger state space.</h2></div>
   <div class="progression">
     <article class="progression-card"><small>01 · BINARY</small><h3>Black or white</h3><p>One address stores one bit: `0` or `1`. Packing, decoding, corruption, and recovery can be tested exactly.</p></article>
-    <article class="progression-card color-stage"><small>02 · COLOR</small><h3>Finite color state</h3><div class="color-bar" aria-hidden="true"></div><p>RGB888 stores 24 bits per address. Indexed color stores a smaller index plus palette information. Hue, Lab, XYZ, and other coordinates may describe the same color state without adding independent source information.</p></article>
+    <article class="progression-card color-stage"><small>02 · COLOR</small><h3>Finite color state</h3><div class="color-bar" aria-hidden="true"></div><p>RGB888 stores 24 bits per address. Indexed color stores a smaller index plus palette information. Hue, Lab, XYZ, and other coordinates may describe the same color state without adding independent source information. <a href="{{ '/experiment/color-carrier/' | relative_url }}">Inspect one color →</a></p></article>
     <article class="progression-card"><small>03 · COMPUTATIONAL OBJECT</small><h3>Structured internal state</h3><p>An address can hold an integer, hash fragment, vector, tensor, token set, memory state, or another finite object when its representation and cost are defined.</p></article>
   </div>
 </section>
@@ -45,6 +45,7 @@ description: Computational pixels as finite spatial addresses whose stored state
     <div class="concept-row"><div class="concept-key">ROBUSTNESS</div><div><h3>Redundancy can repair corruption.</h3><p>Error correction improves recovery by carrying additional coded state. The extra bits are part of the cost.</p></div></div>
     <div class="concept-row"><div class="concept-key">MEMORY</div><div><h3>Persistent state can support retrieval.</h3><p>Memory requires successful write, delay or interference, and later query—not merely hidden activation during one forward pass.</p></div></div>
     <div class="concept-row"><div class="concept-key">COMPUTATION</div><div><h3>Spatial relationships can participate causally.</h3><p>Neighborhoods, regions, direction, scale, and topology become useful only when controlled interventions show that those relationships affect the result.</p></div></div>
+    <div class="concept-row"><div class="concept-key">GENERATION</div><div><h3>Programs and fields can construct pixels.</h3><p>Seeds, symmetry, cellular rules, vector fields, shaders, palettes, layers, and time can generate a raster from smaller persistent state plus a shared decoder. <a href="{{ '/research/12-generative-pixel-engineering/' | relative_url }}">Generative pixel engineering →</a></p></div></div>
     <div class="concept-row"><div class="concept-key">LEARNING</div><div><h3>Operators can be optimized from data.</h3><p>Learned fields are compared on held-out tasks with resource controls, repeated seeds, and baselines. More dimensions alone do not establish an advantage.</p></div></div>
     <div class="concept-row"><div class="concept-key">COMPRESSION</div><div><h3>Useful structure can reduce total description cost.</h3><p>Carrier bits, codebooks, palettes, metadata, model parameters, hidden state, and interpreters must all be counted under a declared accounting rule.</p></div></div>
   </div>
