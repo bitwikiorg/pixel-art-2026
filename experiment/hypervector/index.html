@@ -4,13 +4,28 @@ title: Hypervector Field
 exp_id: "05"
 status: "HDC / VSA · LIVE"
 category: "Representation"
-deck: "Bind each pixel's x-coordinate, y-coordinate and bit value into a bipolar hypervector, bundle all 256 bindings, then query individual addresses back from the distributed representation."
+question: "Can all 256 address-value pairs in a binary field be bundled into one distributed vector and queried back with useful accuracy?"
+explanation: "Each x-coordinate, y-coordinate, and binary value receives a deterministic bipolar hypervector. Binding combines the three roles for one address; bundling adds all 256 bound vectors into one distributed field representation. A query reverses the coordinate binding and asks whether 0 or 1 is more similar to the recovered value."
+deck: "Coordinate/value bindings turn an exact binary field into an approximate distributed representation."
 source: "256 source bits"
 interpretation: "distributed hypervector"
 learned: "No · deterministic shared codebook"
 measure: "address-query accuracy versus dimension"
 shows: "A field can be recoded into a high-dimensional distributed representation with measurable cross-talk and retrieval accuracy."
 does_not_show: "More independent source information. The 256 input bits generate the hypervector through a shared deterministic interpreter."
+steps:
+  - label: "Bind each address"
+    text: "Combine the x-role, y-role, and bit-value hypervectors elementwise so every location produces a distributed address-value binding."
+  - label: "Bundle the field"
+    text: "Add all 256 bindings componentwise. The resulting vector superposes the whole field and therefore contains interference from many items."
+  - label: "Query and sweep"
+    text: "Unbind a selected coordinate, compare its recovered vector with the 0 and 1 codewords, and repeat across every address and several dimensions."
+technical: |
+  Hyperdimensional computing uses high-dimensional distributed vectors with algebraic operations such as binding, bundling, and similarity. With bipolar vectors in `{-1,+1}^D`, elementwise multiplication is a convenient self-inverse binding operation.
+
+  A conceptual encoding for one address is `h_xyv = X_x ⊙ Y_y ⊙ V_v`. The whole field is the bundle `H = Σ_{x,y} h_xyv`. Querying `(x,y)` multiplies `H` by `X_x ⊙ Y_y`; the intended value vector is recovered together with crosstalk from the other 255 bindings. Similarity to `V_0` and `V_1` determines the decoded bit.
+
+  Increasing `D` generally makes unrelated random vectors more nearly orthogonal and can reduce retrieval crosstalk, but it also increases stored derived state. The 256 source bits remain the independent input information; the hypervector and shared role codebook are additional representational resources.
 styles:
   - /assets/css/carrier.css
 scripts:
@@ -18,6 +33,6 @@ scripts:
   - /assets/js/hypervector-lab.js
 ---
 <div data-hypervector-lab>
-  <section class="lab-two"><div class="lab-module"><div class="lab-label">Source field</div><div id="hvSourceGrid" class="binary-grid small"></div><div class="lab-controls" style="margin-top:12px"><button class="btn" data-hv-preset="smile">Smile</button><button class="btn" data-hv-preset="checker">Checker</button><button class="btn" data-hv-preset="frame">Frame</button></div></div><div class="lab-module"><div class="lab-controls"><label>Dimension <select id="hvDim"><option>256</option><option>512</option><option>1024</option><option>2048</option><option selected>4096</option></select></label><button id="hvBuild" class="btn primary">Build hypervector</button><label>x <input id="hvX" type="number" min="0" max="15" value="4"></label><label>y <input id="hvY" type="number" min="0" max="15" value="4"></label><button id="hvQuery" class="btn">Query address</button></div><div class="information-ledger" style="margin-top:14px"><div><small>FULL QUERY ACCURACY</small><strong id="hvAccuracy">—</strong></div><div><small>SOURCE</small><strong>256 bits</strong></div></div><div id="hvQueryStatus" class="lab-status"></div><div class="lab-status"><span id="hvLogical"></span><br><span id="hvBrowser"></span></div></div></section>
-  <section class="lab-module"><div class="lab-label">Dimension sweep</div><p>Cross-talk should generally fall as the representation dimension grows, but storage grows too.</p><button id="hvRunSweep" class="btn">Run 256D → 4096D sweep</button><pre id="hvSweep" class="carrier-code" style="min-height:100px">No sweep yet.</pre></section>
+  <section class="lab-two"><div class="lab-module"><div class="lab-label">Binary source field</div><div id="hvSourceGrid" class="binary-grid small"></div><div class="lab-controls" style="margin-top:12px"><button class="btn" data-hv-preset="smile">Smile</button><button class="btn" data-hv-preset="checker">Checker</button><button class="btn" data-hv-preset="frame">Frame</button></div></div><div class="lab-module"><div class="lab-controls"><label>Dimension <select id="hvDim"><option>256</option><option>512</option><option>1024</option><option>2048</option><option selected>4096</option></select></label><button id="hvBuild" class="btn primary">Build hypervector</button><label>x <input id="hvX" type="number" min="0" max="15" value="4"></label><label>y <input id="hvY" type="number" min="0" max="15" value="4"></label><button id="hvQuery" class="btn">Query address</button></div><div class="information-ledger" style="margin-top:14px"><div><small>FULL QUERY ACCURACY</small><strong id="hvAccuracy">—</strong></div><div><small>SOURCE</small><strong>256 bits</strong></div></div><div id="hvQueryStatus" class="lab-status"></div><div class="lab-status"><span id="hvLogical"></span><br><span id="hvBrowser"></span></div></div></section>
+  <section class="lab-module"><div class="lab-label">Retrieval versus dimension</div><p>Higher dimension can reduce crosstalk because independently generated codewords become easier to distinguish, while representation storage increases proportionally with dimension.</p><button id="hvRunSweep" class="btn">Run 256D → 4096D sweep</button><pre id="hvSweep" class="carrier-code" style="min-height:100px">No sweep yet.</pre></section>
 </div>
