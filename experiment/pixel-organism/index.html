@@ -4,6 +4,8 @@ title: Pixel Organism
 exp_id: "12"
 status: "GENOME + CONTROLLER · LIVE"
 category: "Generation"
+styles:
+  - /assets/css/pixel-organism.css
 question: "Can one finite genome deterministically generate both a visible pixel organism and an inherited recurrent controller whose mutations change behavior under a fixed environment?"
 explanation: "A 256-bit genome is split into two inherited halves. The first 128 bits generate a 24×24 indexed-color body and palette. The second 128 bits encode a tiny recurrent neural controller plus physiology. The organism is then placed in a deterministic 32×32 food world. Mutations change inherited bits; selection evaluates the parent and eight mutants on exactly the same world before choosing the highest-scoring candidate."
 deck: "One finite genome generates body, palette, recurrent controller, physiology, and a measurable lifetime."
@@ -45,7 +47,7 @@ technical: |
 
   **Morphogenesis.** The morphology half seeds a deterministic pseudorandom process that creates a bounded occupancy field, applies a symmetry probability, adds a connected random walk, performs one to three local neighbor-count smoothing steps, and assigns one of four indexed colors to occupied addresses. The visible body contains `24 × 24 = 576` two-bit palette indices after generation. Those 1,152 rendered index bits are derived phenotype, not additional inherited information.
 
-  **Genome-encoded recurrent controller.** Sixteen controller bytes contain thirty-two 4-bit nibbles. The first twenty-three nibbles map linearly to signed weights in `[-1,1]`: `4×2 = 8` input-to-hidden weights, `2×2 = 4` recurrent weights, `2` hidden biases, `2×3 = 6` hidden-to-output weights, and `3` output biases. The remaining nine nibbles control vision range, movement cost, food energy gain, starting energy, turning bias, sensor gain, body cost, activity gain, and reserve.
+  **Genome-encoded recurrent controller.** Sixteen controller bytes contain thirty-two 4-bit nibbles. The first twenty-three nibbles map linearly to signed weights in `[-1,1]`: `4×2 = 8` input-to-hidden weights, `2×2 = 4` recurrent weights, `2` hidden biases, `2×3 = 6` hidden-to-output weights, and `3` output biases. The remaining nine nibbles control vision range, movement cost, food energy gain, starting energy, turning bias, sensor gain, body cost, activity gain, and energy reserve.
 
   **Transient state.** The recurrent hidden state has two `Float64` values in the browser implementation. That is `2 × 64 = 128` transient implementation bits if persisted. It is reset to `[0,0]` at the start of every lifetime and is therefore not inherited genome information.
 
@@ -53,7 +55,7 @@ technical: |
 
   **World and score.** A world seed deterministically places 72 food cells on a `32×32` toroidal grid. All candidates in one selection event see exactly the same food layout. The displayed score is `20 × food_eaten + remaining_energy + 0.05 × survived_steps`. It is an explicit task utility, not a biological fitness law.
 
-  **Selection baseline.** One generation evaluates the current parent plus eight deterministic mutants. Each mutant flips one to three inherited genome bits. The candidate with the highest selected-world score is retained; ties preserve the earlier candidate. Three additional deterministic worlds are then scored without affecting selection. Repeated clicks implement greedy hill climbing, not a population ecology or open-ended evolutionary algorithm.
+  **Selection baseline.** One generation evaluates the current parent plus eight deterministic mutants. Each mutant changes one to three inherited genome bits. The candidate with the highest selected-world score is retained; ties preserve the earlier candidate. Three additional deterministic worlds are then scored without affecting selection. Repeated clicks implement greedy hill climbing, not a population ecology or open-ended evolutionary algorithm.
 
   **Information boundary.** Random-number generation does not create independent information beyond the genome, world seed, shared decoder, and runtime state. The body, palette, weights, trajectories, and scores are deterministic consequences of those inputs. Calling the controller a “pixel brain” is an intuitive shorthand; formally it is a two-state recurrent neural controller with genome-encoded weights.
 scripts:
