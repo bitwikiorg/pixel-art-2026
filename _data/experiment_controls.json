@@ -1,0 +1,84 @@
+{
+  "01": [
+    {"control":"Preset / click a cell","changes":"The 256 source bits.","fixed":"Field size stays 16×16; capacity stays exactly 256 bits.","watch":"Bitstream, bytes, entropy, CRC-32."},
+    {"control":"NOT / Mirror / Shift / Dilate","changes":"Applies the named deterministic transform to the source bitmap.","fixed":"The carrier still contains exactly 256 binary addresses.","watch":"Which bits move or flip; CRC and entropy may change."},
+    {"control":"Decode packed bytes","changes":"Nothing in the source. It reconstructs a second field from the packed 32 bytes.","fixed":"The source and packed bytes.","watch":"Round-trip Hamming distance; exact recovery means 0."},
+    {"control":"Encode / decode text","changes":"Reinterprets the same 256-bit carrier as a length-prefixed UTF-8 payload.","fixed":"Carrier capacity: 32 bytes total, with 2 bytes reserved for length.","watch":"Whether text survives an exact encode/decode round-trip."}
+  ],
+  "01C": [
+    {"control":"Color A","changes":"The one stored RGB888 codeword being inspected.","fixed":"Encoding convention remains 24-bit sRGB.","watch":"RGB bytes, 24 bits, hex, uint24, and every derived coordinate."},
+    {"control":"Color B","changes":"Only the comparison color.","fixed":"Color A remains unchanged.","watch":"ΔE76, OKLab distance, and luminance contrast."},
+    {"control":"Palette pixel count","changes":"How many pixels share one four-entry palette in the accounting example.","fixed":"Palette size is four RGB888 colors; indices remain 2 bits each.","watch":"When indexed color becomes smaller than direct 24-bit RGB."}
+  ],
+  "02": [
+    {"control":"Preset","changes":"The 256-bit source pattern.","fixed":"Both raw and Hamming-coded branches receive the same source.","watch":"Source structure only; transmission budgets stay 256 vs 448 bits."},
+    {"control":"Flip probability","changes":"Independent probability that each transmitted bit is flipped.","fixed":"Encoding and source size.","watch":"Residual BER and exact recovery for raw versus coded transmission."},
+    {"control":"Seed","changes":"The reproducible random corruption pattern.","fixed":"Flip probability and source.","watch":"A different seed can produce a different error placement at the same noise level."},
+    {"control":"Run one channel / 200 trials","changes":"Runs one reproducible corruption event or estimates average behavior across many events.","fixed":"The declared channel probability and code.","watch":"Single-trial recovery versus repeated-trial BER."}
+  ],
+  "03": [
+    {"control":"Preset","changes":"The current 256-spin visible pattern.","fixed":"Previously stored memories remain in the Hopfield weight matrix.","watch":"Whether the current pattern matches or differs from stored attractors."},
+    {"control":"Store current","changes":"Adds the current whole pattern to the persistent Hebbian weight matrix.","fixed":"Current visible state.","watch":"Stored-pattern count and additional memory interference."},
+    {"control":"Noise + Corrupt","changes":"Flips a seeded fraction of current spins to create a noisy cue.","fixed":"Stored weight matrix.","watch":"Hamming distance to the nearest stored pattern."},
+    {"control":"One sweep / Run to fixed point","changes":"Applies sequential asynchronous Hopfield updates once or until stable.","fixed":"Stored weights.","watch":"Energy, Hamming distance, and which attractor is reached."},
+    {"control":"Clear memory","changes":"Removes all stored patterns and resets the weight matrix.","fixed":"Network size remains 256 spins.","watch":"Stored-pattern count returns to zero."}
+  ],
+  "04": [
+    {"control":"Preset","changes":"The 16×16 binary source and therefore its repeated 2×2 motifs.","fixed":"Tile size remains 2×2; source size remains 256 bits.","watch":"Number of unique motifs."},
+    {"control":"Encode + decode","changes":"Builds a motif dictionary, encodes all 64 tiles as indices, then reconstructs the bitmap.","fixed":"Source bitmap.","watch":"Total coded bits versus 256 raw bits and reconstruction Hamming distance."}
+  ],
+  "05": [
+    {"control":"Preset","changes":"The 256 source bits being recoded.","fixed":"Coordinate system and deterministic role-code generator.","watch":"Full-field query accuracy."},
+    {"control":"Dimension","changes":"Length D of the distributed hypervectors.","fixed":"The original 256 source bits.","watch":"Retrieval accuracy versus added derived state/storage."},
+    {"control":"Build hypervector","changes":"Constructs and bundles all 256 coordinate/value bindings at the chosen D.","fixed":"Source field.","watch":"Full query accuracy and representation footprint."},
+    {"control":"x, y + Query address","changes":"Selects one address to decode from the bundled representation.","fixed":"Bundled hypervector.","watch":"Similarity-based recovered value at that coordinate."},
+    {"control":"Run dimension sweep","changes":"Repeats the same encoding/query protocol from 256D through 4096D.","fixed":"Source and code construction.","watch":"Accuracy improvement versus representation size."}
+  ],
+  "06": [
+    {"control":"Scalar / Vector / Tensor / Neural / Transformer / Memory / Subfield","changes":"The finite object and update factorization associated with every outer address.","fixed":"The outer 12×12 address grid.","watch":"Scalars per pixel, total field state, inspector values, and RGB projection."},
+    {"control":"Run / Step","changes":"Applies the selected fixed update rule continuously or once.","fixed":"No parameters are trained; seeded weights remain fixed.","watch":"How the selected internal object evolves and projects to color."},
+    {"control":"Inject signal","changes":"Adds a controlled perturbation to the live state.","fixed":"Object type and update rule.","watch":"How the perturbation propagates through the field."},
+    {"control":"Reset","changes":"Restores the deterministic initial state.","fixed":"Selected interpretation and rule family.","watch":"Step counter and field return to the starting condition."}
+  ],
+  "07": [
+    {"control":"Train / reset model","changes":"Optimizes or reinitializes the shared local recurrent model on the deterministic relation task.","fixed":"Task definition and four relation classes.","watch":"Training accuracy, held-out accuracy, and parameter count."},
+    {"control":"Recurrent steps","changes":"How many times the shared local update is reused before readout.","fixed":"Per-step local 3×3 communication rule.","watch":"Near-versus-far accuracy as effective communication radius grows."},
+    {"control":"Example / trace controls","changes":"Which held-out marker pair is inspected or how one inference trace is intervened on.","fixed":"Trained model parameters unless retraining is requested.","watch":"Predicted relation and distance-conditioned behavior."}
+  ],
+  "08": [
+    {"control":"Operator","changes":"Which exact binary field operation is run: NOT, dilation, or binary edge detection.","fixed":"64×64 source and CPU/GPU comparison protocol.","watch":"CPU↔GPU mismatch count."},
+    {"control":"Run CPU / GPU comparison","changes":"Executes the operator independently in JavaScript and WGSL when WebGPU is available.","fixed":"Input and operator.","watch":"Correctness first; runtime only after mismatch count is zero."},
+    {"control":"Input/preset controls","changes":"The binary source field supplied to both implementations.","fixed":"Same input is sent to CPU and GPU.","watch":"Whether exact agreement survives different spatial patterns."}
+  ],
+  "09": [
+    {"control":"Mask / regenerate dataset","changes":"Which source pixels are hidden and/or which deterministic structured samples are used.","fixed":"Task remains reconstruction of hidden binary pixels.","watch":"Masked locations and baseline difficulty."},
+    {"control":"Train model","changes":"Fits the 745-parameter convolutional baseline to the training set.","fixed":"Architecture, deterministic data protocol, and scoring rule.","watch":"Held-out hidden-pixel accuracy."},
+    {"control":"Evaluate baseline/model","changes":"Runs the local-majority control or learned model on held-out masked pixels.","fixed":"Same test examples and masks.","watch":"Learned accuracy minus baseline accuracy."}
+  ],
+  "10": [
+    {"control":"Equal-state protocol","changes":"Architecture dimensions are chosen so each outer address carries the same scalar state budget.","fixed":"Task and training data.","watch":"Accuracy, parameters, runtime, and seed variance."},
+    {"control":"Equal-parameter protocol","changes":"Architecture widths are adjusted toward similar trainable parameter counts.","fixed":"Task and evaluation metric.","watch":"Whether rankings change when the matched resource changes."},
+    {"control":"Seeds / result files","changes":"Which independent training runs are aggregated.","fixed":"Named benchmark protocol.","watch":"Mean, sample standard deviation, and overlap rather than a single best run."}
+  ],
+  "11": [
+    {"control":"Seed + Generate","changes":"The deterministic 128-bit genome, which regenerates shape, pattern, palette, and all 576 color indices.","fixed":"The shared procedural interpreter.","watch":"Genome hex, palette, phenotype, and 128-bit versus 1,152-bit ledger."},
+    {"control":"Mutate genome","changes":"Flips 1–3 deterministic genome bits and regenerates the phenotype.","fixed":"Interpreter and raster size.","watch":"Which visual traits or palette entries change from a very small genotype edit."},
+    {"control":"Cross genomes","changes":"Builds a child by selecting bytes from parent A or parent B using a deterministic mask.","fixed":"Genome length: 16 bytes.","watch":"Trait combinations inherited from the two parents."},
+    {"control":"Interpolate","changes":"Blends corresponding genome byte values between the two parents.","fixed":"Interpreter.","watch":"Phenotype changes are not guaranteed to be visually smooth because byte meanings are nonlinear/discrete."},
+    {"control":"Damage raster / Regenerate","changes":"Damage modifies only visible 2-bit color indices; regenerate discards those damaged indices and renders again from the unchanged genome.","fixed":"Genome and derived palette during damage.","watch":"Exact restoration demonstrates persistent description versus disposable raster, not learned healing."}
+  ],
+  "12": [
+    {"control":"Genome seed + Generate organism","changes":"Creates one deterministic 256-bit inherited genome, then decodes a 24×24 body, palette, recurrent controller, and physiology.","fixed":"Genome decoder and experiment rules.","watch":"Genome hex, body, palette, vision, energy costs, and controller weights."},
+    {"control":"World seed","changes":"The deterministic placement of food in the 32×32 toroidal environment.","fixed":"Organism genome.","watch":"The same organism can score differently in different environments."},
+    {"control":"Lifetime steps + Run lifetime","changes":"Maximum evaluation horizon, then simulates sensing → recurrent update → action → movement → energy/food update.","fixed":"Genome and selected world.","watch":"Trajectory, food eaten, energy, survival, recurrent state, and world score."},
+    {"control":"Mutate 1–3 bits","changes":"Flips inherited genome bits and immediately regenerates body/controller traits from the mutated description.","fixed":"World seed unless changed separately.","watch":"Genome Δ bits, body Δ pixels, controller/physiology changes, and changed behavior."},
+    {"control":"Select one generation","changes":"Evaluates the current parent plus eight deterministic mutants on the same selected world and keeps the highest-scoring candidate.","fixed":"World, score function, lifetime horizon, decoder.","watch":"Selected-world score versus three held-out-world scores; improvement on one world may be overfitting."}
+  ],
+  "A1": [
+    {"control":"Local coupling","changes":"Strength of neighborhood mixing during each fixed field update.","fixed":"32×32×8 state shape and hand-designed rule family.","watch":"Local coherence and trajectory changes."},
+    {"control":"State memory","changes":"How much previous state persists into the next step.","fixed":"Other update terms.","watch":"RMS magnitude and settling/oscillation behavior."},
+    {"control":"Regional summary","changes":"Adds or removes a coarser regional feedback signal.","fixed":"Local state dimensions.","watch":"Whether large-scale organization changes."},
+    {"control":"Random source remap each step","changes":"Reassigns the hand-written source mapping at each update.","fixed":"No learning occurs.","watch":"How sensitive the trajectory is to source correspondence."},
+    {"control":"Run / Step / Zero 8×8 / Reset","changes":"Advances dynamics, applies one update, zeros a controlled region, or restores initial state.","fixed":"Rule parameters unless sliders/toggles are changed.","watch":"Descriptive diagnostics only; visual recovery is not semantic regeneration."}
+  ]
+}
