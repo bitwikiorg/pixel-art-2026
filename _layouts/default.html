@@ -17,10 +17,11 @@
     <div class="header-inner">
       <a class="brand" href="{{ '/' | relative_url }}" aria-label="Pixel Neural Net Lab home">
         <span class="brand-mark" aria-hidden="true"></span>
-        <span><strong>PIXEL NEURAL NET LAB</strong><small>Multidimensional Pixel Fields · 2026</small></span>
+        <span><strong>PIXEL NEURAL NET LAB</strong><small>Pixel Photon · Multidimensional Pixel Fields · 2026</small></span>
       </a>
       <nav class="top-nav" aria-label="Primary">
         <a href="{{ '/learn/' | relative_url }}">Start here</a>
+        <a href="{{ '/carrier/' | relative_url }}">Binary carrier</a>
         <a href="{{ '/experiment/' | relative_url }}">Lab</a>
         <a href="{{ '/research/' | relative_url }}">Research</a>
         <a href="{{ '/glossary/' | relative_url }}">Glossary</a>
@@ -30,10 +31,11 @@
   </header>
   <main id="main-content">{{ content }}</main>
   <footer class="site-footer">
-    <div><strong>Pixel Neural Net Lab</strong><br><span>Interpret the pixel differently. Build the field differently. Measure what changes.</span></div>
-    <div class="footer-links"><a href="{{ '/learn/' | relative_url }}">Start here</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="https://github.com/bitwikiorg/pixel-art-2026/issues">Research log</a></div>
+    <div><strong>Pixel Neural Net Lab</strong><br><span>One pixel. Many possible universes. Measure every bit, state and interpreter.</span></div>
+    <div class="footer-links"><a href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a href="{{ '/learn/' | relative_url }}">Start here</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="https://github.com/bitwikiorg/pixel-art-2026/issues">Research log</a></div>
   </footer>
   <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
+  {% if page.binary_carrier %}<script src="{{ '/assets/js/binary-carrier.js' | relative_url }}" defer></script>{% endif %}
   {% if page.pixel_universe %}<script src="{{ '/assets/js/pixel-universe.js' | relative_url }}" defer></script>{% endif %}
   {% if page.field_lab %}<script src="{{ '/assets/js/field.js' | relative_url }}" defer></script>{% endif %}
   {% if page.neural_lab %}<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script><script src="{{ '/assets/js/neural-field.js' | relative_url }}" defer></script>{% endif %}
