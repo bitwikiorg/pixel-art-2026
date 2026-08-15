@@ -15,7 +15,7 @@ shows: "A compact description plus a shared interpreter can generate and restore
 does_not_show: "General image compression, arbitrary sprite generation, or neural generation. The interpreter is shared side information and deliberately limits which images can exist."
 steps:
   - label: "Generate a 128-bit description"
-    text: "A text seed deterministically produces sixteen bytes. Those bytes control position, width, height, eyes, horns, legs, pattern, asymmetry, palette, and pattern offsets."
+    text: "A Parent A text seed deterministically produces sixteen bytes. Those bytes control position, width, height, eyes, horns, legs, pattern, asymmetry, palette, and pattern offsets."
   - label: "Render one restricted phenotype"
     text: "The shared body grammar produces 576 values in {0,1,2,3}. Every output belongs to the same designed creature family, which is why different seeds retain a recognizable common style."
   - label: "Separate description from raster"
@@ -29,7 +29,7 @@ technical: |
 
   Genome bytes have fixed roles. Bytes 0–2 control body position and radii; 3–9 control pattern spacing, eye placement, horn length, leg length, pattern mode, and asymmetry while some also participate in palette derivation; 10–12 control body color and pattern offsets; 13–15 control the dark background color. Because several bytes affect more than one expressed trait, a one-bit mutation can have pleiotropic visual effects.
 
-  Mutation flips a small deterministic set of genome bits. Crossover selects bytes from two parent genomes. Interpolation blends byte values. Raster damage changes generated palette indices without changing the genome, so regeneration demonstrates separation between persistent description and disposable rendering rather than learned self-repair.
+  Mutation selects one to three **unique** bit positions and flips each exactly once, so the inherited Hamming distance is exactly 1–3 bits. Crossover selects bytes from two parent genomes. Interpolation blends byte values. Raster damage changes generated palette indices without changing the genome, so regeneration demonstrates separation between persistent description and disposable rendering rather than learned self-repair.
 scripts:
   - /assets/js/pixel-genome.js
 ---
@@ -47,7 +47,7 @@ scripts:
     </div>
   </section>
 
-  <section class="lab-module"><div class="lab-controls"><label>Seed <input id="genomeSeed" value="PIXEL-0001"></label><button id="genomeGenerate" class="btn primary">Generate</button><button id="genomeMutate" class="btn">Mutate genome</button><label>Parent B <input id="genomeParentB" value="PIXEL-0002"></label><button id="genomeCross" class="btn">Cross genomes</button><label>Interpolate <input id="genomeInterpolate" type="range" min="0" max="100" value="0"></label><strong id="genomeT">0.00</strong><button id="genomeDamage" class="btn">Damage raster</button><button id="genomeRegenerate" class="btn secondary">Regenerate from genome</button></div></section>
+  <section class="lab-module"><div class="lab-controls"><label>Parent A seed <input id="genomeSeed" value="PIXEL-0001"></label><button id="genomeGenerate" class="btn primary">Generate</button><button id="genomeMutate" class="btn">Mutate genome</button><label>Parent B seed <input id="genomeParentB" value="PIXEL-0002"></label><button id="genomeCross" class="btn">Cross genomes</button><label>Interpolate <input id="genomeInterpolate" type="range" min="0" max="100" value="0"></label><strong id="genomeT">0.00</strong><button id="genomeDamage" class="btn">Damage raster</button><button id="genomeRegenerate" class="btn secondary">Regenerate from genome</button></div></section>
   <section class="lab-two">
     <div class="lab-module canvas-panel"><small>24×24 · FOUR-COLOR INDEXED FIELD</small><canvas id="genomeCanvas" class="pixel-canvas color-indexed"></canvas><p class="lab-explain">Each visible address stores an index from 0–3. The canvas converts that index to RGB using the derived palette.</p></div>
     <div class="lab-module"><div class="lab-label">128-bit genome</div><pre id="genomeHex" class="carrier-code wrap" style="min-height:80px"></pre><div class="information-ledger"><div><small>GENOME</small><strong id="genomeDescriptionBits">128</strong></div><div><small>INDEX RASTER</small><strong id="genomeRasterBits">1,152</strong></div><div><small>GENOME / RASTER</small><strong id="genomeRatio">0.111×</strong></div><div><small>PIXEL STATE</small><strong>2-bit index</strong></div></div><div id="genomeStatus" class="lab-status"></div></div>
