@@ -33,6 +33,7 @@ jobs:
       - name: Run JavaScript behavioral tests
         run: |
           node scripts/test-pixel-core.js
+          node scripts/test-color-carrier.js
           node scripts/test-relation-task.js
           node scripts/test-webgpu-field.js
           node scripts/test-masked-reconstruction.js
