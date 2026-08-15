@@ -1,16 +1,16 @@
 ---
 layout: default
 title: Experiments
-description: Controlled experiments in binary information, coding, representation, memory, computation, learning, comparison, and generation.
+description: Controlled experiments in binary and color information, coding, representation, memory, computation, learning, comparison, and generation.
 ---
 <div class="page-shell">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Experiments</span></nav>
-  <header class="library-hero"><div class="eyebrow">Experiments</div><h1>What can a pixel-addressed field represent, preserve, compute, and learn?</h1><p class="hero-deck">The experiments begin with exact binary information and then introduce redundancy, reusable motifs, distributed codes, memory, local computation, learned state, architecture comparisons, and generative descriptions. Each mechanism is measured against the resources it adds.</p></header>
+  <header class="library-hero"><div class="eyebrow">Experiments</div><h1>What can a pixel-addressed field represent, preserve, compute, and learn?</h1><p class="hero-deck">The experiments begin with exact binary information, expand to finite color state, and then introduce redundancy, reusable motifs, distributed codes, memory, local computation, learned state, architecture comparisons, and generative descriptions. Each mechanism is measured against the resources it adds.</p></header>
 
   {% assign groups = "Information and coding|Representation|Computation and memory|Learning and comparison|Generation|Archive" | split: "|" %}
   {% for group in groups %}
     {% case group %}
-      {% when 'Information and coding' %}{% assign ids = "01,02,04" | split: "," %}{% assign group_text = "Exact source bits make corruption, redundancy, description length, and lossless recovery directly measurable." %}
+      {% when 'Information and coding' %}{% assign ids = "01,01C,02,04" | split: "," %}{% assign group_text = "Binary and color carriers make source bits, alternate encodings, corruption, redundancy, description length, and lossless recovery directly measurable." %}
       {% when 'Representation' %}{% assign ids = "05,06" | split: "," %}{% assign group_text = "The same outer address can carry a distributed code or a different internal mathematical object without changing the original source information." %}
       {% when 'Computation and memory' %}{% assign ids = "03,08" | split: "," %}{% assign group_text = "A field can participate in state evolution, content-addressable recall, and direct neighborhood computation." %}
       {% when 'Learning and comparison' %}{% assign ids = "07,09,10" | split: "," %}{% assign group_text = "Learned rules are scored on held-out data and compared under explicit state, parameter, and runtime constraints." %}
@@ -24,5 +24,5 @@ description: Controlled experiments in binary information, coding, representatio
     </div></section>
   {% endfor %}
 
-  <section class="section" style="padding-left:0;padding-right:0"><p class="core-note"><strong>Resource boundary.</strong> Derived state, redundancy, model parameters, dictionaries, and memory weights are additional resources. They may improve robustness or computation, but they are not new independent source information.</p></section>
+  <section class="section" style="padding-left:0;padding-right:0"><p class="core-note"><strong>Resource boundary.</strong> Derived state, redundancy, model parameters, dictionaries, palettes, and memory weights are additional or shared resources. They may improve robustness or computation, but they are not new independent source information.</p></section>
 </div>
