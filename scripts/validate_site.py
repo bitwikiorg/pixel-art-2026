@@ -3,127 +3,128 @@ from __future__ import annotations
 
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 import sys
 
 SITE = Path("_site").resolve()
 BASEURL = "/pixel-art-2026"
 
 
-class LinkParser(HTMLParser):
+class PageParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.links: list[tuple[str, str]] = []
+        self.ids: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
+        node_id = values.get("id")
+        if node_id:
+            self.ids.append(node_id)
         for attr in ("href", "src"):
             value = values.get(attr)
             if value:
                 self.links.append((attr, value))
 
 
-def resolve_target(source: Path, raw: str) -> Path | None:
+def resolve_target(source: Path, raw: str) -> tuple[Path | None, str]:
     raw = raw.strip()
-    if not raw or raw.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
-        return None
-
+    if not raw or raw.startswith(("mailto:", "tel:", "javascript:", "data:")):
+        return None, ""
     parsed = urlsplit(raw)
     if parsed.scheme or parsed.netloc:
-        return None
-
+        return None, ""
+    fragment = unquote(parsed.fragment)
     path = parsed.path
     if not path:
-        return None
-
+        return source, fragment
     if path == BASEURL:
         path = "/"
     elif path.startswith(BASEURL + "/"):
         path = path[len(BASEURL):]
-
     if path.startswith("/"):
         candidate = SITE / path.lstrip("/")
     else:
         candidate = source.parent / path
-
     candidate = candidate.resolve()
     try:
         candidate.relative_to(SITE)
     except ValueError:
-        return Path("__OUTSIDE_SITE__")
-
+        return Path("__OUTSIDE_SITE__"), fragment
     if path.endswith("/"):
         candidate = candidate / "index.html"
     elif candidate.is_dir():
         candidate = candidate / "index.html"
     elif not candidate.exists() and not candidate.suffix:
-        pretty = candidate / "index.html"
-        html = candidate.with_suffix(".html")
-        if pretty.exists():
-            candidate = pretty
-        elif html.exists():
-            candidate = html
-
-    return candidate
+        pretty, html = candidate / "index.html", candidate.with_suffix(".html")
+        candidate = pretty if pretty.exists() else html if html.exists() else candidate
+    return candidate, fragment
 
 
 def main() -> int:
     if not SITE.exists():
         print("ERROR: _site does not exist", file=sys.stderr)
         return 1
-
     errors: list[str] = []
     html_files = sorted(SITE.rglob("*.html"))
     if not html_files:
         errors.append("No rendered HTML files found")
 
+    parsed_pages: dict[Path, PageParser] = {}
     for html_file in html_files:
         text = html_file.read_text(encoding="utf-8")
         if "{{" in text or "{%" in text:
             errors.append(f"Unresolved Liquid syntax: {html_file.relative_to(SITE)}")
+        for forbidden in ("data-lab-tab=", "#pixelUniverseLab", "#neuralFieldLab", "#originalFieldLab", "PIXEL NEURAL NET LAB"):
+            if forbidden in text:
+                errors.append(f"Stale omnibus-lab marker {forbidden!r}: {html_file.relative_to(SITE)}")
+        parser = PageParser(); parser.feed(text); parsed_pages[html_file.resolve()] = parser
+        seen: set[str] = set()
+        for node_id in parser.ids:
+            if node_id in seen:
+                errors.append(f"Duplicate id={node_id!r}: {html_file.relative_to(SITE)}")
+            seen.add(node_id)
 
-        parser = LinkParser()
-        parser.feed(text)
+    for html_file, parser in parsed_pages.items():
         for attr, raw in parser.links:
-            target = resolve_target(html_file, raw)
+            target, fragment = resolve_target(html_file, raw)
             if target is None:
                 continue
             if str(target) == "__OUTSIDE_SITE__":
                 errors.append(f"Path escapes site: {html_file.relative_to(SITE)} {attr}={raw!r}")
-            elif not target.exists():
-                try:
-                    shown = target.relative_to(SITE)
-                except ValueError:
-                    shown = target
-                errors.append(
-                    f"Broken internal reference: {html_file.relative_to(SITE)} "
-                    f"{attr}={raw!r} -> {shown}"
-                )
+                continue
+            if not target.exists():
+                try: shown = target.relative_to(SITE)
+                except ValueError: shown = target
+                errors.append(f"Broken internal reference: {html_file.relative_to(SITE)} {attr}={raw!r} -> {shown}")
+                continue
+            if fragment and target.suffix.lower() == ".html":
+                page = parsed_pages.get(target.resolve())
+                if page is None:
+                    text = target.read_text(encoding="utf-8"); page = PageParser(); page.feed(text); parsed_pages[target.resolve()] = page
+                if fragment not in set(page.ids):
+                    errors.append(f"Broken fragment: {html_file.relative_to(SITE)} {attr}={raw!r} -> missing id={fragment!r}")
 
     required = [
-        SITE / "index.html",
-        SITE / "learn" / "index.html",
-        SITE / "experiment" / "index.html",
-        SITE / "research" / "index.html",
-        SITE / "glossary" / "index.html",
-        SITE / "research" / "05-neural-architecture" / "index.html",
-        SITE / "research" / "09-current-frontier" / "index.html",
-        SITE / "assets" / "css" / "style.css",
-        SITE / "assets" / "js" / "site.js",
-        SITE / "assets" / "js" / "field.js",
-        SITE / "assets" / "js" / "neural-field.js",
+        "index.html", "learn/index.html", "experiment/index.html", "carrier/index.html",
+        "experiment/reliability/index.html", "experiment/memory/index.html",
+        "experiment/motif-codec/index.html", "experiment/hypervector/index.html",
+        "experiment/interpretation/index.html", "experiment/learned-local-field/index.html",
+        "experiment/webgpu/index.html", "experiment/masked-reconstruction/index.html",
+        "experiment/primitive-benchmark/index.html", "experiment/pixel-genome/index.html",
+        "experiment/dynamics/index.html", "research/index.html", "glossary/index.html",
+        "assets/css/style.css", "assets/css/atlas.css", "assets/js/site.js", "assets/js/pixel-core.js",
     ]
-    for path in required:
-        if not path.exists():
-            errors.append(f"Required render output missing: {path.relative_to(SITE)}")
+    for rel in required:
+        if not (SITE / rel).exists():
+            errors.append(f"Required render output missing: {rel}")
 
     if errors:
         print("SITE VALIDATION FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
-
-    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked")
+    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, fragments and IDs validated")
     return 0
 
 

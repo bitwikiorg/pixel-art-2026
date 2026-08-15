@@ -1,0 +1,21 @@
+---
+layout: experiment
+title: Original Field Dynamics
+exp_id: "A1"
+status: "LEGACY MECHANICS · LIVE"
+category: "Archive"
+deck: "The original hand-designed 32×32×8 recurrent field is retained as a mechanism study. It is useful for locality, persistence, regional feedback and damage interventions, but it is no longer presented as evidence of learning or reasoning."
+source: "32×32×8 floating-point state"
+interpretation: "hand-designed multidimensional field"
+learned: "No"
+measure: "descriptive coherence, RMS state magnitude, occupancy, energy-change stability"
+shows: "How this specific local dynamical rule responds to coupling, memory, regional feedback and damage."
+does_not_show: "Semantic learning, reasoning, compression or an MPF advantage. Its metrics are descriptive diagnostics, not task performance."
+scripts:
+  - /assets/js/field.js
+---
+<section class="lab-grid">
+  <aside class="panel"><h2>Controls</h2><div class="control"><label><span>Local coupling</span><span data-value="coupling">0.72</span></label><input id="coupling" type="range" min="0" max="1.4" step="0.01" value="0.72"></div><div class="control"><label><span>State memory</span><span data-value="memory">0.70</span></label><input id="memory" type="range" min="0" max="0.98" step="0.01" value="0.70"></div><div class="toggle"><span>Regional summary</span><input id="hierarchy" type="checkbox" checked></div><div class="toggle"><span>Random source remap each step</span><input id="shuffle" type="checkbox"></div><div class="cta-row"><button id="runBtn" class="btn primary">Run</button><button id="stepBtn" class="btn">Step</button><button id="resetBtn" class="btn">Reset</button><button id="damageBtn" class="btn">Zero 8×8 region</button></div></aside>
+  <section class="lab-canvas-wrap"><div class="overlay-label">32×32 · 8D · STEP <span id="stepCount">0</span></div><canvas id="fieldCanvas"></canvas></section>
+  <aside class="panel"><h2>Diagnostics</h2><div class="metrics"><div class="metric"><small>LOCAL COHERENCE</small><strong id="coherence">—</strong></div><div class="metric"><small>RMS MAGNITUDE</small><strong id="energy">—</strong></div><div class="metric"><small>OCCUPANCY</small><strong id="occupancy">—</strong></div><div class="metric"><small>ENERGY-CHANGE STABILITY</small><strong id="stability">—</strong></div></div><button id="exportBtn" class="btn secondary" style="margin-top:14px">Export diagnostics JSON</button></aside>
+</section>

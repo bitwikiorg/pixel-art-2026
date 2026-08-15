@@ -37,7 +37,7 @@ scalar
 → subfield
 ```
 
-[Run the current ladder]({{ '/experiment/#pixelUniverseLab' | relative_url }}).
+[Run the current interpretation sandbox]({{ '/experiment/interpretation/' | relative_url }}).
 
 ## Semantic topology {#semantic-topology}
 

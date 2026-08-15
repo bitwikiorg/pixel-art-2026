@@ -1,4 +1,4 @@
-name: Validate Pixel Neural Net Lab
+name: Validate Pixel Photon Lab
 
 on:
   push:
@@ -24,29 +24,36 @@ jobs:
           ruby-version: "3.2"
           bundler-cache: true
 
-      - name: Check JavaScript syntax
-        run: |
-          node --check assets/js/site.js
-          node --check assets/js/field.js
-          node --check assets/js/neural-field.js
-          node --check assets/js/pixel-universe.js
-          node --check assets/js/binary-carrier.js
-          node --check scripts/test-pixel-universe.js
-          node --check scripts/test-binary-carrier.js
+      - name: Set up Python lint
+        run: python3 -m pip install --disable-pip-version-check ruff==0.11.13
 
-      - name: Run browser-primitive smoke tests
+      - name: Lint JavaScript syntax
+        run: find assets/js scripts -name '*.js' -print0 | xargs -0 -n1 node --check
+
+      - name: Run JavaScript behavioral tests
         run: |
+          node scripts/test-pixel-core.js
+          node scripts/test-relation-task.js
+          node scripts/test-webgpu-field.js
+          node scripts/test-masked-reconstruction.js
+          node scripts/test-pixel-genome.js
           node scripts/test-pixel-universe.js
-          node scripts/test-binary-carrier.js
 
-      - name: Check Python experiment syntax
+      - name: Lint and compile Python
         run: |
-          python3 -m py_compile experiments/mpf_relations.py experiments/pixel_primitives.py scripts/validate_site.py
+          ruff check --select F,E9 experiments scripts
+          python3 -m compileall -q experiments scripts
+
+      - name: Audit experiment registry
+        run: python3 scripts/audit_experiments.py
 
       - name: Build Jekyll site
         env:
           JEKYLL_ENV: production
         run: bundle exec jekyll build --trace
 
-      - name: Validate rendered output and internal links
+      - name: Audit rendered experiment registry
+        run: python3 scripts/audit_experiments.py
+
+      - name: Validate rendered output, links, fragments and IDs
         run: python3 scripts/validate_site.py

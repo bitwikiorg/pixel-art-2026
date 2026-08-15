@@ -1,0 +1,27 @@
+---
+layout: experiment
+title: Learned Local Vector Field
+exp_id: "07"
+status: "LEARNED · LIVE"
+category: "Learning"
+deck: "A deliberately narrow neural baseline: 12-dimensional state at every spatial address, one shared local convolutional update reused through recurrent depth, and a four-way relation readout."
+source: "two markers on a 12×12 grid"
+interpretation: "12D vector pixel"
+learned: "Yes · TensorFlow.js"
+measure: "held-out accuracy by distance, parameters, loss"
+shows: "A shared local recurrent vector field can learn the synthetic LEFT/RIGHT/ABOVE/BELOW task."
+does_not_show: "That this representation beats a CNN, NCA, Transformer or graph control; the relation task is intentionally simple."
+tfjs: true
+scripts:
+  - /assets/js/relation-task.js
+  - /assets/js/neural-field.js
+---
+<section id="neuralFieldLab">
+  <div class="architecture-flow"><div class="flow-node"><strong>WRITE</strong>A + B markers</div><div class="flow-node"><strong>STATE</strong>12D / address</div><div class="flow-node"><strong>LOCAL</strong>shared 3×3 conv</div><div class="flow-node"><strong>REPEAT</strong>T recurrent steps</div><div class="flow-node"><strong>READ</strong>4-way classifier</div></div>
+  <div class="neural-grid">
+    <aside class="panel"><h2>Train</h2><div class="control"><label><span>Epochs</span><span data-value="epochs">18</span></label><input id="epochs" type="range" min="5" max="40" value="18"></div><div class="control"><label><span>Recurrent steps</span><span data-value="recurrentSteps">6</span></label><input id="recurrentSteps" type="range" min="2" max="10" value="6"></div><div class="cta-row"><button id="trainBtn" class="btn primary">Train</button><button id="resetNeuralBtn" class="btn">New seeded model</button></div><div id="neuralStatus" class="lab-status"><span class="status-dot"></span>loading TensorFlow.js…</div><div class="progress"><span id="trainProgress"></span></div><div class="metrics" style="margin-top:14px"><div class="metric"><small>PARAMETERS</small><strong id="paramCount">—</strong></div><div class="metric"><small>STEPS</small><strong id="stepCountNeural">—</strong></div><div class="metric"><small>BACKEND</small><strong id="backend">—</strong></div><div class="metric"><small>TRAIN TIME</small><strong id="trainTime">—</strong></div></div></aside>
+    <section class="lab-card"><div class="kicker">Hidden-state projection</div><h2>Field through recurrent depth</h2><div class="lab-canvas-wrap"><div class="overlay-label">TRACE STEP <span id="traceStep">0</span></div><canvas id="neuralCanvas"></canvas></div><div class="control"><label><span>Inspect step</span><span>0 → depth</span></label><input id="traceSlider" type="range" min="0" max="6" value="6"></div><div class="toggle"><span>Use distance 5–8 example</span><input id="farExample" type="checkbox"></div><div class="toggle"><span>Shuffle cells in this displayed trace only</span><input id="neuralShuffle" type="checkbox"></div><button id="newExampleBtn" class="btn secondary">New held-out example</button></section>
+    <aside class="panel"><h2>Measurement</h2><small>PREDICTION</small><div id="prediction" class="prediction">—</div><p class="lab-explain">truth <strong id="truth">—</strong> · distance <strong id="distanceReadout">—</strong></p><div class="class-row"><div id="score0" class="class-score">LEFT —</div><div id="score1" class="class-score">RIGHT —</div><div id="score2" class="class-score">ABOVE —</div><div id="score3" class="class-score">BELOW —</div></div><div class="metrics" style="margin-top:14px"><div class="metric"><small>TRAIN ACC</small><strong id="trainAcc">—</strong></div><div class="metric"><small>TRAIN LOSS</small><strong id="trainLoss">—</strong></div><div class="metric"><small>DIST 2–4</small><strong id="nearAcc">—</strong></div><div class="metric"><small>DIST 5–8</small><strong id="farAcc">—</strong></div></div><h3>Distance profile</h3><div id="distanceProfile" class="training-log">Train the model to measure accuracy separately at each distance.</div><h3>Training log</h3><div id="trainingLog" class="training-log"></div></aside>
+  </div>
+  <div class="method-box"><strong>Important control note:</strong> “shuffle cells” is an intervention on the displayed inference trace, not a train/evaluate topology ablation. Controlled topology experiments belong in the Python reference suite.</div>
+</section>
