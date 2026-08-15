@@ -30,10 +30,10 @@ layout: default
       <nav class="side-local-outline" aria-label="On this experiment">
         <strong class="side-nav-title">On this experiment</strong>
         <a href="#overview"><span>01</span>Overview</a>
-        {% if controls %}<a href="#controls"><span>02</span>{% if apparatus_recorded %}Protocols{% else %}Controls{% endif %}</a>{% endif %}
-        {% if page.steps %}<a href="#method"><span>03</span>Method</a>{% endif %}
-        {% if outcomes %}<a href="#outcomes"><span>04</span>Outcomes</a>{% endif %}
-        <a href="#apparatus"><span>05</span>{% if apparatus_recorded %}Recorded results{% else %}Live experiment{% endif %}</a>
+        <a href="#apparatus"><span>02</span>{% if apparatus_recorded %}Results{% else %}Experiment{% endif %}</a>
+        {% if controls %}<a href="#controls"><span>03</span>{% if apparatus_recorded %}Protocols{% else %}Controls{% endif %}</a>{% endif %}
+        {% if page.steps %}<a href="#method"><span>04</span>Method</a>{% endif %}
+        {% if outcomes %}<a href="#outcomes"><span>05</span>Outcomes</a>{% endif %}
         <a href="#evidence"><span>06</span>Evidence</a>
         {% if page.technical %}<a href="#technical"><span>07</span>Technical</a>{% endif %}
         {% if references %}<a href="#references"><span>08</span>References</a>{% endif %}
@@ -43,6 +43,17 @@ layout: default
         {% if prev_exp %}<a href="{{ prev_exp.url | relative_url }}" title="Previous experiment"><span>←</span><small>Previous</small></a>{% else %}<span></span>{% endif %}
         {% if next_exp %}<a href="{{ next_exp.url | relative_url }}" title="Next experiment"><small>Next</small><span>→</span></a>{% endif %}
       </div>
+
+      <details class="mobile-experiment-menu">
+        <summary>Browse all experiments</summary>
+        {% for group in site.data.experiment_groups %}
+          <div class="side-group-items">
+            {% for id in group.ids %}{% assign nav_exp = site.data.experiments | where: "id", id | first %}
+              <a href="{{ nav_exp.url | relative_url }}"{% if nav_exp.id == page.exp_id %} aria-current="page" class="current"{% endif %}><span>{{ nav_exp.id }}</span><strong>{{ nav_exp.title }}</strong></a>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </details>
 
       <div class="side-group-nav">
         <strong class="side-nav-title">Experiment groups</strong>
@@ -87,29 +98,33 @@ layout: default
         <section class="experiment-outline">
           <div class="outline-row"><h2>What it is</h2><p>{{ page.explanation | default: page.deck }}</p></div>
           {% if mental_model %}<div class="outline-row"><h2>How to think about it</h2><p>{{ mental_model }}</p></div>{% endif %}
-          {% if background %}<div class="outline-row"><h2>Know first</h2><ul>{% for item in background %}<li>{{ item }}</li>{% endfor %}</ul></div>{% endif %}
         </section>
+        {% if background %}<details class="definition-drawer preflight-drawer"><summary>Know before running</summary><ul>{% for item in background %}<li>{{ item }}</li>{% endfor %}</ul></details>{% endif %}
+      </section>
 
-        {% if terms %}<details class="definition-drawer"><summary>Definitions used in this experiment</summary><div class="definition-list">{% for item in terms %}<div><strong class="term-with-tip">{{ item.term }} <span class="help-tip" tabindex="0" data-tip="{{ item.definition | escape }}">?</span></strong><p>{{ item.definition }}</p></div>{% endfor %}</div></details>{% endif %}
+      <section id="apparatus" class="apparatus-block apparatus-v2 anchor-section">
+        <div class="apparatus-heading"><span class="section-token">{% if apparatus_recorded %}RECORDED BENCHMARK{% else %}LIVE EXPERIMENT{% endif %}</span><h2>{{ page.title }}</h2></div>
+        {% unless apparatus_recorded %}<div class="apparatus-start"><strong>Run condition</strong><p>Change one control at a time when possible. Watch the declared measurements, then use the interaction guide to distinguish what changed from what remained fixed.</p></div>{% endunless %}
+        <article class="experiment-content">{{ content }}</article>
       </section>
 
       {% if controls %}
       <section id="controls" class="interaction-guide anchor-section">
-        <div class="section-head compact"><div class="kicker">{% if apparatus_recorded %}Protocol guide{% else %}Interaction guide{% endif %}</div><h2>{% if apparatus_recorded %}What each recorded protocol changes{% else %}What each control changes{% endif %}</h2></div>
+        <div class="section-head compact"><div class="kicker">{% if apparatus_recorded %}Protocol guide{% else %}Interaction guide{% endif %}</div><h2>{% if apparatus_recorded %}What each recorded protocol changes{% else %}What each control actually does{% endif %}</h2></div>
         <div class="control-guide-list">{% for item in controls %}<article class="control-guide-row"><div class="control-name"><strong>{{ item.control }}</strong></div><div><small>CHANGES</small><p>{{ item.changes }}</p></div><div><small>STAYS FIXED</small><p>{{ item.fixed }}</p></div><div><small>WATCH</small><p>{{ item.watch }}</p></div></article>{% endfor %}</div>
       </section>
       {% endif %}
 
+      {% if terms %}<details class="definition-drawer"><summary>Definitions used in this experiment</summary><div class="definition-list">{% for item in terms %}<div><strong class="term-with-tip">{{ item.term }} <span class="help-tip" tabindex="0" data-tip="{{ item.definition | escape }}">?</span></strong><p>{{ item.definition }}</p></div>{% endfor %}</div></details>{% endif %}
+
       {% if page.steps %}<section id="method" class="method-block method-block-v2 anchor-section"><h2>Method</h2><ol class="method-outline">{% for step in page.steps %}<li><strong>{{ step.label }}</strong><span>{{ step.text }}</span></li>{% endfor %}</ol></section>{% endif %}
       {% if outcomes %}<section id="outcomes" class="result-guide anchor-section"><h2>Possible outcomes</h2><div class="result-outline">{% for item in outcomes %}<div><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div></section>{% endif %}
-
-      <section id="apparatus" class="apparatus-block apparatus-v2 anchor-section"><div class="apparatus-heading"><span class="section-token">{% if apparatus_recorded %}RECORDED BENCHMARK{% else %}LIVE EXPERIMENT{% endif %}</span><h2>{{ page.title }}</h2></div><article class="experiment-content">{{ content }}</article></section>
 
       <section id="evidence" class="evidence-panel evidence-v2 anchor-section"><div><small>SUPPORTED</small><p>{{ page.shows }}</p></div><div><small>NOT SUPPORTED</small><p>{{ page.does_not_show }}</p></div></section>
 
       {% if page.technical %}<details id="technical" class="technical-section anchor-section"><summary>Technical details · equations, implementation, formal definitions</summary><div class="technical-intro">Formal state definitions, equations, resource counts, and implementation assumptions for the experiment.</div><div class="deep-dive-body">{{ page.technical | markdownify }}</div></details>{% endif %}
 
-      {% if references %}<section id="references" class="experiment-references anchor-section"><div class="section-head compact"><div class="kicker">References</div><h2>Sources and context</h2></div><div class="reference-cards">{% for ref in references %}<a class="reference-card" href="{% if ref.url contains '://' %}{{ ref.url }}{% else %}{{ ref.url | relative_url }}{% endif %}"><strong>{{ ref.title }}</strong><span>{{ ref.note }}</span></a>{% endfor %}</div></section>{% endif %}
+      {% if references %}<section id="references" class="experiment-references anchor-section"><div class="section-head compact"><div class="kicker">References</div><h2>Research and technical sources</h2></div><div class="reference-cards">{% for ref in references %}<a class="reference-card" href="{% if ref.url contains '://' %}{{ ref.url }}{% else %}{{ ref.url | relative_url }}{% endif %}"><strong>{{ ref.title }}</strong><span>{{ ref.note }}</span></a>{% endfor %}</div></section>{% endif %}
 
       <nav class="experiment-next">
         {% if prev_exp %}<a class="btn" href="{{ prev_exp.url | relative_url }}">← {{ prev_exp.id }} · {{ prev_exp.title }}</a>{% else %}<a class="btn" href="{{ '/experiment/' | relative_url }}">← All experiments</a>{% endif %}
