@@ -1,229 +1,274 @@
 ---
 layout: research
 title: Foundations
+description: A clarity-first introduction to computational pixels, from binary carriers to color, structured state, communication, memory, and measured resource cost.
 ---
 
-# From one pixel to a computational field
+# From one bit to a computational field
 
-A pixel can be modeled as a spatial address that holds a finite state.
+A computational pixel has three parts:
+
+1. **Address** — where the state lives.
+2. **Carrier state** — the finite values stored there.
+3. **Interpretation** — what those values mean and what operations may act on them.
+
+The simplest useful case is a black-and-white pixel. Richer cases change the carrier while keeping the address explicit.
+
+<div class="progression">
+  <div class="progression-card"><small>01 · ONE BIT</small><h3>Black / white</h3><p>`0` or `1`. Exact source information, exact packing, exact decoding.</p></div>
+  <div class="progression-card color-stage"><small>02 · COLOR</small><h3>RGB or palette index</h3><div class="color-bar" aria-hidden="true"></div><p>A larger finite alphabet. RGB888 carries 24 stored bits; indexed color carries an index plus palette accounting.</p></div>
+  <div class="progression-card"><small>03 · RICHER STATE</small><h3>Vector, tensor, tokens, memory</h3><p>More internal structure becomes available, but every component still has finite precision and cost.</p></div>
+</div>
+
+## Binary gives exact ground truth
+
+A 16×16 black-and-white field has 256 addresses. If black means `0` and white means `1`, every address contributes exactly one source bit.
+
+The same source can be viewed as:
+
+- a visible bitmap;
+- a matrix of zeros and ones;
+- a row-major bit stream;
+- packed bytes;
+- hexadecimal data.
+
+Those views are different interpretations of the same finite source. [Binary Pixel Carrier]({{ '/carrier/' | relative_url }}) tests the round-trip directly.
+
+## Color expands the carrier
+
+Color changes the size and structure of the local state.
+
+| Carrier | Example | Stored cost |
+|---|---|---:|
+| binary | black / white | 1 bit |
+| four-color index | `0`, `1`, `2`, or `3` | 2 bits + palette |
+| RGB888 | `(44, 167, 145)` | 24 bits |
+| RGBA8888 | `(44, 167, 145, 192)` | 32 bits |
+
+A four-color index does not need a full RGB tuple at every address, but the palette must be counted unless it is shared or deterministically derived from state already counted.
+
+Color also has many useful descriptions: hue, saturation, chroma, lightness, XYZ, Lab, LCH, OKLab, chromaticity, color difference, and others. These are **not automatically extra independent channels**. Many are transformations or measurements derived from the same underlying stimulus or stored color.
+
+Physical light introduces another layer: spectral distribution, radiance, irradiance, wavelength content, polarization, coherence, illumination direction, reflectance, and material response. Those quantities are not recoverable uniquely from an ordinary RGB code.
+
+[Color, Light, and Pixel State]({{ '/research/11-color-light-state/' | relative_url }}) defines these layers separately.
+
+## Four questions prevent information double-counting
+
+<div class="family-list">
+  <div class="family-row"><h3>What is stored?</h3><p>Count the finite carrier bits: channels, indices, integers, floats, token IDs, memory values, hashes, or other state.</p></div>
+  <div class="family-row"><h3>What is derived?</h3><p>Hue, Lab coordinates, gradients, distances, entropy, and other deterministic measurements can be recomputed from stored state and required metadata.</p></div>
+  <div class="family-row"><h3>What is measured externally?</h3><p>Spectra, polarization, illumination geometry, material reflectance, and similar physical quantities require sensors, models, or supplied data.</p></div>
+  <div class="family-row"><h3>What meaning is assigned?</h3><p>A color or number can represent confidence, class, relation, memory address, instruction, uncertainty, or another semantic role when an encoder and decoder define that interpretation.</p></div>
+</div>
+
+## Pixel encoding can be tokenizer-like
+
+A tokenizer converts a source into finite symbols or IDs that a larger model can operate on. A pixel encoder can perform the same kind of boundary operation when it maps source information into a finite local code.
+
+<div class="parallel-schema">
+  <div class="schema-label">TEXT</div><div><strong>Source</strong>text or bytes</div><div><strong>Encode</strong>token IDs</div><div><strong>Compute</strong>network state</div><div><strong>Decode</strong>output symbols</div>
+  <div class="schema-label">PIXEL FIELD</div><div><strong>Source</strong>bits, color, measurements</div><div><strong>Encode</strong>local pixel state</div><div><strong>Compute</strong>field interactions</div><div><strong>Decode</strong>image, data, action</div>
+</div>
+
+The analogy has a boundary. Raw RGB, an fp32 vector, or a tensor is not automatically a token. Token-like behavior requires a defined mapping, vocabulary, codebook, quantizer, or equivalent finite coding rule.
+
+## A pixel can contain a smaller computational object
+
+The local object can be simple or internally structured:
+
+| Local object | What changes |
+|---|---|
+| integer | one finite scalar replaces one bit |
+| RGB / indexed color | visible state has multiple code values or channels |
+| hash fragment | local state can act as an identifier or routing key |
+| vector | several channels share one outer address |
+| tensor | internal axes are preserved for an operator to exploit |
+| token set | several internal tokens interact before communicating outward |
+| memory object | fast and persistent components have different temporal roles |
+| micro-network | a small learned operator lives inside one outer address |
+| subfield | one outer address contains another addressable field |
+
+Self-similarity becomes a meaningful description only when structure is genuinely reused across levels. A scalar pixel is not a miniature copy of a neural network. A recursively reused subfield operator or repeated micro-network can be.
+
+[Pixel Interpretation Sandbox]({{ '/experiment/interpretation/' | relative_url }}) compares finite state types and fixed-rule active states.
+
+## Internal state and communication are separate choices
+
+Changing what a pixel stores does not determine how pixels communicate.
+
+Possible communication mechanisms include:
+
+- nearest-neighbor or convolutional messages;
+- graph edges;
+- sparse long-range links;
+- windowed or global attention;
+- learned routing;
+- regional summaries;
+- parent/child messages across scales.
+
+Two fields can have the same local state and different communication topology. A fair experiment changes one factor at a time or explicitly measures their interaction.
+
+## Time turns a field into a process
+
+Repeated updates can propagate information beyond one local neighborhood and support iterative computation. More update steps also cost runtime and can create convergence, oscillation, instability, or oversmoothing.
+
+Recurrence is therefore a mechanism to test, not a definition of a computational pixel.
+
+## Memory requires delayed retrieval
+
+Persistent memory needs more than hidden activation during one forward pass. A useful protocol contains four events:
+
+<div class="parallel-schema">
+  <div class="schema-label">MEMORY</div><div><strong>Write</strong>present information</div><div><strong>Remove</strong>take source away</div><div><strong>Delay</strong>add time or interference</div><div><strong>Query</strong>measure retrieval</div>
+</div>
+
+Retention duration, retrieval accuracy, capacity, overwrite behavior, corruption tolerance, and stored-state cost then become measurable.
+
+## Compression requires complete accounting
+
+A representation is not compressed merely because it looks compact or uses a high-dimensional latent state. Compression means the complete description is smaller for an acceptable reconstruction or task utility.
+
+Useful mechanisms can include:
+
+- palette indices;
+- motif dictionaries;
+- vector quantization;
+- predictive residuals;
+- sparsity;
+- low-rank or factorized state;
+- multiscale summaries;
+- entropy coding;
+- reusable recursive rules.
+
+Palettes, codebooks, metadata, shared parameters, interpreters, and hidden persistent state are part of the accounting when reproduction depends on them.
+
+## Geometry changes relationships, not dimension count
+
+Dimensionality asks how many coordinates a representation contains. Geometry asks how distance and relationship are defined.
+
+A high-dimensional Euclidean vector is not automatically hyperbolic. A low-dimensional Poincaré representation can be hyperbolic. Hyperbolic geometry is most relevant when the target relationships are genuinely hierarchical and an equal-dimensional Euclidean control is available.
+
+## Central research question
+
+> **What finite computational object should occupy an address, how should many such objects interact, and what representation, memory, robustness, compression, computation, or learning is obtained for the measured cost?**
+
+Negative results are informative. Extra dimensions, memory, routing, recursion, or geometry that increase state and compute without improving the measured task narrow the useful design space.
+
+<details class="technical-section technical-foundation">
+<summary>Technical section: formal definitions, equations, and accounting</summary>
+<div class="technical-intro">The symbols below formalize the concepts above. Each expression names a state, transformation, or resource that must be defined before quantitative comparisons are made.</div>
+<div class="deep-dive-body" markdown="1">
+
+### Computational pixel
+
+A compact model is:
 
 ```text
 pixel = address + carrier state + interpretation
 ```
 
-The address answers **where?** The carrier state answers **what finite values are present?** The interpretation answers **what do those values mean, and what operations can act on them?**
-
-For a field,
+For a two-dimensional field:
 
 ```text
 F[i,j] = O_ij
 ```
 
-`(i,j)` is the outer address. `O_ij` is the finite object at that address.
+`(i,j)` is the outer address and `O_ij` is the finite object stored there.
 
-## Start with a source whose information is exact
+### Binary source accounting
 
-A 16×16 black-and-white field can use black = `0` and white = `1`.
+For a 16×16 one-bit field:
 
 ```text
 16 × 16 = 256 source bits
 256 bits ÷ 8 = 32 packed bytes
 ```
 
-The bitmap, bit matrix, row-major bitstream, packed bytes, and hexadecimal representation can all describe the same 256 source bits exactly. Decoding is correct only when every recovered bit equals the original.
+Exact recovery requires zero Hamming distance between the original and decoded 256-bit source.
 
-[Binary Pixel Carrier]({{ '/carrier/' | relative_url }}) executes that round-trip directly.
+### Stored color versus visible projection
 
-## One address can hold many finite data types
-
-The word **pixel** does not determine the data type.
-
-| State at one address | Example | Raw state cost |
-|---|---|---:|
-| bit | `1` | 1 bit |
-| unsigned integer | `uint8 = 173` | 8 bits |
-| RGB tuple | `(44, 167, 145)` | 24 bits |
-| indexed color | index `2` into four colors | 2 bits + palette cost |
-| hash fragment | `0xA6F3` | 16 bits |
-| float vector | 8 fp32 values | 256 bits |
-| tensor | 4×4 fp16 values | 256 bits |
-| token set | 3 tokens × 6 fp16 values | 288 bits |
-| memory state | 8 fast + 8 slow fp16 values | 256 bits |
-
-These costs describe raw state only. A palette, codebook, neural weights, schema, routing table, or interpreter is an additional resource unless it is already shared or deterministically derived from counted state.
-
-### Indexed color makes the distinction concrete
-
-A four-color image does not need 24 RGB bits at every address. A pixel can store a two-bit index:
+An RGB carrier can literally store:
 
 ```text
-00 → palette color 0
-01 → palette color 1
-10 → palette color 2
-11 → palette color 3
+O_ij = [R, G, B]
 ```
 
-If the four RGB888 palette entries are stored with the image, the palette costs another
-
-```text
-4 colors × 24 bits = 96 bits
-```
-
-If the palette is universal or derived from another already-counted object, its accounting changes accordingly.
-
-## Stored color and projected color are different cases
-
-An RGB pixel can literally store three color channels:
-
-```text
-O_ij = [R,G,B]
-```
-
-A vector-valued computational pixel may instead store eight, sixty-four, or thousands of values. To display it, a projection converts the richer state into visible color:
+A richer internal object can instead be mapped to display color:
 
 ```text
 visible(i,j) = P(O_ij)
 ```
 
-The rendered RGB square is then a measurement or view of the internal state, not the complete object.
+`P` is then a projection or decoder. The visible RGB square does not fully specify `O_ij` unless the mapping is one-to-one and all required information is retained.
 
-This distinction matters whenever a visualization appears simpler than the state that produced it.
+### Derived coordinates
 
-## More state is not more independent source information
-
-Suppose one bit is deterministically expanded into a 4,096-dimensional vector. The vector may improve separability, robustness, retrieval, or algebraic manipulation. It still derives from the original source plus a shared transformation.
-
-A useful resource ledger is
+A deterministic color transform can change coordinates without adding source information:
 
 ```text
-system resources
-= source carrier
-+ hidden or persistent state
-+ metadata
-+ codebooks / side information
-+ model parameters under a declared amortization rule
+RGB → XYZ → Lab → LCH
 ```
 
-A larger representation can be useful without creating new independent source information.
+For cylindrical Lab coordinates:
 
-## Internal pixel type and communication are independent
+```text
+C = sqrt(a² + b²)
+h = atan2(b, a)
+```
 
-What an address contains does not determine how addresses communicate.
+`C` and `h` reorganize `a` and `b`; they are not additional independent channels unless separately stored.
 
-A vector, tensor, token set, or memory object can exchange information through:
+### State examples
 
-- local convolution or nearest-neighbor messages;
-- graph edges;
-- sparse long-range connections;
-- global or windowed attention;
-- learned routing;
-- regional summaries;
-- parent/child messages across scales.
+```text
+vector:       x_ij ∈ R^D
+tensor:       X_ij ∈ R^(A×B×C)
+internal set: X_ij ∈ R^(K×D)
+memory:       x_ij = [fast | slow | gates]
+subfield:     F_outer[i,j] = F_inner^(i,j)
+```
 
-Two fields with identical internal state can behave differently if their communication topology differs.
+Every physical implementation uses finite precision even when real-number notation is convenient mathematically.
 
-## Time is another independent variable
+### Recurrence
 
-A field may update repeatedly:
+Repeated updates form a state trajectory:
 
 ```text
 F_0 → F_1 → F_2 → ... → F_T
 ```
 
-Repeated local updates increase the distance over which information can propagate. They can also support iterative computation and persistence. Each extra update costs runtime and can introduce convergence, oscillation, or instability.
+`T` is part of the compute budget. Increasing `T` can change effective communication distance as well as runtime.
 
-Recurrence is therefore one mechanism, not the definition of a computational pixel.
+### Complete resource ledger
 
-## Memory requires persistence under removal and interference
-
-Hidden state inside one forward pass is not enough to establish useful memory.
-
-A memory experiment needs a sequence such as
+A useful bit ledger is:
 
 ```text
-write → remove source → delay/interference → query
+B_system
+= B_carrier
++ B_hidden
++ B_metadata
++ B_codebook
++ B_topology
++ B_interpreter
++ B_parameters,amortized
 ```
 
-Measurements can include retention duration, retrieval accuracy, capacity, interference, overwrite, corruption tolerance, and stored-state cost.
+Terms that are universal and truly shared can be amortized under an explicit rule; instance-specific resources cannot be silently omitted.
 
-A classical Hopfield network provides a transparent baseline: visible pixels become bipolar state while a dense weight matrix stores associative relationships used for recall.
+### Compression objective
 
-## Compression is a rate question
-
-A 64-dimensional state per address is generally much larger than RGB. Compression begins only when structure reduces the complete accounted description.
-
-Possible mechanisms include:
-
-- reusable motif dictionaries;
-- vector quantization and codebook indices;
-- low-rank or factorized state;
-- predictive residual coding;
-- sparsity;
-- multiscale summaries;
-- entropy coding;
-- shared recursive rules.
-
-The useful measurement is a rate–distortion or rate–utility curve:
+Compression is evaluated through a rate–distortion or rate–utility relationship:
 
 ```text
 stored bits ↔ reconstruction quality
 stored bits ↔ retained task performance
 ```
 
-## Richer internal objects change the available computation
+A larger latent representation may improve robustness, separability, or computation while still increasing the complete storage rate.
 
-### Vector
-
-```text
-x_ij ∈ R^D
-```
-
-A vector distributes state across channels. Neural Cellular Automata are an established example of learned vector-valued cells with shared local updates.
-
-### Tensor
-
-```text
-X_ij ∈ R^(A×B×C)
-```
-
-A tensor introduces explicit internal axes. It becomes meaningfully different from a flat vector only when the operator preserves or exploits those axes.
-
-### Internal token set
-
-```text
-X_ij ∈ R^(K×D)
-```
-
-Several tokens live inside one outer address and can interact through attention. This differs from a field Transformer, where attention connects different outer addresses.
-
-### Memory object
-
-```text
-x_ij = [fast state | slow state | gates]
-```
-
-Different components can have different temporal roles. Their value has to be established with a persistence task.
-
-### Subfield
-
-```text
-F_outer[i,j] = F_inner^(i,j)
-```
-
-One outer address contains another active field. Genuine recursion requires reusable cross-level structure or operators; ordinary pooling alone is not enough.
-
-[Pixel Interpretation Sandbox]({{ '/experiment/interpretation/' | relative_url }}) compares finite data types and executes fixed-rule examples of richer active states.
-
-## High dimensionality and hyperbolic geometry are separate
-
-Dimensionality asks how many coordinates a representation contains. Geometry asks how distance is defined between represented points.
-
-A 4,096-dimensional Euclidean hypervector is high-dimensional but not hyperbolic. A two-dimensional Poincaré disk is hyperbolic but only two-dimensional.
-
-Hyperbolic geometry is most defensible when the target relationships are explicitly hierarchical and an equal-dimensional Euclidean control is available.
-
-## Central research question
-
-> **What finite computational object should occupy an address, how should many such objects interact, and what representation, memory, robustness, compression, computation, or learning is obtained for the measured cost?**
-
-A negative result is useful. If a tensor, memory mechanism, routing system, or recursive structure adds state and compute without improving the measured task, that result narrows the design space.
+</div>
+</details>
