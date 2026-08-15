@@ -1,55 +1,55 @@
 ---
 layout: default
 title: Pixel Neural Net Lab
-description: An experimental laboratory for computational pixels, multidimensional fields, memory, tensors, attention, recursive structure and machine reasoning.
+description: An experimental laboratory for Pixel Photon carriers, computational pixels, multidimensional fields, memory, tensors, attention, recursive structure and machine reasoning.
 ---
 <section class="hero">
-  <div class="eyebrow">Open research laboratory · computational representation · 2026</div>
-  <h1>What if a pixel were a computational universe?</h1>
-  <p class="hero-deck">Pixel Neural Net Lab studies a deliberately broad primitive: a pixel is a spatial address whose internal meaning is not fixed. It can hold a scalar, vector, tensor, neural unit, micro-transformer, memory object, subfield, or a recursively larger structure. The visible color is only one possible projection.</p>
-  <div class="hero-actions"><a class="btn primary" href="{{ '/experiment/#pixelUniverseLab' | relative_url }}">Open the Pixel Universe</a><a class="btn secondary" href="{{ '/learn/' | relative_url }}">Understand the idea</a><a class="btn" href="{{ '/research/' | relative_url }}">Browse research</a></div>
+  <div class="eyebrow">Open research laboratory · Pixel Photon · 2026</div>
+  <h1>One pixel. Many possible universes.</h1>
+  <p class="hero-deck">Pixel Neural Net Lab studies a deliberately broad primitive: a pixel is a spatial address plus a carrier state plus an interpretation. It may be a bit, scalar, vector, tensor, neural unit, micro-transformer, memory object, hypervector, subfield, or a recursively larger structure. The visible color is only one possible projection.</p>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/carrier/' | relative_url }}">Start with one-bit pixels</a><a class="btn secondary" href="{{ '/experiment/#pixelUniverseLab' | relative_url }}">Change the interpretation</a><a class="btn" href="{{ '/research/' | relative_url }}">Browse research</a></div>
 </section>
 
 <section class="section">
   <div class="big-question">
-    <div><div class="kicker">The primitive</div><h2>The pixel is an address. Its interpretation is open.</h2><p class="scope-statement">A pixel can be interpreted as a scalar, vector, tensor, neural unit, micro-transformer, memory object, subfield, or something recursively larger; the lab compares those interpretations rather than prematurely defining MPF as one recurrent-grid architecture.</p><p>The word <em>pixel</em> gives us a stable spatial address and a human-visible projection. It does not dictate how much state or computation exists behind that address.</p></div>
-    <div class="formula-box">pixel(i,j) = interpretation(stateᵢⱼ)<br><br>stateᵢⱼ ∈ scalar · vector · tensor · network · token set · memory · field · …<br><br>visible RGB = projection(stateᵢⱼ)</div>
+    <div><div class="kicker">The primitive</div><h2>Pixel = address + carrier + interpretation.</h2><p class="scope-statement">A pixel can be interpreted as a scalar, vector, tensor, neural unit, micro-transformer, memory object, hypervector, subfield, or something recursively larger. The lab compares those interpretations rather than prematurely defining MPF as one recurrent-grid architecture.</p><p>The word <em>pixel</em> gives us an address and a human-visible projection. It does not dictate the computational object associated with that address.</p></div>
+    <div class="formula-box">carrier bᵢⱼ ∈ {0,1}  ← simplest case<br><br>stateᵢⱼ = g(bᵢⱼ, address, memory, context, …)<br><br>visible pixel = projection(stateᵢⱼ)<br><br>interpretation ∈ { bit, vector, tensor, network, attention, memory, field, … }</div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">Interpretation ladder</div><h2>Increase the internal world, not merely the color channels.</h2></div><p class="section-intro">The conceptual dimensionality is open-ended, but every real implementation is finite. The scientific question is not “how many dimensions can we name?” It is which interpretation gives useful representation, computation, memory, compression, robustness or reasoning for a measured resource cost.</p></div>
+  <div class="section-head"><div><div class="kicker">Ground truth first</div><h2>Before a pixel becomes a neural universe, make the bit undeniable.</h2></div><p class="section-intro">The Binary Pixel Photon Carrier is the new entrance to the lab. A 16×16 black-and-white field is exactly 256 source bits = 32 packed bytes. The browser shows the same object as image, bit matrix and hexadecimal, then subjects it to transport, corruption, memory, compression and high-dimensional reinterpretation.</p></div>
+  <div class="card-grid">
+    <article class="learn-card"><span class="level">EXACT</span><h3>Image ↔ bits ↔ bytes ↔ hex</h3><p>Click one visible pixel and exactly one source bit changes. CRC-32 and entropy update immediately.</p><a class="card-link" href="{{ '/carrier/' | relative_url }}">Run the binary carrier →</a></article>
+    <article class="learn-card"><span class="level">UTILITY</span><h3>Text, noise and recovery</h3><p>Encode harmless UTF-8 into pixels, flip bits in a simulated channel, and compare raw transmission with Hamming(7,4) recovery.</p><a class="card-link" href="{{ '/carrier/#corruption-channel' | relative_url }}">Test the channel →</a></article>
+    <article class="learn-card"><span class="level">MEMORY</span><h3>Bitmap as associative state</h3><p>Store binary patterns in a Hopfield memory, damage them and iterate the network toward a remembered attractor.</p><a class="card-link" href="{{ '/carrier/#associative-memory' | relative_url }}">Run associative memory →</a></article>
+    <article class="learn-card"><span class="level">COMPRESSION</span><h3>Visual motif dictionary</h3><p>Represent repeated 2×2 structures once, encode tiles as motif IDs, count dictionary/index bits, and decode exactly.</p><a class="card-link" href="{{ '/carrier/#motif-codec' | relative_url }}">Measure motif coding →</a></article>
+    <article class="learn-card"><span class="level">HYPERDIMENSIONAL</span><h3>Distributed address/value binding</h3><p>Bundle all 256 coordinate/value pairs into a 4,096-D bipolar hypervector and query a coordinate back from the distributed state.</p><a class="card-link" href="{{ '/carrier/#hypervector-field' | relative_url }}">Build a hypervector field →</a></article>
+    <article class="learn-card"><span class="level">TRANSDUCTION</span><h3>Pixels → sound</h3><p>Hear the exact bitstream as binary frequency-shift keying. Same source information; a different physical representation.</p><a class="card-link" href="{{ '/carrier/#pixel-sound' | relative_url }}">Hear the field →</a></article>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><div class="kicker">Interpretation ladder</div><h2>Increase the internal world, not merely the color channels.</h2></div><p class="section-intro">Conceptual dimensionality is open-ended; every real implementation is finite. The question is which interpretation gives useful representation, computation, memory, compression, robustness or reasoning for a measured resource cost.</p></div>
   <div class="interpretation-ladder">
-    <div><strong>scalar</strong><small>one value at an address</small></div><div><strong>vector</strong><small>learned multidimensional state</small></div><div><strong>tensor</strong><small>structured latent axes inside one pixel</small></div><div><strong>neural unit</strong><small>state plus a nonlinear update</small></div><div><strong>transformer</strong><small>multiple internal tokens + attention</small></div><div><strong>memory</strong><small>fast and persistent state</small></div><div><strong>subfield</strong><small>a smaller field inside the address</small></div>
+    <div><strong>bit / scalar</strong><small>exact carrier or one value</small></div><div><strong>vector</strong><small>learned multidimensional state</small></div><div><strong>tensor</strong><small>structured latent axes inside one pixel</small></div><div><strong>neural unit</strong><small>state plus a nonlinear update</small></div><div><strong>transformer</strong><small>multiple internal tokens + attention</small></div><div><strong>memory</strong><small>fast, slow or attractor state</small></div><div><strong>subfield</strong><small>a smaller field inside the address</small></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">Carrier analogy</div><h2>Do not confuse what we see with everything being carried.</h2></div><div><p class="section-intro">A photon can be described by more than perceived brightness: frequency, phase, polarization, momentum and helicity can matter. A computational pixel is not literally a photon, but the analogy is useful—the visible projection need not exhaust the state of the carrier.</p><p class="section-intro">Likewise, an RGB square can be the human-facing view of a much richer computational object.</p></div></div>
+  <div class="section-head"><div><div class="kicker">Carrier analogy</div><h2>Do not confuse what we see with everything being carried.</h2></div><div><p class="section-intro">A photon can participate in information encoding through physical degrees of freedom such as frequency, phase, polarization, momentum or spatial mode. Pixel Photon is a computational analogy—not a claim that a photon stores arbitrary software state.</p><p class="section-intro">Likewise, a black/white or RGB square can be the visible projection of a richer computational object. “Infinite universe” means the type system is open-ended, not that finite hardware contains infinite recoverable information.</p></div></div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">Live laboratory</div><h2>Three executable starting points.</h2></div><p class="section-intro">The project now keeps the original field, the learned neural field, and the broader interpretation experiment together. They answer different questions.</p></div>
+  <div class="section-head"><div><div class="kicker">Executable architecture zoo</div><h2>The neural experiments now sit above the carrier.</h2></div><p class="section-intro">The original field, learned vector field and interpretation sandbox remain valuable. They now have a clearer place in the stack instead of standing in for the whole thesis.</p></div>
   <div class="card-grid">
-    <article class="learn-card"><span class="level">01 · PIXEL UNIVERSE</span><h3>Change what each pixel contains</h3><p>Run scalar, vector, tensor, neural-unit, micro-transformer, memory-object and subfield interpretations in pure JavaScript. Step the dynamics and inspect the complete state hidden behind a selected pixel.</p><a class="card-link" href="{{ '/experiment/#pixelUniverseLab' | relative_url }}">Run the interpretation lab →</a></article>
-    <article class="learn-card"><span class="level">02 · TRAINED MODEL</span><h3>Learned vector pixels</h3><p>A TensorFlow.js model learns a spatial-relation task using vector-valued cells, a shared local neural update and recurrence. This is one MPF architecture, not the definition of the project.</p><a class="card-link" href="{{ '/experiment/#neuralFieldLab' | relative_url }}">Train the neural field →</a></article>
-    <article class="learn-card"><span class="level">03 · ORIGINAL</span><h3>Field dynamics sandbox</h3><p>The hand-designed multidimensional field remains intact for direct experiments with locality, memory, region feedback, topology permutation, damage and recovery dynamics.</p><a class="card-link" href="{{ '/experiment/#originalFieldLab' | relative_url }}">Open the original field →</a></article>
+    <article class="learn-card"><span class="level">INTERPRETERS</span><h3>Pixel Interpretation Sandbox</h3><p>Run scalar, vector, tensor, neural-unit, micro-transformer, memory-object and subfield mechanics in pure JavaScript.</p><a class="card-link" href="{{ '/experiment/#pixelUniverseLab' | relative_url }}">Open interpretations →</a></article>
+    <article class="learn-card"><span class="level">TRAINED MODEL</span><h3>Learned Local Vector Field</h3><p>A TensorFlow.js model learns a spatial relation task using vector-valued cells, a shared local neural update and recurrence.</p><a class="card-link" href="{{ '/experiment/#neuralFieldLab' | relative_url }}">Train the vector field →</a></article>
+    <article class="learn-card"><span class="level">ORIGINAL</span><h3>Field Dynamics Sandbox</h3><p>The hand-designed multidimensional field exposes locality, persistence, regional feedback, permutation, damage and recovery directly.</p><a class="card-link" href="{{ '/experiment/#originalFieldLab' | relative_url }}">Open original dynamics →</a></article>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">The larger program</div><h2>Pixels can become systems.</h2></div><p class="section-intro">Once the primitive is no longer fixed, the project can ask how useful structures compose: tensor pixels, transformer pixels, learned semantic geography, persistent memory, quantized fields, hyperdimensional state, recursive fields, and albums of interacting fields.</p></div>
-  <div class="card-grid">
-    <article class="concept-card"><span class="num">TENSOR</span><h3>Structured state inside a pixel</h3><p>Compare a tensor-valued cell with an equal-scalar-count flat vector. Internal factorization may matter even when total storage does not change.</p></article>
-    <article class="concept-card"><span class="num">ATTENTION</span><h3>Transformer inside vs between pixels</h3><p>One experiment puts several latent tokens inside each pixel. Another treats pixels themselves as tokens. Their computational factorization is fundamentally different.</p></article>
-    <article class="concept-card"><span class="num">RECURSION</span><h3>A field inside a field</h3><p>Cells can form regions; a visible cell can itself contain a subfield; the same organization may recur across scales or across collections of fields.</p></article>
-    <article class="concept-card"><span class="num">MEMORY</span><h3>Persistent semantic objects</h3><p>A field can be saved, restored, queried, damaged, repaired, compared or allowed to interact with another field.</p></article>
-    <article class="concept-card"><span class="num">GEOMETRY</span><h3>High-dimensional and hyperbolic state</h3><p>Dimensionality, topology and geometry are separate choices. The lab can test high-dimensional compositional state and non-Euclidean semantic distance independently.</p></article>
-    <article class="concept-card"><span class="num">ALBUM</span><h3>Fields of fields</h3><p>The unit of computation can eventually become a whole persistent field. Collections of fields may function as associative memory or higher-order representations.</p></article>
-  </div>
-</section>
-
-<section class="section">
-  <div class="section-head"><div><div class="kicker">Research neighborhood</div><h2>Build on what already exists.</h2></div><p class="section-intro">Neural Cellular Automata, recurrent networks, Transformers, external memory, vector quantization, self-organizing maps, vector-symbolic systems and hyperbolic embeddings each cover part of the space. The research question is what happens when these interpretations are compared and composed at a spatial computational primitive.</p></div>
-  <div class="hero-actions"><a class="btn primary" href="{{ '/research/' | relative_url }}">Browse the research library</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">See the experiment map</a><a class="btn" href="{{ '/glossary/' | relative_url }}">Open glossary</a></div>
+  <div class="section-head"><div><div class="kicker">Research neighborhood</div><h2>Pixels as channels, representations, agents, memories and recursive systems.</h2></div><p class="section-intro">The new research map connects exact PNG/bit representation, Hopfield memory, Neural Cellular Automata, PIXEL language modeling, masked reconstruction, visual BPE, VQ, HDC/VSA, nested Transformers, sparse PixelTransformer-style querying, GPU texture computation and generative Pixel Genome experiments.</p></div>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/research/10-pixel-photon-primitives/' | relative_url }}">Open the Pixel Photon primitive map</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">See the experiment program</a><a class="btn" href="{{ '/glossary/' | relative_url }}">Open glossary</a></div>
 </section>
