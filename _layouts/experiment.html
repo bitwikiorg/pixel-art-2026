@@ -3,6 +3,10 @@ layout: default
 ---
 {% assign exp = site.data.experiments | where: "id", page.exp_id | first %}
 {% assign teach = site.data.experiment_teaching[page.exp_id] %}
+{% assign mental_model = teach.mental_model | default: page.mental_model %}
+{% assign background = teach.background | default: page.background %}
+{% assign terms = teach.terms | default: page.terms %}
+{% assign outcomes = teach.outcomes | default: page.outcomes %}
 {% assign category_slug = page.category | slugify %}
 <div class="page-shell experiment-shell exp-{{ category_slug }} experiment-shell-v2">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiments</a><span>›</span><span>{{ page.exp_id }}</span></nav>
@@ -28,22 +32,24 @@ layout: default
       <h2>What it is</h2>
       <p>{{ page.explanation | default: page.deck }}</p>
     </div>
-    {% if teach %}
+    {% if mental_model %}
     <div class="outline-row">
       <h2>How to think about it</h2>
-      <p>{{ teach.mental_model }}</p>
+      <p>{{ mental_model }}</p>
     </div>
+    {% endif %}
+    {% if background %}
     <div class="outline-row">
       <h2>Know first</h2>
-      <ul>{% for item in teach.background %}<li>{{ item }}</li>{% endfor %}</ul>
+      <ul>{% for item in background %}<li>{{ item }}</li>{% endfor %}</ul>
     </div>
     {% endif %}
   </section>
 
-  {% if teach %}
+  {% if terms %}
   <details class="definition-drawer">
     <summary>Definitions used in this experiment</summary>
-    <div class="definition-list">{% for item in teach.terms %}<div><strong>{{ item.term }}</strong><p>{{ item.definition }}</p></div>{% endfor %}</div>
+    <div class="definition-list">{% for item in terms %}<div><strong>{{ item.term }}</strong><p>{{ item.definition }}</p></div>{% endfor %}</div>
   </details>
   {% endif %}
 
@@ -54,10 +60,10 @@ layout: default
   </section>
   {% endif %}
 
-  {% if teach %}
+  {% if outcomes %}
   <section class="result-guide">
     <h2>Possible outcomes</h2>
-    <div class="result-outline">{% for item in teach.outcomes %}<div><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div>
+    <div class="result-outline">{% for item in outcomes %}<div><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div>
   </section>
   {% endif %}
 
