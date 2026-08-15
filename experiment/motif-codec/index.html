@@ -4,13 +4,28 @@ title: Visual Motif Codec
 exp_id: "04"
 status: "EXACT CODEC · LIVE"
 category: "Compression"
-deck: "Break a binary field into 2×2 motifs, build a dictionary of unique motifs, encode the field as dictionary indices, and count the dictionary and metadata rather than hiding them."
+question: "When does repeated local structure make a binary field shorter to describe than its raw 256 bits?"
+explanation: "The 16×16 source is partitioned into sixty-four 2×2 tiles. Each distinct four-bit tile becomes a dictionary entry, and the field is represented by a sequence of dictionary indices. Compression occurs only when repeated tiles save more bits than the dictionary and metadata cost."
+deck: "A small exact dictionary codec exposes both repetition gains and side-information cost."
 source: "16×16 binary field = 256 raw bits"
 interpretation: "reusable motif dictionary"
 learned: "No"
 measure: "total coded bits and exact decode distance"
 shows: "Repeated spatial structure can reduce description length when the dictionary overhead is worth paying."
 does_not_show: "Universal compression; random or motif-rich fields can become larger than the raw bitmap."
+steps:
+  - label: "Partition"
+    text: "Divide the field into non-overlapping 2×2 tiles. Each tile is one four-bit motif drawn from at most sixteen possible binary patterns."
+  - label: "Build a dictionary"
+    text: "Store every distinct motif once, then replace each tile with the index of its dictionary entry. Index width depends on dictionary size."
+  - label: "Count and decode"
+    text: "Add dictionary, index, and metadata bits, reconstruct every tile, and require zero Hamming distance for an exact result."
+technical: |
+  A 16×16 field contains `64` non-overlapping 2×2 tiles. Each raw tile costs four bits. If the dictionary contains `K` motifs, tile indices require `ceil(log2 K)` bits each, while the dictionary itself stores `4K` motif bits plus the metadata needed to interpret the stream.
+
+  Repetition can therefore reduce description length when `K` is small enough. A checkerboard uses very few motif types; a random bitmap tends to use many and may expand once dictionary overhead is included.
+
+  This is a fixed exact codec, not a learned compressor. A stronger compression study would compare total rate against RLE, DEFLATE, quadtree methods, learned codebooks, or entropy models at matched reconstruction fidelity.
 styles:
   - /assets/css/carrier.css
 scripts:
@@ -19,7 +34,8 @@ scripts:
 ---
 <div data-motif-lab>
   <section class="lab-module"><div class="lab-controls"><button class="btn" data-motif-preset="checker">Checker</button><button class="btn" data-motif-preset="frame">Frame</button><button class="btn" data-motif-preset="smile">Smile</button><button class="btn" data-motif-preset="random">Random</button><button id="motifRun" class="btn primary">Encode + decode</button></div></section>
-  <section class="lab-two"><div class="lab-module"><div class="lab-label">Source</div><div id="motifSourceGrid" class="binary-grid small"></div></div><div class="lab-module"><div class="lab-label">Decoded</div><div id="motifDecodedGrid" class="binary-grid small"></div></div></section>
+  <section class="lab-two"><div class="lab-module"><div class="lab-label">Source field</div><div id="motifSourceGrid" class="binary-grid small"></div></div><div class="lab-module"><div class="lab-label">Exact reconstruction</div><div id="motifDecodedGrid" class="binary-grid small"></div></div></section>
   <div id="motifStatus" class="lab-status"></div>
-  <section class="lab-module"><div class="lab-label">Dictionary</div><div id="motifDictionary" class="motif-dictionary"></div></section>
+  <section class="lab-module"><div class="lab-label">Unique 2×2 motifs</div><div id="motifDictionary" class="motif-dictionary"></div></section>
+  <p class="lab-explain">A smaller dictionary is useful only when the complete coded representation, including the dictionary itself, is smaller than the 256-bit raw source.</p>
 </div>
