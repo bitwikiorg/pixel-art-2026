@@ -49,6 +49,9 @@ jobs:
       - name: Audit experiment registry
         run: python3 scripts/audit_experiments.py
 
+      - name: Audit recorded benchmark data
+        run: python3 scripts/audit_benchmark_results.py
+
       - name: Build Jekyll site
         env:
           JEKYLL_ENV: production
@@ -56,6 +59,9 @@ jobs:
 
       - name: Audit rendered experiment registry
         run: python3 scripts/audit_experiments.py
+
+      - name: Audit rendered experiment wiring
+        run: python3 scripts/audit_experiment_wiring.py
 
       - name: Validate rendered output, links, fragments and IDs
         run: python3 scripts/validate_site.py
