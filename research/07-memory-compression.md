@@ -3,19 +3,21 @@ layout: research
 title: Memory and Compression
 ---
 
-# Persistent fields as memory—and what “compression” really means
+# Persistent fields, memory, and compression
 
-<div class="plain-box"><strong>Plain English:</strong> a multidimensional field can be a useful memory format without being small. Compression only begins when we reduce the number of bits needed to store a field while preserving useful information.</div>
+A multidimensional field can be useful memory without being compact. Memory asks whether state survives and remains usable. Compression asks whether the same useful information can be preserved with fewer accounted bits.
+
+Those questions should remain separate.
 
 ## Raw field size
 
-For a 32×32 field with 64 state values per cell:
+A 32×32 field with 64 state values per cell contains
 
 ```text
 1,024 cells × 64 values = 65,536 scalars
 ```
 
-Approximate raw storage:
+Approximate raw storage is
 
 | Representation | Field size |
 |---|---:|
@@ -23,115 +25,140 @@ Approximate raw storage:
 | fp16 / bf16 | 128 KiB |
 | int8 | 64 KiB |
 
-So simply replacing RGB pixels with 64-dimensional neural state increases storage dramatically.
+Replacing RGB pixels with 64-dimensional neural state therefore increases raw storage dramatically before any compression method is applied.
 
-## Persistence before compression
+## Persistence as an independent capability
 
-First ask whether the field is a useful memory object at all.
+A persistent field can be tested by interrupting computation:
 
-Experiments:
+```text
+compute → serialize F_T → remove active state → restore → continue or query
+```
 
-1. stop the recurrent computation and serialize `F_T`;
-2. restore it later;
-3. continue updating;
-4. answer new queries from the restored state;
-5. compare against recomputing the field from the original input.
+Useful measurements include:
 
-If the restored field contains useful working information, persistence has value independent of compression.
+- whether task-relevant information survives serialization;
+- how long the state can remain inactive;
+- whether computation can resume without the original input;
+- how much state must be stored;
+- whether recomputing from the source is cheaper than restoring the field.
+
+Persistence has value only if the saved state contains useful information that is costly or impossible to recover from the source at query time.
+
+## Memory requires removal of the source
+
+A stronger memory protocol uses
+
+```text
+write → remove source → delay/interference → query
+```
+
+This prevents a model from answering by re-reading the original input.
+
+Report retention length, capacity, retrieval accuracy, interference, overwrite, corruption sensitivity, and total stored state. A model with more memory bits should not be compared with a smaller baseline as though their storage budgets were equal.
 
 ## Vector quantization
 
-[VQ-VAE](https://arxiv.org/abs/1711.00937) provides a direct mechanism: replace a continuous vector with the index of a learned codebook vector.
+[VQ-VAE](https://arxiv.org/abs/1711.00937) replaces a continuous vector with the index of a learned codebook entry.
 
-A product-VQ example for a 64-dimensional cell:
+For a 64-dimensional cell, product quantization might split the vector into four groups of sixteen values. If each group chooses among 256 codewords, each index costs eight bits:
 
 ```text
-64 dimensions → four groups of 16
-256 codewords per group → 8 bits per index
-4 indices × 8 bits = 32 bits per cell
+4 groups × 8 bits = 32 bits / cell
 ```
 
 For 1,024 cells:
 
 ```text
-32,768 bits = 4 KiB of indices
+1,024 × 32 bits = 32,768 bits = 4 KiB of indices
 ```
 
-But those indices only make sense with a codebook.
+The 4 KiB figure is incomplete without the codebook.
 
-If four fp16 codebooks each contain `256 × 16` values, the codebooks themselves occupy roughly 32 KiB. A per-field self-contained encoding would therefore be closer to 36 KiB before headers or entropy coding—not 4 KiB.
-
-If one codebook is shared by millions of fields, its cost can be amortized. Both accounting regimes are useful, but they answer different questions.
-
-## Three meanings of “self-contained”
-
-### Interpreter-dependent
-A shared model, codebook and schema are assumed. Only the latent field is stored.
-
-### Instance-self-contained
-A fixed universal interpreter/codebook may be shared, but every piece of **instance-specific** state and metadata required to use the field travels with it.
-
-### Strictly self-describing
-The field also carries its schema, definitions and decoding metadata. This is much more ambitious and potentially expensive.
-
-The second definition is the best starting point; it resembles a normal codec with a shared decoder.
-
-## Rate–utility rather than “information density”
-
-For reasoning memory, reconstruction pixels may be the wrong objective. Instead measure:
+Four fp16 codebooks containing `256 × 16` values each occupy roughly
 
 ```text
-stored bits ↔ retained task performance
+4 × 256 × 16 × 2 bytes ≈ 32 KiB
 ```
 
-Examples:
+A self-contained field-specific representation would therefore be closer to 36 KiB before headers or entropy coding. If one 32 KiB codebook is shared by millions of fields, its amortized per-field cost can be tiny. Both accounting regimes are legitimate, but they answer different deployment questions.
+
+## Three levels of self-containment
+
+### Interpreter-dependent
+
+A shared model, codebook, and schema already exist. Only the latent instance state is stored.
+
+### Instance-self-contained
+
+A universal interpreter may be shared, but every piece of instance-specific state and metadata required for decoding travels with the field.
+
+### Strictly self-describing
+
+The stored object also carries enough schema, definitions, and decoding metadata to explain its own structure. This is substantially more expensive and should not be assumed by default.
+
+Instance-self-contained storage is the closest analogue to an ordinary codec with a shared decoder.
+
+## Rate–utility
+
+For reasoning or memory, pixel-perfect reconstruction may not be the relevant objective. The stored representation can instead be evaluated by how much task performance it preserves:
+
+```text
+stored bits ↔ retained utility
+```
+
+Examples include:
 
 - bits required to answer 95% of stored facts correctly;
-- bits required to retain path-planning performance;
-- bits required to resume recurrent reasoning without losing accuracy.
+- bits required to preserve route-planning accuracy;
+- bits required to resume recurrent computation with less than a chosen loss in performance.
 
-Plot a **rate–utility curve** for MPF, flat VQ state, continuous latents and other baselines.
-
-Background: [rate–distortion theory](https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory).
+The result should be a curve because different methods can dominate at different rates.
 
 ## Multiresolution storage
 
-A hierarchy may enable coarse-to-fine storage:
+Hierarchical state can support coarse-to-fine coding:
 
 ```text
-coarse summary + local residuals
+coarse prediction + fine residual
 ```
 
-Potential methods:
+Possible mechanisms include:
 
-- store coarse regions densely and fine cells sparsely;
-- predict fine state from parent regions and encode only residuals;
-- use different quantization rates by scale;
-- retrieve fine detail only for queried regions.
+- dense coarse regions with sparse fine cells;
+- parent-state prediction of child state;
+- residual coding only where prediction fails;
+- different quantization rates by scale;
+- query-driven restoration of fine detail.
 
-This is where “semantic compression” can become an operational engineering problem rather than a metaphor.
+The relevant comparison is with flat quantization, conventional predictive coding, and other hierarchical codecs under the same fidelity or utility target.
 
-## Damage and error correction
+## Damage and recovery
 
-Persistent recurrent state may support repair.
-
-Procedure:
-
-1. obtain a useful field;
-2. delete or corrupt a region;
-3. continue recurrent updates;
-4. measure whether task performance recovers.
-
-If recovery occurs, inspect where the redundant information came from: neighboring state, coarse regions, global memory, or the learned dynamics themselves.
-
-## Albums and associative retrieval
-
-A collection of fields can serve as higher-order memory:
+A persistent field can be corrupted after it has acquired useful state:
 
 ```text
-A = {F₁, F₂, ..., Fₙ}
+useful field → delete or corrupt region → continue computation → re-evaluate task
 ```
 
-A later model might retrieve fields by a learned key, combine related episodes, or consolidate many fields into an abstract field.
+Recovery should be traced to its actual source:
 
-The main comparison should be with ordinary key-value memory, vector databases, recurrent memory models and learned external-memory architectures. “Album” is useful only if field-level structure gives something beyond a set of vectors.
+- redundancy in neighboring state;
+- coarse region summaries;
+- a global memory;
+- learned dynamics;
+- external source information that was never removed.
+
+Without that distinction, visual repair can be mistaken for memory.
+
+## Higher-order field memory
+
+A collection of persistent fields can be treated as a memory set
+
+```text
+A = {F_1, F_2, ..., F_n}
+```
+
+A retrieval system could select one field by key, combine related fields, update an existing field, or consolidate many fields into a summary.
+
+The comparison target is ordinary key-value memory, vector databases, recurrent memory models, and learned external-memory architectures. Field-level structure is useful only if it improves retrieval, composition, persistence, or update behavior for its additional storage cost.
