@@ -49,6 +49,9 @@ jobs:
       - name: Audit experiment registry
         run: python3 scripts/audit_experiments.py
 
+      - name: Audit control-guide coverage
+        run: python3 scripts/audit_control_guides.py
+
       - name: Reject mock or placeholder implementations
         run: python3 scripts/audit_no_boilerplate.py
 
