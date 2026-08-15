@@ -1,53 +1,55 @@
 ---
 layout: default
 title: Pixel Neural Net Lab
-description: An interactive research library and neural-field laboratory for Multidimensional Pixel Fields.
+description: An experimental laboratory for computational pixels, multidimensional fields, memory, tensors, attention, recursive structure and machine reasoning.
 ---
 <section class="hero">
-  <div class="eyebrow">Open research laboratory · neural representation · 2026</div>
-  <h1>What if a neural network had a place to think?</h1>
-  <p class="hero-deck">Pixel Neural Net Lab explores a simple architectural idea: give a neural system a persistent two-dimensional workspace. Every cell in that workspace contains a learned vector state, nearby cells exchange information, and the field changes repeatedly as the network computes.</p>
-  <div class="hero-actions"><a class="btn primary" href="{{ '/learn/' | relative_url }}">Start with the idea</a><a class="btn secondary" href="{{ '/experiment/' | relative_url }}">Open the live lab</a><a class="btn" href="{{ '/research/' | relative_url }}">Browse research</a></div>
+  <div class="eyebrow">Open research laboratory · computational representation · 2026</div>
+  <h1>What if a pixel were a computational universe?</h1>
+  <p class="hero-deck">Pixel Neural Net Lab studies a deliberately broad primitive: a pixel is a spatial address whose internal meaning is not fixed. It can hold a scalar, vector, tensor, neural unit, micro-transformer, memory object, subfield, or a recursively larger structure. The visible color is only one possible projection.</p>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/experiment/' | relative_url }}">Open the Pixel Universe</a><a class="btn secondary" href="{{ '/learn/' | relative_url }}">Understand the idea</a><a class="btn" href="{{ '/research/' | relative_url }}">Browse research</a></div>
 </section>
 
 <section class="section">
   <div class="big-question">
-    <div><div class="kicker">The object we are studying</div><h2>A pixel is an address, not a color.</h2><p>In this project, “pixel” means one location in a grid. Instead of storing only red, green and blue values, that location can hold dozens of learned numbers: a <a href="{{ '/glossary/#cell-state' | relative_url }}">cell state</a>. The visible color is only a way for a human to look at a few of those dimensions.</p><p>This makes the field closer to a recurrent neural network laid out over space than to an ordinary image.</p></div>
-    <div class="formula-box">F<sub>t</sub> ∈ ℝ<sup>H×W×D</sup><br><br>cell(i,j) = x<sub>ij</sub> ∈ ℝ<sup>D</sup><br><br>F<sub>0</sub> → F<sub>1</sub> → … → F<sub>T</sub></div>
+    <div><div class="kicker">The primitive</div><h2>The pixel is an address. Its interpretation is open.</h2><p class="scope-statement">A pixel can be interpreted as a scalar, vector, tensor, neural unit, micro-transformer, memory object, subfield, or something recursively larger; the lab compares those interpretations rather than prematurely defining MPF as one recurrent-grid architecture.</p><p>The word <em>pixel</em> gives us a stable spatial address and a human-visible projection. It does not dictate how much state or computation exists behind that address.</p></div>
+    <div class="formula-box">pixel(i,j) = interpretation(stateᵢⱼ)<br><br>stateᵢⱼ ∈ scalar · vector · tensor · network · token set · memory · field · …<br><br>visible RGB = projection(stateᵢⱼ)</div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">A five-minute map</div><h2>Learn it in layers.</h2></div><p class="section-intro">You do not need to know neural cellular automata, vector quantization or hyperbolic geometry to enter the project. Start with the mechanism, then add the research directions one at a time.</p></div>
-  <div class="path-strip">
-    <a class="path-step" href="{{ '/learn/#cell' | relative_url }}"><span>01</span><strong>Cell</strong><br><small>one location, many learned values</small></a>
-    <a class="path-step" href="{{ '/learn/#local-rule' | relative_url }}"><span>02</span><strong>Local rule</strong><br><small>neighbors exchange information</small></a>
-    <a class="path-step" href="{{ '/learn/#recurrence' | relative_url }}"><span>03</span><strong>Recurrence</strong><br><small>repeat the same learned rule</small></a>
-    <a class="path-step" href="{{ '/learn/#hierarchy' | relative_url }}"><span>04</span><strong>Scale</strong><br><small>cells, regions and coarse summaries</small></a>
-    <a class="path-step" href="{{ '/learn/#training' | relative_url }}"><span>05</span><strong>Training</strong><br><small>gradient descent learns the update</small></a>
+  <div class="section-head"><div><div class="kicker">Interpretation ladder</div><h2>Increase the internal world, not merely the color channels.</h2></div><p class="section-intro">The conceptual dimensionality is open-ended, but every real implementation is finite. The scientific question is not “how many dimensions can we name?” It is which interpretation gives useful representation, computation, memory, compression, robustness or reasoning for a measured resource cost.</p></div>
+  <div class="interpretation-ladder">
+    <div><strong>scalar</strong><small>one value at an address</small></div><div><strong>vector</strong><small>learned multidimensional state</small></div><div><strong>tensor</strong><small>structured latent axes inside one pixel</small></div><div><strong>neural unit</strong><small>state plus a nonlinear update</small></div><div><strong>transformer</strong><small>multiple internal tokens + attention</small></div><div><strong>memory</strong><small>fast and persistent state</small></div><div><strong>subfield</strong><small>a smaller field inside the address</small></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">Live experiments</div><h2>Make the mechanism visible.</h2></div><p class="section-intro">The browser lab contains both a trainable neural model and a hand-designed dynamics sandbox. They are intentionally separated so learned behavior is not confused with a visualization.</p></div>
-  <div class="card-grid two">
-    <article class="learn-card"><span class="level">NEURAL NETWORK</span><h3>Train a local recurrent field</h3><p>A small TensorFlow.js network learns a spatial-relation task. Every cell uses the same learned convolutional update rule, applied repeatedly over a 12×12 hidden field. Inspect the hidden state after each recurrent step and compare normal versus shuffled state.</p><a class="card-link" href="{{ '/experiment/#neuralFieldLab' | relative_url }}">Run the neural field →</a></article>
-    <article class="learn-card"><span class="level">DYNAMICAL SYSTEM</span><h3>Explore field dynamics</h3><p>Change local coupling, memory and regional feedback; damage part of the field; or permute cell positions. This sandbox is not trained—it exists to make ideas such as locality, persistence and perturbation intuitive.</p><a class="card-link" href="{{ '/experiment/' | relative_url }}">Open the sandbox →</a></article>
-  </div>
+  <div class="section-head"><div><div class="kicker">Carrier analogy</div><h2>Do not confuse what we see with everything being carried.</h2></div><div><p class="section-intro">A photon can be described by more than perceived brightness: frequency, phase, polarization, momentum and helicity can matter. A computational pixel is not literally a photon, but the analogy is useful—the visible projection need not exhaust the state of the carrier.</p><p class="section-intro">Likewise, an RGB square can be the human-facing view of a much richer computational object.</p></div></div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">Research neighborhood</div><h2>This idea has ancestors.</h2></div><p class="section-intro">The project sits where several established areas meet. Understanding the neighbors prevents us from reinventing existing work and shows which combinations are actually worth testing.</p></div>
+  <div class="section-head"><div><div class="kicker">Live laboratory</div><h2>Three executable starting points.</h2></div><p class="section-intro">The project now keeps the original field, the learned neural field, and the broader interpretation experiment together. They answer different questions.</p></div>
   <div class="card-grid">
-    <article class="concept-card"><span class="num">NCA</span><h3>Neural Cellular Automata</h3><p>The closest structural relative: vector-valued cells on a grid, a shared learned local update, and recurrence.</p><a class="card-link" href="https://distill.pub/2020/growing-ca/">Read Distill →</a></article>
-    <article class="concept-card"><span class="num">MEMORY</span><h3>Spatial neural memory</h3><p>Neural Map shows that a learned two-dimensional memory can remain persistent across time. MPF asks what happens when the memory itself becomes an active recurrent computation.</p><a class="card-link" href="https://arxiv.org/abs/1702.08360">Read Neural Map →</a></article>
-    <article class="concept-card"><span class="num">TOPOLOGY</span><h3>Self-organizing maps</h3><p>Kohonen maps are a classic example of mapping high-dimensional data onto an ordered 2D grid while preserving useful neighborhood structure.</p><a class="card-link" href="https://www.scholarpedia.org/article/Kohonen_network">Read Scholarpedia →</a></article>
-    <article class="concept-card"><span class="num">CODES</span><h3>Vector quantization</h3><p>VQ-VAE learns discrete latent codebook entries. That is relevant if a persistent field is later stored compactly between reasoning episodes.</p><a class="card-link" href="https://arxiv.org/abs/1711.00937">Read VQ-VAE →</a></article>
-    <article class="concept-card"><span class="num">GEOMETRY</span><h3>Hyperbolic embeddings</h3><p>Poincaré embeddings show why negative curvature is worth testing for tree-like or hierarchical semantic structure—not as a mysterious extra dimension.</p><a class="card-link" href="https://arxiv.org/abs/1705.08039">Read the paper →</a></article>
-    <article class="concept-card"><span class="num">REASONING</span><h3>Recurrent latent computation</h3><p>Recent work again makes recurrence and test-time depth relevant: repeated latent updates can increase effective computational depth without producing a longer token sequence.</p><a class="card-link" href="{{ '/research/09-current-frontier/' | relative_url }}">See current frontier →</a></article>
+    <article class="learn-card"><span class="level">01 · PIXEL UNIVERSE</span><h3>Change what each pixel contains</h3><p>Run scalar, vector, tensor, neural-unit, micro-transformer, memory-object and subfield interpretations in pure JavaScript. Step the dynamics and inspect the complete state hidden behind a selected pixel.</p><a class="card-link" href="{{ '/experiment/#pixelUniverseLab' | relative_url }}">Run the interpretation lab →</a></article>
+    <article class="learn-card"><span class="level">02 · TRAINED MODEL</span><h3>Learned vector pixels</h3><p>A TensorFlow.js model learns a spatial-relation task using vector-valued cells, a shared local neural update and recurrence. This is one MPF architecture, not the definition of the project.</p><a class="card-link" href="{{ '/experiment/#neuralFieldLab' | relative_url }}">Train the neural field →</a></article>
+    <article class="learn-card"><span class="level">03 · ORIGINAL</span><h3>Field dynamics sandbox</h3><p>The hand-designed multidimensional field remains intact for direct experiments with locality, memory, region feedback, topology permutation, damage and recovery dynamics.</p><a class="card-link" href="{{ '/experiment/' | relative_url }}">Open the original field →</a></article>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">Research library</div><h2>Choose a question, not a chapter number.</h2></div><div><p class="section-intro">The library is organized as cards by topic: architecture, learning, topology, memory, compression, geometry, reasoning and interpretation. Each page begins in plain English, then becomes technical.</p><div class="hero-actions"><a class="btn primary" href="{{ '/research/' | relative_url }}">Browse the cards</a><a class="btn" href="{{ '/glossary/' | relative_url }}">Open glossary</a></div></div></div>
+  <div class="section-head"><div><div class="kicker">The larger program</div><h2>Pixels can become systems.</h2></div><p class="section-intro">Once the primitive is no longer fixed, the project can ask how useful structures compose: tensor pixels, transformer pixels, learned semantic geography, persistent memory, quantized fields, hyperdimensional state, recursive fields, and albums of interacting fields.</p></div>
+  <div class="card-grid">
+    <article class="concept-card"><span class="num">TENSOR</span><h3>Structured state inside a pixel</h3><p>Compare a tensor-valued cell with an equal-scalar-count flat vector. Internal factorization may matter even when total storage does not change.</p></article>
+    <article class="concept-card"><span class="num">ATTENTION</span><h3>Transformer inside vs between pixels</h3><p>One experiment puts several latent tokens inside each pixel. Another treats pixels themselves as tokens. Their computational factorization is fundamentally different.</p></article>
+    <article class="concept-card"><span class="num">RECURSION</span><h3>A field inside a field</h3><p>Cells can form regions; a visible cell can itself contain a subfield; the same organization may recur across scales or across collections of fields.</p></article>
+    <article class="concept-card"><span class="num">MEMORY</span><h3>Persistent semantic objects</h3><p>A field can be saved, restored, queried, damaged, repaired, compared or allowed to interact with another field.</p></article>
+    <article class="concept-card"><span class="num">GEOMETRY</span><h3>High-dimensional and hyperbolic state</h3><p>Dimensionality, topology and geometry are separate choices. The lab can test high-dimensional compositional state and non-Euclidean semantic distance independently.</p></article>
+    <article class="concept-card"><span class="num">ALBUM</span><h3>Fields of fields</h3><p>The unit of computation can eventually become a whole persistent field. Collections of fields may function as associative memory or higher-order representations.</p></article>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><div class="kicker">Research neighborhood</div><h2>Build on what already exists.</h2></div><p class="section-intro">Neural Cellular Automata, recurrent networks, Transformers, external memory, vector quantization, self-organizing maps, vector-symbolic systems and hyperbolic embeddings each cover part of the space. The research question is what happens when these interpretations are compared and composed at a spatial computational primitive.</p></div>
+  <div class="hero-actions"><a class="btn primary" href="{{ '/research/' | relative_url }}">Browse the research library</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">See the experiment map</a><a class="btn" href="{{ '/glossary/' | relative_url }}">Open glossary</a></div>
 </section>
