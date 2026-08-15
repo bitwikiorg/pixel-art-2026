@@ -1,0 +1,230 @@
+{
+  "01": {
+    "background": [
+      "A bit has two possible values: 0 or 1. Eight bits form one byte.",
+      "A two-dimensional bitmap can be serialized by choosing an address order. Row-major order reads left-to-right across each row, then continues downward.",
+      "Exact recovery means every reconstructed source bit equals the original. Hamming distance counts positions that differ."
+    ],
+    "mental_model": "Think of the 16×16 field as 256 labeled light switches. The picture is one way to look at them; a bitstream, 32 bytes, or hexadecimal are other exact views of the same switch states.",
+    "terms": [
+      {"term":"bit","definition":"one binary value, 0 or 1"},
+      {"term":"byte","definition":"eight bits"},
+      {"term":"Hamming distance","definition":"number of positions that differ"},
+      {"term":"CRC-32","definition":"32-bit checksum used to detect changed data"}
+    ],
+    "outcomes": [
+      {"label":"Exact round-trip","meaning":"Hamming distance is 0. Packing and decoding preserved all 256 source bits."},
+      {"label":"Nonzero distance","meaning":"At least one recovered bit differs. The encode/decode path is not exact for that trial."},
+      {"label":"Entropy near 1 bit/symbol","meaning":"Zeros and ones are close to balanced. This does not imply spatial randomness or good compression."}
+    ]
+  },
+  "02": {
+    "background": [
+      "A noisy binary channel flips transmitted bits with some probability.",
+      "Error-correcting codes deliberately add redundancy so a decoder can infer some corrupted values.",
+      "Hamming(7,4) maps four source bits to seven transmitted bits. Its guaranteed correction radius is one flipped bit per codeword."
+    ],
+    "mental_model": "The coded branch spends extra bits to leave clues about what the original four-bit block was. Those clues make some errors diagnosable; they are not free capacity.",
+    "terms": [
+      {"term":"BER","definition":"bit-error rate: wrong recovered bits divided by source bits"},
+      {"term":"code rate","definition":"source bits divided by transmitted coded bits"},
+      {"term":"syndrome","definition":"parity-check result used to locate a likely error"},
+      {"term":"miscorrection","definition":"decoder changes a bit but lands on the wrong codeword"}
+    ],
+    "outcomes": [
+      {"label":"Coded branch recovers exactly","meaning":"Added redundancy was sufficient for the corruption pattern in that trial."},
+      {"label":"Residual coded errors","meaning":"One or more codewords exceeded the correction guarantee or were miscorrected."},
+      {"label":"Raw branch performs similarly","meaning":"At very low noise, the overhead of coding may buy little on a small sample."}
+    ]
+  },
+  "03": {
+    "background": [
+      "A Hopfield network stores whole patterns as attractors in a recurrent dynamical system.",
+      "Binary values are mapped to bipolar spins −1 and +1. Stored patterns determine a dense symmetric weight matrix.",
+      "Sequential asynchronous updates change one spin at a time. For the classical symmetric model, Hopfield energy should not increase."
+    ],
+    "mental_model": "Picture a landscape of valleys. Storing a pattern shapes a valley around it. A corrupted cue starts partway up the landscape and repeated updates can roll it toward a nearby attractor.",
+    "terms": [
+      {"term":"attractor","definition":"state toward which nearby states tend to evolve"},
+      {"term":"Hebbian storage","definition":"weights accumulate pairwise correlations from stored patterns"},
+      {"term":"energy","definition":"scalar function used to track classical Hopfield dynamics"},
+      {"term":"spurious attractor","definition":"stable state that is not one of the intended stored patterns"}
+    ],
+    "outcomes": [
+      {"label":"Returns to intended pattern","meaning":"The corrupted cue lies inside that memory's basin of attraction."},
+      {"label":"Converges to another stored pattern","meaning":"Corruption or interference moved the cue into another basin."},
+      {"label":"Converges to a spurious state","meaning":"The weight matrix contains a stable attractor not identical to an intended memory."}
+    ]
+  },
+  "04": {
+    "background": [
+      "Dictionary coding replaces repeated chunks with shorter references to a shared dictionary entry.",
+      "A 16×16 field contains sixty-four non-overlapping 2×2 tiles. Each raw tile contains four bits.",
+      "Compression must count the dictionary, the tile indices, and metadata—not only the index stream."
+    ],
+    "mental_model": "Instead of writing every 2×2 tile from scratch, write each distinct tile once and then point back to it. Repetition helps only when the saved repeats outweigh the cost of the dictionary.",
+    "terms": [
+      {"term":"motif","definition":"reusable local 2×2 binary pattern"},
+      {"term":"dictionary","definition":"set of distinct motifs stored once"},
+      {"term":"index width","definition":"bits required to name one dictionary entry"},
+      {"term":"side information","definition":"extra data needed to decode the main representation"}
+    ],
+    "outcomes": [
+      {"label":"Total code < 256 bits","meaning":"The field compresses under this exact motif scheme."},
+      {"label":"Total code ≈ 256 bits","meaning":"Repetition roughly balances dictionary and metadata overhead."},
+      {"label":"Total code > 256 bits","meaning":"The codec expands the field; the motifs are not repetitive enough for this dictionary."}
+    ]
+  },
+  "05": {
+    "background": [
+      "Hyperdimensional computing uses long distributed vectors whose components jointly represent structured information.",
+      "Binding combines roles such as x-coordinate, y-coordinate, and value. Bundling superposes many bound items into one vector.",
+      "Superposition creates crosstalk. Larger dimensionality can make unrelated random codes easier to distinguish, but it costs more state."
+    ],
+    "mental_model": "Imagine writing many faint transparent address-value stamps on the same large sheet. A query tries to cancel the address part of one stamp and decide whether the remaining trace looks more like value 0 or value 1.",
+    "terms": [
+      {"term":"binding","definition":"algebraic operation that combines roles into one distributed code"},
+      {"term":"bundling","definition":"superposition of many distributed codes"},
+      {"term":"cosine similarity","definition":"directional similarity between vectors"},
+      {"term":"crosstalk","definition":"interference from other superposed items"}
+    ],
+    "outcomes": [
+      {"label":"High query accuracy","meaning":"Address/value bindings remain distinguishable at the chosen dimension."},
+      {"label":"Accuracy rises with dimension","meaning":"Additional derived state is reducing crosstalk for this encoding."},
+      {"label":"Low or unstable accuracy","meaning":"Too many bindings are interfering for the chosen dimensionality or code construction."}
+    ]
+  },
+  "06": {
+    "background": [
+      "A pixel is an address plus finite state plus an interpretation. The state does not have to be RGB or even a single number.",
+      "Storage cost depends on representation. An 8-bit integer costs 8 raw bits; RGB888 costs 24; an eight-component fp32 vector costs 256 raw bits.",
+      "A visible color can be the stored state itself, an indexed lookup, or only a projection of a larger hidden object."
+    ],
+    "mental_model": "Keep the grid coordinates fixed and replace what lives at every address. The outer map stays the same while the local data type—and therefore the operations, state cost, and possible computation—changes.",
+    "terms": [
+      {"term":"carrier state","definition":"finite state physically or computationally stored at an address"},
+      {"term":"interpretation","definition":"rule that gives the state meaning and valid operations"},
+      {"term":"projection","definition":"lower-dimensional visible view of a richer state"},
+      {"term":"indexed color","definition":"small integer at each pixel that selects a color from a palette"}
+    ],
+    "outcomes": [
+      {"label":"Different state counts","meaning":"The examples consume different raw state budgets even though the outer grid is unchanged."},
+      {"label":"Different dynamics","meaning":"Internal factorization changes what the fixed local rule can do; this is mechanics, not a learned ranking."},
+      {"label":"Same visible color, different hidden state","meaning":"A projection can hide substantial internal differences between computational pixels."}
+    ]
+  },
+  "07": {
+    "background": [
+      "Supervised learning adjusts parameters so model predictions match labeled examples.",
+      "A 3×3 local operator sees only nearby addresses in one update. Repeating it expands the effective communication radius.",
+      "The four classes are LEFT, RIGHT, ABOVE, and BELOW, so uninformed balanced chance performance is 25%."
+    ],
+    "mental_model": "Two markers are dropped onto a grid. Each recurrent update lets nearby state exchange information. Enough updates can allow evidence about marker A to reach marker B before a small classifier chooses one of four relations.",
+    "terms": [
+      {"term":"held-out accuracy","definition":"accuracy on examples not used to optimize the model"},
+      {"term":"receptive field","definition":"input region that can influence a state after a given number of updates"},
+      {"term":"recurrence","definition":"reusing state and usually the same update rule through multiple steps"},
+      {"term":"seed","definition":"initial random state controlling reproducible initialization or data generation"}
+    ],
+    "outcomes": [
+      {"label":"Near > far accuracy","meaning":"The learned local process handles short communication distances better than long ones."},
+      {"label":"Far accuracy improves with depth","meaning":"Additional recurrent updates are helping information travel farther."},
+      {"label":"Near and far stay near 25%","meaning":"Training failed or the configured model did not learn the relation task."}
+    ]
+  },
+  "08": {
+    "background": [
+      "A compute shader runs the same small program across many indexed data elements in parallel.",
+      "A CPU reference is an independent implementation used as a correctness oracle.",
+      "For exact integer/binary operators, correctness can be checked address by address before comparing runtime."
+    ],
+    "mental_model": "The 64×64 field is simultaneously an image and an array of 4,096 addressable values. The CPU and GPU are given the same source and operator; their outputs must be identical before timing means anything.",
+    "terms": [
+      {"term":"WGSL","definition":"WebGPU Shading Language used by WebGPU shaders"},
+      {"term":"storage buffer","definition":"GPU-accessible array used for general compute data"},
+      {"term":"dilation","definition":"neighborhood operator that turns on a pixel when a nearby source pixel is on"},
+      {"term":"mismatch count","definition":"number of output addresses where CPU and GPU disagree"}
+    ],
+    "outcomes": [
+      {"label":"0 mismatches","meaning":"The GPU result agrees exactly with the CPU oracle for that operator and input."},
+      {"label":">0 mismatches","meaning":"There is an implementation or boundary-condition disagreement; timing should not be interpreted."},
+      {"label":"GPU slower on this field","meaning":"Submission and readback overhead dominate this small end-to-end workload; it is not evidence against GPU-resident compute at larger scale."}
+    ]
+  },
+  "09": {
+    "background": [
+      "Masked reconstruction hides known source values and asks a method to infer them from visible context.",
+      "The visibility channel distinguishes an observed zero from a missing value; otherwise those two cases would be ambiguous.",
+      "A baseline matters because structured images can often be reconstructed surprisingly well by simple local rules."
+    ],
+    "mental_model": "Cover some squares of a patterned 16×16 card. A local-majority rule guesses from nearby visible squares; a tiny convolutional model learns recurring structure from many examples. Only the covered squares count toward the headline score.",
+    "terms": [
+      {"term":"mask rate","definition":"fraction of source pixels hidden from the model"},
+      {"term":"visibility channel","definition":"binary input indicating whether a source value is observed"},
+      {"term":"baseline","definition":"simpler reference method the learned model must beat to show added value"},
+      {"term":"hidden-pixel accuracy","definition":"accuracy computed only where the source was masked"}
+    ],
+    "outcomes": [
+      {"label":"Learned > local baseline","meaning":"Training captured structure not fully used by the neighborhood heuristic on this distribution."},
+      {"label":"Learned ≈ baseline","meaning":"The learned model adds little over the simple local rule under this protocol."},
+      {"label":"Learned < baseline","meaning":"Optimization, capacity, or inductive bias is worse than the simple control for the tested distribution."}
+    ]
+  },
+  "10": {
+    "background": [
+      "Architecture comparisons are only meaningful after stating what resource is held constant.",
+      "Equal state, equal trainable parameters, and equal compute are different experimental protocols.",
+      "Repeated random seeds expose optimization variance that a single best run can hide."
+    ],
+    "mental_model": "Three engines run the same task, but fuel-tank size, engine mass, and fuel burn are different constraints. A fair comparison must name which one is being matched and report the others instead of calling every setup 'equal'.",
+    "terms": [
+      {"term":"equal-state","definition":"same number of scalar state values per outer address"},
+      {"term":"equal-parameter","definition":"similar number of trainable parameters"},
+      {"term":"equal-compute","definition":"similar FLOPs, runtime, or another declared compute budget"},
+      {"term":"sample standard deviation","definition":"spread of scores across independent runs"}
+    ],
+    "outcomes": [
+      {"label":"Consistent advantage across seeds","meaning":"One architecture performs better under the named budget with low enough variance to justify follow-up."},
+      {"label":"Large overlapping variance","meaning":"The protocol is too unstable to rank architectures confidently."},
+      {"label":"Ranking changes by budget","meaning":"The apparent winner depends on whether state, parameters, or compute is constrained."}
+    ]
+  },
+  "11": {
+    "background": [
+      "A procedural generator stores a compact description and relies on a shared interpreter to produce a larger object.",
+      "Indexed color stores a small integer per pixel. The integer selects one entry from a palette instead of storing an RGB tuple independently at every address.",
+      "Genotype is the persistent description; phenotype is the generated visible object. Damage to the phenotype does not necessarily change the genotype."
+    ],
+    "mental_model": "The 128-bit genome is a recipe. The interpreter reads that recipe to choose shape, pattern, and a four-color palette, then emits 576 two-bit color indices. The RGB image on screen is a projection of those indices through the derived palette.",
+    "terms": [
+      {"term":"genome","definition":"128-bit instance-specific procedural description"},
+      {"term":"indexed color","definition":"2-bit pixel value selecting one of four palette entries"},
+      {"term":"palette","definition":"mapping from color index to rendered RGB color"},
+      {"term":"regeneration","definition":"discarding damaged raster state and rendering again from the persistent genome"}
+    ],
+    "outcomes": [
+      {"label":"Exact regeneration","meaning":"The same genome and interpreter reproduce the same 576 color indices after raster damage."},
+      {"label":"Mutation changes phenotype","meaning":"One to three genome-bit flips alter one or more generated traits or palette values."},
+      {"label":"Small genome, larger index raster","meaning":"128 instance bits generate 1,152 bits of two-bit pixel indices, but only inside the restricted family defined by the shared interpreter."}
+    ]
+  },
+  "A1": {
+    "background": [
+      "A dynamical system repeatedly applies an update rule to its current state.",
+      "Local coupling mixes neighboring states; persistence keeps part of the previous state; regional feedback adds a coarser signal.",
+      "No loss function or training data selected these rules, so the result is mechanics rather than learned behavior."
+    ],
+    "mental_model": "Imagine 1,024 coupled eight-value cells. Each update mixes local state according to fixed equations. Changing coupling, memory, or damage changes the trajectory of that chosen dynamical system.",
+    "terms": [
+      {"term":"state trajectory","definition":"sequence of field states through repeated updates"},
+      {"term":"local coherence","definition":"similarity of neighboring states under the implemented diagnostic"},
+      {"term":"fixed point","definition":"state that no longer changes under the update rule"},
+      {"term":"intervention","definition":"deliberate change such as zeroing a region or remapping a source"}
+    ],
+    "outcomes": [
+      {"label":"Settling dynamics","meaning":"State changes shrink and the system approaches a stable configuration."},
+      {"label":"Persistent oscillation or motion","meaning":"The fixed rule continues producing nontrivial temporal dynamics."},
+      {"label":"Damage diffuses or reorganizes","meaning":"Local/regional coupling redistributes state after the intervention; this is not semantic regeneration without a task target."}
+    ]
+  }
+}
