@@ -144,8 +144,9 @@ def main() -> int:
         "research/11-color-light-state/index.html", "research/12-generative-pixel-engineering/index.html",
         "research/13-pixel-organisms-artificial-life/index.html",
         "glossary/index.html", "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
-        "assets/css/clarity-v2.css", "assets/css/clarity-v3.css", "assets/js/site.js", "assets/js/pixel-core.js",
-        "assets/js/color-carrier.js", "assets/js/pixel-organism.js", "assets/js/experiment-help.js",
+        "assets/css/clarity-v2.css", "assets/css/clarity-v3.css", "assets/css/clarity-v4.css",
+        "assets/js/site.js", "assets/js/pixel-core.js", "assets/js/color-carrier.js",
+        "assets/js/pixel-organism.js", "assets/js/experiment-help.js",
     ]
     for rel in required:
         if not (SITE / rel).exists():
@@ -160,12 +161,35 @@ def main() -> int:
             if f'id="{anchor}"' not in text:
                 errors.append(f"Experiment category navigation target missing: {anchor}")
 
+    research_index = SITE / "research" / "index.html"
+    if research_index.exists():
+        text = research_index.read_text(encoding="utf-8")
+        if 'data-library-page="research"' not in text or text.count('class="library-link-card"') < 10:
+            errors.append("Research landing page did not render its research-domain map")
+        if ">Research</a>" not in text:
+            errors.append("Research primary-navigation link missing from research landing page")
+
+    glossary_index = SITE / "glossary" / "index.html"
+    if glossary_index.exists():
+        text = glossary_index.read_text(encoding="utf-8")
+        if 'data-library-page="glossary"' not in text or text.count('class="glossary-card"') < 20:
+            errors.append("Glossary landing page did not render its grouped definitions")
+        for anchor in ("glossary-core", "glossary-compute", "glossary-memory", "glossary-color", "glossary-geometry", "glossary-evaluation"):
+            if f'id="{anchor}"' not in text:
+                errors.append(f"Glossary group missing: {anchor}")
+
+    for exp_path in [SITE / "carrier" / "index.html", *sorted((SITE / "experiment").glob("*/index.html"))]:
+        if exp_path.exists():
+            text = exp_path.read_text(encoding="utf-8")
+            if 'class="side-group-nav"' not in text or 'class="side-local-outline"' not in text:
+                errors.append(f"Grouped experiment navigation missing: {exp_path.relative_to(SITE)}")
+
     if errors:
         print("SITE VALIDATION FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
-    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, navigation, fragments, IDs and copy constraints validated")
+    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, navigation, library maps, fragments, IDs and copy constraints validated")
     return 0
 
 
