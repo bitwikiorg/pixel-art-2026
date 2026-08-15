@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());const field=document.querySelector('.fake-field');if(field&&!field.children.length){for(let i=0;i<144;i++){const cell=document.createElement('i');cell.style.setProperty('--i',String((i*7+(i%12)*3)%18));field.appendChild(cell);}}});

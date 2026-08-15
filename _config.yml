@@ -1,0 +1,10 @@
+title: "Multidimensional Pixel Fields"
+description: "A living research lab for spatial neural representation, compression, memory, and reasoning."
+url: "https://bitwikiorg.github.io"
+baseurl: "/pixel-art-2026"
+markdown: kramdown
+permalink: pretty
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
