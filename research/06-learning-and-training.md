@@ -3,130 +3,129 @@ layout: research
 title: Learning and Training
 ---
 
-# How computational pixels can learn
+# Learning with computational pixels
 
-<div class="plain-box"><strong>Plain English:</strong> there is no single MPF training rule because there is no single pixel interpretation. A vector field can learn through recurrent backpropagation; a tensor pixel can learn structured internal operators; a micro-transformer can learn attention; a memory pixel can learn gates; a semantic field can learn where information should live.</div>
+There is no single training rule for Multidimensional Pixel Fields because the object at an address is not fixed. A vector field can learn recurrent local updates; a tensor cell can learn structured operators; an internal-token cell can learn attention; a memory object can learn write and retention gates; a semantic field can learn where information should be placed.
 
-The current browser neural field demonstrates one concrete training loop. The larger research program asks which parts of a computational pixel should be learned and which architectural biases are useful.
+The objective must match the mechanism being tested.
 
-## The current trained baseline
+## Recurrent vector-field learning
 
-The live relation model uses
+A learned recurrent field follows
 
 ```text
 F_0 → F_1 → … → F_T → prediction
 ```
 
-with vector-valued pixels and differentiable recurrent updates. The loss gradient flows backward through the readout, every field state and the shared local update.
+A differentiable loss at the output sends gradients backward through the readout, every intermediate field state, and the shared update rule. This is backpropagation through time applied to a spatial state tensor.
 
-This is **backpropagation through time (BPTT)** applied to a spatial recurrent representation.
+Background: [Backpropagation](https://en.wikipedia.org/wiki/Backpropagation) · [Recurrent neural networks](https://www.scholarpedia.org/article/Recurrent_neural_networks).
 
-Background: [Backpropagation — Wikipedia](https://en.wikipedia.org/wiki/Backpropagation) · [Recurrent neural networks — Scholarpedia](https://www.scholarpedia.org/article/Recurrent_neural_networks).
+## What can be learned under different pixel interpretations?
 
-## What changes when the pixel interpretation changes?
-
-| Pixel interpretation | What can be learned? |
+| Pixel interpretation | Learnable components |
 |---|---|
 | vector | embeddings, local update, writer, routing |
-| tensor | tensor factors, structured kernels, low-rank/internal transforms |
-| neural unit | shared MLP or expert selection |
-| micro-transformer | Q/K/V/O projections, internal token states, neighbor interface |
-| memory object | write/read/forget gates, persistence policy |
-| subfield | inner update, outer update, cross-scale communication |
+| tensor | tensor factors, structured kernels, low-rank transforms |
+| neural unit | shared MLP, gates, expert selection |
+| internal token set | Q/K/V/O projections, token state, neighbor interface |
+| memory object | write/read/forget gates, retention policy |
+| subfield | inner update, outer update, cross-scale interface |
 | semantic/topographic pixel | coordinates, write locations, graph edges, routing |
 | quantized pixel | codebooks, assignments, entropy model |
 
-The training objective should match the interpretation. A tensor should not be introduced merely to flatten it immediately and run the same vector operation.
+A tensor representation should not be introduced only to flatten it immediately and apply the same vector operation. If the internal structure never affects computation, the experiment has not isolated tensor factorization as a mechanism.
 
-## Weight sharing is an experimental variable
+## Weight sharing
 
-A field can reuse one computational rule across many addresses:
+A field can reuse one parameter set across many addresses:
 
 ```text
-shared θ across pixels
+same θ at every pixel
 ```
 
-This keeps parameter count manageable and may encourage reusable local computation.
-
-But there are intermediate possibilities:
+Weight sharing reduces parameter growth and can encourage reusable local computation, but several intermediate designs are possible:
 
 - one universal shared rule;
-- one shared rule conditioned by a learned role vector;
-- a small shared mixture of experts;
-- different rules by scale;
-- the same rule reused recursively across scales.
+- one shared rule conditioned on a learned role vector;
+- a small mixture of shared experts;
+- separate rules by scale;
+- one rule reused recursively across scales.
 
-The project should compare these rather than assume maximum sharing is always best.
+Each choice trades parameter efficiency against specialization.
 
-## Training the live vector relation task
+## Spatial-relation training
 
-The browser experiment generates two locations:
-
-- marker A;
-- marker B;
-- target label: LEFT, RIGHT, ABOVE or BELOW.
-
-Training distances are shorter than one evaluation range. This creates a tiny test of whether local recurrent computation transfers to farther examples.
-
-The task is intentionally small. It demonstrates mechanics; it is not evidence that one pixel interpretation is generally superior.
-
-## Training tensor pixels
-
-A useful first comparison holds scalar state constant.
+A controlled relation task places marker A and marker B on a grid and predicts one of four labels:
 
 ```text
-vector model: 64 scalars / pixel
-
-tensor model: 8×8 = 64 scalars / pixel
+LEFT
+RIGHT
+ABOVE
+BELOW
 ```
 
-The tensor model should use operations that preserve or exploit its internal axes, such as separable transforms, low-rank mixing, internal convolution or attention over tensor factors.
+Shorter marker separations require fewer local communication steps than longer separations. Training and evaluation can therefore be stratified by distance.
 
-Measure whether the structure improves:
+The informative quantity is
+
+```text
+accuracy(distance, recurrent steps)
+```
+
+because a high aggregate score can hide failure at longer communication distances.
+
+## Tensor-valued cells
+
+A first controlled comparison can hold scalar state constant:
+
+```text
+vector: 64 scalars / pixel
+
+tensor: 8×8 = 64 scalars / pixel
+```
+
+The tensor model should use operations that preserve or exploit internal axes, such as separable transforms, low-rank mixing, tensor-factor attention, or internal convolution.
+
+Useful measurements include:
 
 - task accuracy;
-- data efficiency;
-- longer-depth generalization;
-- compression or low-rank structure;
-- interpretability of internal factors.
+- sample efficiency;
+- generalization to greater depth or distance;
+- rank or factor structure;
+- runtime;
+- compressibility;
+- stability across seeds.
 
-## Training micro-transformer pixels
+## Internal-token cells
 
-A small cell can hold
+An address can contain
 
 ```text
 K internal tokens × D dimensions
 ```
 
-and share one attention block across all outer addresses.
+with one shared attention block reused across outer addresses.
 
-For the first model keep `K` very small. Otherwise the cost becomes
-
-```text
-outer_pixels × O(K²)
-```
-
-before outer-field communication is counted.
-
-Compare it against:
+Per-address self-attention introduces roughly `O(K²)` token interactions, so `K` should remain small in early comparisons. A fair benchmark should include:
 
 - a flat vector with similar scalar state;
-- a shared MLP neural pixel with similar parameters;
-- a field Transformer that performs attention between outer addresses instead.
+- a shared MLP cell with similar parameters;
+- a field Transformer that attends between outer addresses instead.
 
-## Training memory objects
+The scientific question is where attention earns its cost.
 
-A memory experiment must require persistence. Otherwise a model can ignore the memory channels.
+## Learned memory
 
-A simple task structure is:
+Memory training must create a reason to retain information. A simple protocol is
 
 ```text
-WRITE phase
-→ distractor / computation phase
-→ QUERY phase
+WRITE
+→ distractor / delay
+→ QUERY
 ```
 
-Learned gates can control:
+Learned gates may control
 
 ```text
 write
@@ -135,128 +134,124 @@ read
 forget
 ```
 
-Evaluate retention length, interference, overwrite, selective recall and recovery after damage.
+Evaluation should vary delay length, interference, number of stored items, overwrite pressure, and corruption. Stored-state bits are part of the result.
 
-## Training recursive fields
+## Recursive fields
 
-A field-inside-field model has at least two communication processes:
+A field-inside-field model has at least three trainable communication processes:
 
 ```text
 inner dynamics
 outer dynamics
+inner ↔ outer interface
 ```
 
-and a third interface:
+The strongest version reuses the same or related update rule across scales. Training should include multiple sizes and hierarchy depths so the model cannot simply memorize one fixed geometry.
 
-```text
-inner ↔ outer
-```
+A critical generalization test is whether the learned operator transfers to larger unseen scales.
 
-The most interesting version reuses the same or related update rule at multiple scales. Train with multiple field sizes and depths so recursion is not tied to one fixed geometry.
+## Supplied versus learned layout
 
-## Learned layout versus supplied layout
+A supplied layout fixes where information lives. This is valuable when isolating the behavior of the update mechanism.
 
-There are two different research questions.
+A learned layout makes placement itself part of the model. Soft assignment can learn where entities, relations, or memories should occupy the field.
 
-### Supplied layout
+Success with a human-designed layout therefore does not establish learned semantic geography. The placement mechanism needs its own control.
 
-The experimenter decides where information goes. This isolates the computational mechanism and is the best starting point for debugging.
+## Functional specialization
 
-### Learned layout
-
-The model learns where to write entities, relations or memory. This is required to study emergent semantic geography.
-
-A successful model on a human-designed layout has not yet learned its own topology.
-
-## Role specialization
-
-A vector state can be partitioned explicitly:
+State can be partitioned explicitly:
 
 ```text
 x = [content | role | memory | routing | confidence]
 ```
 
-but the project should also test an undifferentiated state as a control.
+or left undifferentiated so specialization must emerge.
 
-For tensor, transformer and memory pixels, specialization may instead emerge as:
+Different primitives offer different places for specialization:
 
-- tensor axes or factors;
+- vector subspaces;
+- tensor factors;
 - internal tokens;
 - attention heads;
 - memory slots;
 - subregions;
 - expert selection.
 
-Interpretability is therefore tied to the pixel primitive itself.
+A probe can detect correlations with candidate roles, but causal interventions are needed to establish that the role matters to behavior.
 
-## Recurrence depth when recurrence is used
+## Recurrent depth as a compute budget
 
-For recurrent architectures, sample or vary update depth and measure a compute curve:
+When recurrence is used, performance should be measured against actual update count:
 
 ```text
 performance versus recurrent updates
 ```
 
-Questions include:
+Relevant questions include:
 
 - Does more computation help harder examples?
-- Does the state converge, oscillate or degrade?
-- Can the model run longer than it was trained?
-- Can adaptive halting reduce unnecessary compute?
+- Does the state converge, oscillate, or degrade?
+- Can the model run longer than the depths seen during training?
+- Can adaptive halting reduce average compute?
 
-Do not force these questions onto non-recurrent experiments.
+Non-recurrent models should not be forced into this framing; compute depth is only one architectural axis.
 
-## Better task families
+## Task families with interpretable difficulty
 
 ### Relation chains
-Train on short relation compositions and test longer chains.
+
+Compose short relations during training and test on longer unseen chains.
 
 ### Shortest path
-Use exact BFS wavefronts as ground-truth intermediate states.
+
+Use exact breadth-first-search wavefronts as known intermediate computation states.
 
 ### Cellular-rule induction
-Infer rules from examples and execute them for multiple steps.
+
+Infer a transition rule from examples, then execute it for multiple steps.
 
 ### Persistent-memory tasks
-Write facts, remove the source, delay, then query.
+
+Write facts, remove the source, delay, inject interference, then query.
 
 ### Hierarchical tasks
-Use explicit tree-like data for multiresolution or hyperbolic experiments.
+
+Use explicit trees or nested structures for multiresolution and hyperbolic comparisons.
 
 ### CLUTRR
-Test longer relational composition. [CLUTRR paper](https://arxiv.org/abs/1908.06177).
 
-## Optimization defaults are architecture-specific
+Relational composition can be tested at longer chain lengths. [CLUTRR](https://arxiv.org/abs/1908.06177) provides a relevant benchmark lineage.
 
-The current vector-field prototype can begin around:
+## Practical optimization variables
 
-| Setting | Initial value |
+A small recurrent vector baseline can begin near:
+
+| Setting | Example value |
 |---|---:|
-| field | 12×12 browser; 16×16–32×32 research |
-| vector width | 12 browser; 32–64 research |
+| field | 12×12 interactive; 16×16–32×32 larger runs |
+| vector width | 12 interactive; 32–64 larger runs |
 | local neighborhood | 3×3 |
-| recurrent updates | 6 browser; 8–16 research |
+| recurrent updates | 6 interactive; 8–16 larger runs |
 | optimizer | Adam / AdamW |
 | gradient clip | 1.0 |
 
-Tensor and Transformer pixels need smaller outer grids or internal sizes at first because their per-pixel computation is larger.
+Tensor and internal-token cells generally require smaller outer fields or internal sizes at first because their per-address operator cost is larger.
 
-## What to log across interpretations
+## What to record
 
-For each trained experiment record:
+Every trained comparison should retain enough information to reproduce both the score and the resource budget:
 
-- task performance;
-- training/validation loss;
+- task metric and loss;
+- train/test distribution;
 - parameter count;
-- scalar state per pixel;
+- scalar state per address;
 - outer field size;
-- internal tensor/token/subfield shape;
-- update depth;
-- approximate compute;
-- wall-clock time;
+- internal tensor, token, or subfield shape;
+- recurrent or operator depth;
+- approximate compute and wall-clock time;
 - stored bits when persistence matters;
-- state snapshots and projections;
-- probes and intervention maps;
+- state snapshots and intervention outputs;
 - random seed and full configuration.
 
-The purpose is to compare **computational interpretations**, not only final scores.
+The comparison target is the computational interpretation and its cost, not the final score in isolation.
