@@ -8,6 +8,25 @@ import sys
 
 SITE = Path("_site").resolve()
 BASEURL = "/pixel-art-2026"
+METADISCOURSE = (
+    "this page",
+    "this section",
+    "this site",
+    "the site now",
+    "the site is organized",
+    "here we",
+    "why this page exists",
+    "why this experiment exists",
+    "the lab is organized",
+    "the zoo, organized",
+    "plain english:",
+    "in simple english",
+    "the research library explains",
+    "the atlas deliberately",
+    "every experiment says",
+    "in this project",
+    "the project becomes",
+)
 
 
 class PageParser(HTMLParser):
@@ -73,11 +92,15 @@ def main() -> int:
     parsed_pages: dict[Path, PageParser] = {}
     for html_file in html_files:
         text = html_file.read_text(encoding="utf-8")
+        lowered = text.lower()
         if "{{" in text or "{%" in text:
             errors.append(f"Unresolved Liquid syntax: {html_file.relative_to(SITE)}")
         for forbidden in ("data-lab-tab=", "#pixelUniverseLab", "#neuralFieldLab", "#originalFieldLab", "PIXEL NEURAL NET LAB"):
             if forbidden in text:
                 errors.append(f"Stale omnibus-lab marker {forbidden!r}: {html_file.relative_to(SITE)}")
+        for phrase in METADISCOURSE:
+            if phrase in lowered:
+                errors.append(f"Structural metadiscourse {phrase!r}: {html_file.relative_to(SITE)}")
         parser = PageParser(); parser.feed(text); parsed_pages[html_file.resolve()] = parser
         seen: set[str] = set()
         for node_id in parser.ids:
@@ -94,8 +117,10 @@ def main() -> int:
                 errors.append(f"Path escapes site: {html_file.relative_to(SITE)} {attr}={raw!r}")
                 continue
             if not target.exists():
-                try: shown = target.relative_to(SITE)
-                except ValueError: shown = target
+                try:
+                    shown = target.relative_to(SITE)
+                except ValueError:
+                    shown = target
                 errors.append(f"Broken internal reference: {html_file.relative_to(SITE)} {attr}={raw!r} -> {shown}")
                 continue
             if fragment and target.suffix.lower() == ".html":
@@ -113,7 +138,8 @@ def main() -> int:
         "experiment/webgpu/index.html", "experiment/masked-reconstruction/index.html",
         "experiment/primitive-benchmark/index.html", "experiment/pixel-genome/index.html",
         "experiment/dynamics/index.html", "research/index.html", "glossary/index.html",
-        "assets/css/style.css", "assets/css/atlas.css", "assets/js/site.js", "assets/js/pixel-core.js",
+        "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
+        "assets/js/site.js", "assets/js/pixel-core.js",
     ]
     for rel in required:
         if not (SITE / rel).exists():
@@ -124,7 +150,7 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
         return 1
-    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, fragments and IDs validated")
+    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, fragments, IDs and copy constraints validated")
     return 0
 
 
