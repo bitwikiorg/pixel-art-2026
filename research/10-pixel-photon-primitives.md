@@ -1,152 +1,121 @@
 ---
 layout: research
-title: Pixel Photon primitive map
-kicker: Carrier · representation · computation · memory
+title: Pixel Photon Primitive Map
 ---
 
 # Pixel Photon primitive map
 
-The lab now uses a strict progression:
+The research program uses a strict progression so the source information remains visible as machinery is added:
 
 ```text
 bit
 → carrier
+→ reliability
 → interpretation
-→ state
 → computation
 → memory
 → composition
 → learning / reasoning
 ```
 
-The purpose is to keep the source information visible while richer machinery is added. A 16×16 binary field starts with exactly **256 source bits**. A later tensor, hypervector, attention state or memory matrix may allocate much more state, but that extra state is measured rather than treated as free information.
+A 16×16 binary field begins with **256 source bits**. Tensor state, hypervectors, neural weights, dictionaries and memory matrices are extra resources and must be counted separately.
 
-[Run the Binary Pixel Photon Carrier]({{ '/carrier/' | relative_url }}).
+## Carrier and channel
 
-## The working primitive set
+**Binary carrier** is the ground truth: black/white field ↔ bitstream ↔ packed bytes. [Experiment 01]({{ '/carrier/' | relative_url }}).
 
-| Primitive | What the browser actually does | Status | Main measurement |
-|---|---|---|---|
-| Binary carrier | click black/white pixels; pack 256 bits into 32 bytes and hex | live | exact round trip, entropy, CRC |
-| Benign data pixelizer | UTF-8 → length header + bytes → pixels → UTF-8 | live | exact decode |
-| Corruption channel | independent bit flips with raw vs Hamming(7,4) path | live | source Hamming error after transmission |
-| Bitwise/spatial compute | NOT, mirror, shift and binary dilation | live | exact transformed field |
-| Associative memory | classical bipolar Hopfield storage and iterative recall | live | distance to nearest stored pattern |
-| Visual motif codec | exact 2×2 motif dictionary + tile IDs | live | dictionary bits + index bits vs raw bits |
-| Hypervector field | bind x, y and bit-value hypervectors; bundle; query coordinate | live | query score / crosstalk / state cost |
-| Pixel → sound | binary frequency-shift keying of the exact bitstream | live | representation/transduction |
-| Pixel interpretation sandbox | scalar, vector, tensor, neural unit, inner tokens, memory, subfield | live mechanics | state size and dynamics |
-| Learned Local Vector Field | shared local recurrent neural rule trained on relations | live learned model | accuracy by distance/depth |
-| Vector / tensor / micro-transformer ladder | CPU PyTorch reference models | trainable reference | state, parameters, runtime, task accuracy |
+Related lineages include PNG 1-bit grayscale, text/image codecs, Pixelizator, `encode-png`, and PythonPixelArtTransformer. `pxpipe` and PIXEL broaden the question from exact byte transport to representation-channel tradeoffs: the same semantic source can be presented as bytes, glyph pixels or learned visual patches, but exactness and model cost must be measured separately.
 
-## 1. Pixels as a data channel
+The benign transport lesson from PixelCode-Attack is limited to generic byte↔pixel mapping. This lab does not reconstruct executables or loaders.
 
-### Exact binary and PNG
+## Reliability
 
-The first laboratory object should remain boring enough to audit: one address, one bit. The W3C PNG specification supports 1-bit grayscale images, making true binary raster serialization a natural standards-based extension of the current browser bit packing.
+[Experiment 02]({{ '/experiment/reliability/' | relative_url }}) compares raw transmission against Hamming(7,4) under independent bit flips. It exposes the cost of redundancy and the code's actual correction limit instead of calling “noise resistance” an abstract property.
 
-**Next implementation:** export/import a genuine 1-bit grayscale PNG while preserving the live 256-bit ledger.
-
-- W3C PNG specification: https://www.w3.org/TR/png-3/
-- Ward Cunningham `encode-png`: https://github.com/WardCunningham/encode-png
-- Pixelizator: https://github.com/apolikamixitos/Pixelizator
-- Text-Image Encoder/Decoder: https://github.com/IN4111/Text-Image-Encoder-Decoder
-- PythonPixelArtTransformer: https://github.com/Zero-AI-Hub/PythonPixelArtTransformer
-
-### Text through the visual channel
-
-`pxpipe` and the PIXEL language-model line illustrate two different ideas. `pxpipe` renders text as imagery to exploit a model's visual input channel, trading exactness against input cost. PIXEL trains a language model directly on rendered text patches rather than a fixed token vocabulary.
-
-For this lab the useful experiment is not “pixels magically compress text.” It is:
+Later recovery comparisons should keep distinct mechanisms separate:
 
 ```text
-same information
-→ UTF-8 bytes
-→ 1-bit glyph bitmap
-→ grayscale page
-→ learned visual representation
+ECC recovery
+Hopfield attractor recall
+learned masked reconstruction
+NCA regeneration
+persistent-state repair
 ```
 
-Measure exact recovery, semantic recovery, byte cost and model-input cost separately.
+They solve different problems.
 
-- pxpipe: https://github.com/teamchong/pxpipe
-- PIXEL: https://github.com/xplip/pixel
-- Language Modelling with Pixels: https://arxiv.org/abs/2207.06991
+## Distributed representation
 
-### Compute directly on pixel storage
+[Experiment 05]({{ '/experiment/hypervector/' | relative_url }}) binds x-coordinate, y-coordinate and bit-value hypervectors and bundles the full field. It measures coordinate-query accuracy as dimension changes. The representation is deliberately approximate: crosstalk and capacity are part of the phenomenon.
 
-`GTP` / text2shader motivates treating a pixel texture as directly searchable/operable data. WebGPU storage textures make a browser-native compute field possible.
+This is the HDC/VSA branch of the project. It is one of the cleanest ways to test very high-dimensional state while retaining an exact binary source against which retrieval can be scored.
 
-**Current browser baseline:** NOT, shift, mirror and dilation on the 1-bit field.
+Hyperbolic geometry remains a different hypothesis and should enter only on genuinely hierarchical targets.
 
-**Next implementation:** WebGPU + JavaScript side-by-side for XOR, Hamming distance, motif search, convolution, dilation/erosion and neighborhood queries.
+## Spatial coding and compression
 
-- GTP: https://github.com/byteface/GTP
-- WGSL: https://www.w3.org/TR/WGSL/
+[Experiment 04]({{ '/experiment/motif-codec/' | relative_url }}) is an exact fixed 2×2 dictionary codec. It counts metadata, dictionary entries and tile indices. Random fields can expand; repeated motifs can compress.
 
-The attack-oriented PixelCode-Attack repository is relevant only to the generic byte↔pixel transport mechanism. This lab deliberately limits that branch to harmless text, JSON, generated patterns, checksums and error-correction experiments.
+The next compression research layer is recursive/learned motif discovery, motivated by visual-BPE approaches such as Being-VL, and learned discrete representations such as VQ-VAE. These must still count codebooks and side information.
 
-- PixelCode-Attack: https://github.com/S3N4T0R-0X0/PixelCode-Attack
+TACO and learned image-compression work motivate separating pixel fidelity, perceptual fidelity and task utility rather than calling all three “compression quality.”
 
-## 2. Pixels as learned representations
+## Pixel as computational agent
 
-### Masked reconstruction
+Neural Cellular Automata are the major established baseline for learned vector-valued local cells. Therefore “hidden channels in a pixel” is not the novelty target.
 
-Masked Autoencoders and Pixio motivate a simple binary learning problem before large vision models are involved:
+[Experiment 06]({{ '/experiment/interpretation/' | relative_url }}) is a mechanics sandbox that changes the object at each address: scalar, vector, tensor, tiny neural update, internal token attention, memory state or subfield. Its rules are fixed; it is not evidence that one interpretation is useful.
+
+[Experiment 07]({{ '/experiment/learned-local-field/' | relative_url }}) is the learned vector-field baseline. It belongs near NCA/recurrent CNNs, not above them.
+
+## Inner Transformer versus field Transformer
+
+Transformer in Transformer (TNT) is direct prior art for nested inner/outer attention. The useful distinction for this project is therefore:
 
 ```text
-true 16×16 bitmap
-→ hide 25 / 50 / 75%
-→ small model
-→ reconstruct missing bits
+INNER TRANSFORMER PIXEL
+multiple persistent tokens inside one address
+attention inside the address
+compact message outside
+
+FIELD TRANSFORMER
+one token per outer address
+attention between addresses
 ```
 
-The experiment should compare a feed-forward CNN, recurrent local field and pixel-token Transformer under matched small budgets.
+The distinctive research question is persistence, memory, recursive reuse and resource-controlled comparison—not merely placing attention inside an image patch.
 
-- Masked Autoencoders: https://arxiv.org/abs/2111.06377
-- Pixio: https://github.com/facebookresearch/pixio
+PixelTransformer provides another useful contrast: sparse observed spatial samples can support probabilistic queries at arbitrary coordinates. That motivates future “known carrier vs model state about carrier” experiments.
 
-### Visual motifs and discrete codes
+## Direct compute on pixel-addressed state
 
-The live 2×2 motif codec is intentionally simple. Being-VL's visual-BPE work suggests the next step: recursively learn repeated visual structures rather than fixing tile size. VQ-VAE and learned compression provide the discrete-code and bit-accounting baselines.
+[Experiment 08]({{ '/experiment/webgpu/' | relative_url }}) implements binary operators in a CPU reference and, where available, WGSL/WebGPU. A GPU result is accepted only when its output exactly matches the CPU field. Timing is end-to-end submit/readback timing, so the page does not imply that WebGPU must win on small arrays.
 
-**Current:** exact fixed 2×2 dictionary.
+GTP/text2shader is useful inspiration for treating a 2D texture as data that is searched or transformed directly rather than merely visualized.
 
-**Next:** learned/recursive motif merges, then compare against RLE, DEFLATE, quadtree coding and VQ.
+## Learned reconstruction
 
-- Being-VL-0 / visual BPE: https://github.com/BeingBeyond/Being-VL-0
-- From Pixels to Tokens: https://arxiv.org/abs/2410.02155
-- VQ-VAE: https://arxiv.org/abs/1711.00937
-- Scale hyperprior compression: https://arxiv.org/abs/1802.01436
-- TACO: https://github.com/effl-lab/TACO
+Masked Autoencoders and Pixio motivate learning from missing pixel content. [Experiment 09]({{ '/experiment/masked-reconstruction/' | relative_url }}) intentionally starts far smaller: structured 16×16 binary fields, a visibility mask, a local-majority baseline and a 745-parameter convolutional model scored **only on hidden pixels**.
 
-## 3. Pixels as computational agents
+This is a conventional learned reconstruction control, not an MPF win. Its role is to provide a trustworthy rung between exact binary primitives and richer persistent-cell architectures.
 
-### Neural Cellular Automata
+## Resource-controlled primitive ladder
 
-NCA is the strongest prior-art baseline for vector-valued local computational cells. The distinction for Pixel Photon is therefore not “a cell has hidden channels.” It is the broader type system and the comparison of alternative internal objects.
+[Experiment 10]({{ '/experiment/primitive-benchmark/' | relative_url }}) compares vector, tensor and inner-token cells under declared matching protocols. Equal state, equal parameters and equal compute are separate questions.
 
-- Growing Neural Cellular Automata: https://distill.pub/2020/growing-ca/
-- Self-classifying MNIST Digits: https://distill.pub/2020/selforg/mnist/
+The audit found substantial seed/training instability in small relation-task runs. That is now treated as a result about the benchmark protocol: isolated best runs are not featured as stable architecture evidence.
 
-### Inner attention vs field attention
+Future controls should include MLP, feed-forward CNN, recurrent CNN, NCA, pixel-token Transformer and graph message passing.
 
-“Transformer inside a pixel” must be split into two experiments:
+## Memory
 
-1. **Inner Transformer:** several latent tokens live inside one persistent address; self-attention mixes them; a compact message crosses to neighbors.
-2. **Field Transformer:** each outer pixel is itself a token and attention occurs between addresses.
+[Experiment 03]({{ '/experiment/memory/' | relative_url }}) uses a classical fully connected Hopfield network as a transparent associative-memory baseline. The field is treated as a bipolar attractor state; the browser reports Hamming distance and Hopfield energy.
 
-Transformer in Transformer is direct prior art for nested inner/outer attention, so the research target is persistence, memory, recursive reuse and resource-controlled comparisons—not merely putting attention inside a patch.
+A stronger persistent Pixel Photon memory experiment must add a real write → delay/interference → query task and compare against this baseline under explicit stored-state cost.
 
-- Transformer in Transformer: https://arxiv.org/abs/2103.00112
-- lucidrains implementation: https://github.com/lucidrains/transformer-in-transformer
-- PixelTransformer: https://github.com/shubhtuls/PixelTransformer
-- PixelTransformer paper: https://proceedings.mlr.press/v139/tulsiani21a.html
-- PixelRNN: https://arxiv.org/abs/1601.06759
+## Local plus global computation
 
-### Local + global correction
-
-PRDiT suggests a useful architectural primitive independent of its original application:
+PRDiT and related architectures motivate a useful general primitive:
 
 ```text
 local persistent computation
@@ -154,91 +123,11 @@ local persistent computation
 periodic global correction / attention
 ```
 
-That is a better experiment than forcing every long-range dependency to propagate one cell at a time.
+This may be more efficient than forcing every long-range dependency to propagate one cell per recurrent step. It belongs after inner-vs-field attention is controlled.
 
-- PRDiT: https://github.com/Fredy-Zhang/PRDiT
-- TransformerConvs: https://github.com/BjBodner/TransformerConvs
-- nanoDiT: https://github.com/sayakpaul/nanoDiT
+## Computational address need not remain sensor-aligned
 
-## 4. Memory, robustness and causal purpose
-
-### Associative memory
-
-The live Hopfield primitive makes a binary bitmap an attractor state. It should later be compared with modern Hopfield/attention memory and multidimensional persistent fields under equal stored-state budgets.
-
-- Hopfield 1982: https://authors.library.caltech.edu/records/w41x7-8bn13
-- Hopfield layers: https://github.com/ml-jku/hopfield-layers
-- Simple binary-image Hopfield reference: https://github.com/StrozhDima/neural-network-hopfield-s
-
-### Damage and regeneration
-
-NCA demonstrates learned regeneration after damage. Pixel Photon should compare:
-
-```text
-raw redundancy
-Hamming / ECC
-Hopfield recall
-neural reconstruction
-NCA regeneration
-persistent multidimensional memory
-```
-
-These mechanisms solve different recovery problems and should not be collapsed into one score.
-
-### Causal pixel inspection
-
-A hidden-state color is not an explanation. Every learned experiment should progressively expose:
-
-```text
-visible carrier
-internal state
-messages received
-attention weights
-memory state
-next state
-output influence
-```
-
-and interventions:
-
-```text
-mute cell
-freeze cell
-swap cell
-zero memory
-replace hidden state while preserving visible bit
-```
-
-- Neural-network visualizer: https://github.com/cpldcpu/neural-network-visualizer
-- Interpreting neural networks: https://github.com/CarlosFontaneli/interpreting-neural-networks
-- ROI attention-map example: https://github.com/sagieppel/Focusing-attention-of-Fully-convolutional-neural-networks-on-Region-of-interest-ROI-input-map-
-
-## 5. Hyperdimensional and geometric state
-
-The live hypervector experiment binds coordinate and bit-value roles into a distributed 4,096-D bipolar representation. It is deliberately allowed to make mistakes: crosstalk and finite capacity are part of the experiment.
-
-Next tests:
-
-- dimensions: 64 → 256 → 1,024 → 4,096 → 16,384;
-- number of bundled addresses;
-- corruption robustness;
-- translation/rotation role operators;
-- exact coordinate queries;
-- storage cost in bits/bytes;
-- comparison with ordinary bitmaps and learned vectors.
-
-- HDC/VSA survey I: https://arxiv.org/abs/2111.06077
-- HDC/VSA survey II: https://arxiv.org/abs/2112.15424
-
-Hyperbolic geometry stays a separate choice. It enters when an experiment contains a real hierarchy; it is not a synonym for high dimensionality.
-
-- Poincaré Embeddings: https://arxiv.org/abs/1705.08039
-
-## 6. Spatial address does not have to remain sensor aligned
-
-NOVA3R is useful as a counterexample to an overly literal pixel grid: useful visual computation need not remain permanently aligned to original sensor pixels. PixelREPA likewise suggests aligning hidden visual representations to external semantic targets.
-
-A mature MPF may distinguish:
+NOVA3R and PixelREPA are useful reminders that hidden visual computation need not remain permanently aligned to input pixels. A mature system may distinguish:
 
 ```text
 physical image coordinate
@@ -246,119 +135,64 @@ physical image coordinate
 ≠ semantic coordinate
 ```
 
-- NOVA3R: https://github.com/wrchen530/nova3r
-- PixelREPA: https://github.com/kaist-cvml/PixelREPA
-- PoseAwareVT: https://github.com/dominickrei/PoseAwareVT
+Learned semantic geography therefore remains an open topology experiment rather than an assumption.
 
-## 7. Cross-domain interpretation
+## Pixel Genome
 
-The live FSK experiment already maps the exact source bitstream into sound. A richer experiment can map image row → frequency and pixel intensity → amplitude, then reconstruct a spatial field from a spectrogram.
+[Experiment 11]({{ '/experiment/pixel-genome/' | relative_url }}) is the audited first version inspired aesthetically by 0xmons: a **128-bit genome + shared procedural interpreter** generates a larger binary creature. Mutation, crossing, interpolation, damage and regeneration are deterministic operations.
 
-- pixelsound: https://github.com/tuomastik/pixelsound
-- Image/ASCII/pixel-art transformer: https://github.com/ViniciusCestarii/Image-Transformer-to-ASCII-and-PixelArt
+The important scientific point is the accounting: the genome is not a universal 128-bit compressor for arbitrary images. It describes only the restricted family generated by the shared interpreter. Later versions can compare a learned VAE or NCA growth model against this procedural baseline.
 
-This branch tests a core Pixel Photon idea:
+## True recursion
 
-> Same information does not imply the same representation or interpreter.
+Pooling is not enough. A future recursive lab should literally contain field-inside-field state with parent↔child messages and a reused interface/operator across levels. The measurement is whether recursive reuse improves generalization, adaptive computation or storage efficiency relative to a flat model.
 
-## 8. Pixel Genome
+## Causal inspection standard
 
-0xmons is best treated as generative/aesthetic inspiration rather than a scientific baseline. The standalone lab experiment should be reproducible and independent:
+A hidden-state color is not an explanation. Learned experiments should eventually expose:
 
 ```text
-seed / latent genome
-→ 16×16 creature
-→ mutate
-→ cross
-→ interpolate
-→ quantize
-→ damage
-→ regenerate
+visible carrier
+internal state
+messages received
+attention / gates if defined
+next state
+output influence
 ```
 
-Version 1 can be deterministic procedural generation. Version 2 can train a tiny VAE. Version 3 can grow the creature from a seed using NCA dynamics.
+and allow interventions such as mute, freeze, swap or zero-memory. This is the path from named “roles” to causal evidence of roles.
 
-- 0xmons: https://github.com/c0mput3rxz/0xmons
+## Research lineage
 
-## 9. True recursion
+High-value references include:
 
-Pooling is not enough to justify “fractal.” A recursive experiment should literally implement:
+- PNG 1-bit grayscale specification;
+- Hopfield associative memory;
+- Growing NCA and Self-classifying NCA;
+- PIXEL and masked pixel reconstruction;
+- VQ-VAE and learned compression/hyperpriors;
+- Being-VL visual BPE;
+- HDC/VSA surveys;
+- Transformer in Transformer;
+- PixelTransformer and PixelRNN;
+- GTP/text2shader and WebGPU/WGSL;
+- PixelREPA, NOVA3R and local/global vision architectures.
+
+The many generic “pixel neural network” repositories remain useful for baselines, interface ideas and educational visualizations, but most treat pixels as ordinary **inputs to** a network rather than asking what computational object occupies a persistent address.
+
+## Current boundary
+
+The implemented atlas now covers exact carrier behavior, reliability, associative memory, motif coding, distributed representation, mechanics variants, a learned local field, direct GPU computation, masked reconstruction, a multi-seed primitive benchmark and a procedural Pixel Genome.
+
+The next research tier—not yet promoted to live evidence—is:
 
 ```text
-8×8 outer field
-→ click cell
-4×4 inner field
-→ click cell
-4×4 inner-inner field
+inner-vs-field Transformer
+→ matched-compute control suite
+→ learned persistent memory
+→ true recursive field
+→ semantic topology
+→ quantized/rate–utility fields
+→ hierarchy-specific hyperbolic tests
+→ field albums
 ```
-
-The same update interface should operate at every level, with child→parent summaries and parent→child context. The measurement is whether recursive operator reuse buys useful capacity or storage efficiency relative to a flat system.
-
-## 10. Controls that make the architecture zoo scientific
-
-The same task should compare:
-
-| Control | What it isolates |
-|---|---|
-| flattened MLP | no spatial inductive bias |
-| feed-forward CNN | ordinary spatial processing |
-| recurrent CNN | local recurrence without stronger MPF interpretation |
-| NCA | established vector-cell local dynamics |
-| pixel-token Transformer | global attention between addresses |
-| graph message passing | topology without Cartesian pixels |
-| MPF vector field | persistent vector cells |
-| tensor cell | internal factorization |
-| inner-transformer cell | attention inside persistent cells |
-| hybrid local/global field | local state + periodic global correction |
-
-Every result should report at least:
-
-```text
-source bits
-stored state bits
-parameters
-approximate compute / runtime
-training examples
-seeds
-exact reconstruction if relevant
-task metric
-```
-
-Comparisons should be repeated under equal state size, roughly equal parameter count and roughly equal inference compute. Those are different experiments.
-
-## 11. Repository triage
-
-Many supplied repositories are useful as implementation or interface baselines without being central prior art. Simple CNN/MNIST/SegNet/pathfinding projects generally treat pixels as inputs *to* a network rather than asking what the computational object *at the pixel address* can be. They remain useful for controls and educational visualization.
-
-Examples include:
-
-- https://github.com/HauShianChin/8x8-pixel-neural-network
-- https://github.com/Albert-LZG/Pixel-Recurrent-Neural-Network
-- https://github.com/NathanLaCrosse/Pixel-Recurrent-Neural-Networks
-- https://github.com/nisharaichur/SegNet-Encoder-Decoder-Architecture-for-Image-Segmentation
-- https://github.com/Manning1999/Neural-Network-Pathfinding
-- https://github.com/suryam144/Image-Fill-Neural-Network
-- https://github.com/MossBeachBrothers/FPGA-Neural-Network
-
-Their role in this lab is **baseline, interface inspiration or implementation comparison**, not evidence for the distinctive MPF thesis.
-
-## Current implementation priority
-
-1. **Binary carrier** — live now.
-2. **Text transport + corruption/ECC** — live now.
-3. **Associative memory** — live now.
-4. **Exact motif codec** — live now.
-5. **Hypervector field** — live now.
-6. **WebGPU texture compute** — next browser primitive.
-7. **Masked binary reconstruction** — next learned benchmark.
-8. **Resource-controlled primitive ladder** — strengthen current vector/tensor/transformer work.
-9. **Inner vs field Transformer** — controlled persistent-state comparison.
-10. **True recursive field** — same operator/interface across nested scales.
-11. **Pixel Genome** — standalone generative experiment.
-12. **Semantic geography / non-pixel-aligned field** — learned address organization.
-13. **Damage/regeneration suite** — compare ECC, associative, neural and NCA recovery.
-14. **Field Album** — persistent fields interacting as higher-order units.
-
-The unifying question is no longer “can a recurrent grid solve a task?” It is:
-
-> **What computational object should occupy an address, how should many such objects interact, and what representation, memory, compression, robustness or reasoning becomes possible for the measured cost?**

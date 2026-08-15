@@ -1,219 +1,131 @@
 ---
 layout: research
-title: What is an MPF?
+title: Research Thesis
 ---
 
-# What is a Multidimensional Pixel Field?
+# Multidimensional Pixel Fields: research thesis
 
-<div class="plain-box"><strong>Plain English:</strong> the project begins by refusing to assume what a pixel must contain. A pixel is a spatial address. Behind that address we can place a scalar, vector, tensor, neural unit, token set, memory object, subfield, or recursively larger structure. The research program compares those interpretations and studies what happens when many such objects are organized into fields.</div>
+<div class="plain-box"><strong>Working thesis:</strong> treat a pixel as a spatially addressable information carrier whose computational object is a design variable. Then ask which combinations of state type, communication, memory, topology, scale, geometry and learning produce useful behavior for a measured resource cost.</div>
 
-## The central research question
+## General object
 
-Can we engineer neural representations in which spatially addressable computational objects have purposeful roles, organize information across neighborhoods and scales, persist as memory, and themselves participate in reasoning?
-
-The minimal vector version can still be written as
+The smallest field is binary:
 
 ```text
-F[i,j] = x_ij ∈ R^D
+B[i,j] = b_ij ∈ {0,1}
 ```
 
-but this is the **simplest member of the family**, not the boundary of the idea.
-
-A more general notation is
+The broader family is:
 
 ```text
 F[i,j] = O_ij
 ```
 
-where `O_ij` is the computational object associated with address `(i,j)`.
+where `O_ij` is the finite computational object at address `(i,j)`: scalar, vector, tensor, neural state, latent token set, persistent memory, hypervector binding, subfield or recursively structured object.
 
-Depending on the experiment:
-
-```text
-O_ij = scalar
-O_ij = vector
-O_ij = tensor
-O_ij = neural state + update
-O_ij = latent token set + attention
-O_ij = persistent memory object
-O_ij = subfield
-O_ij = recursively structured object
-```
-
-## The important separation: visible pixel versus computational pixel
-
-RGB is a visualization interface, not the dimensional limit.
+When the object is richer than a display value:
 
 ```text
-visible_RGB(i,j) = projection(O_ij)
+visible(i,j) = P(O_ij)
 ```
 
-A 4×4 tensor, a 64-dimensional embedding or three internal Transformer tokens can all be projected into one visible square for a human observer. That projection does not imply that the object contains only three numbers.
+The visible square is a projection, not the complete storage object.
 
-This is why alternate color notations such as RGB and hexadecimal do not create additional dimensions. Additional representational capacity comes from the computational state associated with the address.
+## The separation that matters most
 
-## “Infinite universe” as a research metaphor
+Three quantities must not be conflated:
 
-There is no useful architectural reason to declare in advance that a pixel may contain only `D` scalar channels. A pixel can contain nested objects and those objects can themselves contain structure. In that sense the **interpretation space is open-ended**.
+1. **source information** — independent information supplied to the system;
+2. **computational state** — memory allocated by the representation;
+3. **interpreter/model complexity** — rules, codebooks, weights and side information needed to use that state.
 
-A physical implementation is never literally infinite: finite hardware stores finite state and executes finite computation. Human interpretability is also finite. We therefore need projections, slices, probes, causal interventions and summaries to inspect what a rich pixel is doing.
-
-A useful analogy is a photon. Human-perceived brightness does not exhaust its physical description; frequency, phase, polarization, momentum and helicity can matter. A computational pixel is not literally a photon. The analogy simply separates the **visible effect** from the **full state carried by the object**.
-
-## The pixel interpretation space
-
-### Scalar
+A 1-bit source expanded deterministically into a 4,096-dimensional vector has not become 4,096 independent source bits. Expansion may improve robustness, separability or compositional computation, but it costs state and interpreter complexity.
 
 ```text
-x_ij ∈ R
+B_system = B_carrier
+         + B_hidden
+         + B_metadata
+         + B_side-info
+         + B_model/amortized
 ```
 
-Useful as a control and as the smallest spatial state.
+## A field contributes more than cell contents
 
-### Vector
-
-```text
-x_ij ∈ R^D
-```
-
-The closest established structural precedent is Neural Cellular Automata: vector-valued cells, local learned updates and recurrence.
-
-### Tensor
-
-```text
-x_ij ∈ R^(A × B × C)
-```
-
-A pixel can have internal axes and factorization. A tensor-valued pixel should be compared with a flat vector containing the same total number of scalar values.
-
-### Neural unit
-
-```text
-x_ij' = fθ(x_ij, messages_ij)
-```
-
-A shared nonlinear program transforms each pixel state. Shared weights allow many pixels to instantiate the same computational rule without storing a separate model at every address.
-
-### Micro-transformer
-
-```text
-X_ij ∈ R^(K × D)
-X_ij' = Attentionθ(X_ij, message_ij)
-```
-
-One visible address contains several internal latent tokens. Attention occurs **inside the pixel**. This is distinct from a field Transformer, where pixels themselves become tokens and attention occurs **between addresses**.
-
-### Memory object
-
-A pixel can contain fast state, slower memory, confidence, routing information or other persistent components.
-
-### Subfield
-
-```text
-F_outer[i,j] = F_inner^(i,j)
-```
-
-A pixel can itself be a smaller field. This creates an explicit route from cell → region → field → field-of-fields rather than treating hierarchy as pooling alone.
-
-## A field adds another layer of information
-
-The internal object is only one source of structure. A field also provides:
-
-- an address;
-- neighborhood relationships;
-- distance and direction;
-- region membership;
-- scale;
-- possible learned long-range links;
-- a history of state changes.
-
-So representation may be carried simultaneously by
+Representation can be carried jointly by:
 
 ```text
 what is inside the pixel
 + where the pixel is
-+ what surrounds it
++ which addresses are neighbors
 + what region contains it
 + what scale it occupies
-+ how it changes through time.
++ how it changes through time
 ```
 
-## Representation + memory + workspace + computational substrate
+Cell type and field organization are therefore separate experimental axes.
 
-The strongest MPF direction is not “visualize activations as colored pixels.” It is a field in which the state itself becomes useful for several jobs at once:
+## Why this is not simply Neural Cellular Automata
 
-- **representation** — what information exists;
-- **memory** — what persists;
-- **workspace** — where intermediate states live;
-- **computation** — how those states transform;
-- **routing** — which information interacts;
-- **hierarchy** — how coarse and fine state relate.
+NCA already establishes multidimensional vector cells, shared learned local rules, recurrence, persistence and regeneration. The research target cannot simply be “hidden channels in pixels” or “a recurrent grid.”
 
-A recurrent trajectory is one mechanism:
+The broader variables are:
+
+- bit vs vector vs tensor vs inner-token state;
+- convolution vs graph messages vs attention;
+- transient vs persistent memory;
+- fixed Cartesian address vs learned semantic address;
+- flat field vs actual field-inside-field recursion;
+- continuous vs quantized/discrete state;
+- Euclidean vs hierarchy-motivated hyperbolic geometry;
+- one field vs interacting persistent fields.
+
+## Pixel Photon as analogy
+
+The analogy is narrow: what is visible need not be the complete state used by an information-processing system. It is **not** a claim that a photon contains arbitrary software, electric charge, or infinite recoverable information.
+
+## Representation + memory + workspace + computation
+
+A mature MPF system may combine representation, persistent memory, working state, computation, routing and hierarchy. No current browser experiment establishes all of these. The atlas deliberately decomposes them.
+
+## Recurrence is optional
+
+One mechanism is `F_0 → F_1 → … → F_T`. It can support local propagation, memory and test-time computation. But exact codecs, hypervector representations, field Transformers and procedural genomes can belong to the research program without recurrence.
+
+## Recursion and scale
+
+A genuine recursive field is operational:
 
 ```text
-F_0 → F_1 → … → F_T
+field → region → cell → inner field → inner cell
 ```
 
-but recurrence is not the definition of MPF. Other experiments can focus on internal tensor structure, attention, storage, semantic placement, geometry or field-to-field interaction.
+The stronger experiment reuses the same or closely related interface/operator across levels and measures whether reuse improves capacity, generalization or storage efficiency. “Fractal” is reserved for demonstrated recursive/self-similar reuse; otherwise **recursive**, **hierarchical** or **multiresolution** is more precise.
 
-## Recursive and multiresolution organization
+## Hyperdimensionality and hyperbolic geometry are different
 
-The original direction becomes especially interesting when the same representational logic can operate at several levels:
+- **dimensionality** asks how many coordinates/components a representation uses;
+- **geometry** asks how distance and relationships are defined.
 
-```text
-album
-  ↓
-field
-  ↓
-region
-  ↓
-subregion
-  ↓
-cell
-  ↓
-inner subfield
-```
-
-“Fractal” should be reserved for a design that demonstrates meaningful recursive or self-similar reuse. Until then, **recursive**, **hierarchical** or **multiresolution** is more precise.
-
-## Hyperdimensionality and geometry are different choices
-
-Very high-dimensional state and hyperbolic geometry should not be conflated.
-
-- **dimensionality** asks how many independent coordinates or components a representation uses;
-- **geometry** asks how distance and relationships are defined in that representation space.
-
-A field can therefore contain high-dimensional Euclidean vectors, hyperbolic hierarchy-related state, vector-symbolic representations, tensors, or mixtures of several geometries.
+HDC/VSA and hyperbolic embeddings are different hypotheses and should be tested separately.
 
 ## Compression is not automatic
 
-A richer pixel usually costs **more** raw storage, not less. Compression becomes meaningful only when the architecture exploits structure through methods such as quantization, shared codebooks, sparsity, low rank, predictive reconstruction, multiresolution storage, recursive reuse or entropy coding.
+Richer raw state usually costs more storage. Compression becomes meaningful only when structure—quantization, shared codebooks, sparsity, low rank, prediction, recursive reuse or entropy coding—reduces the **total accounted rate** for a chosen fidelity or utility target.
 
-The useful measurement is task-relevant utility per stored bit, not the number of dimensions listed in the design.
+## Falsifiable questions
 
-## The experimental stance
+- Does explicit tensor factorization help an equal-state flat vector?
+- Does inner attention help a local MLP/convolution at comparable parameters and runtime?
+- Does stable spatial addressability matter after controlling for generic recurrence?
+- Can persistent state survive delay/interference better per stored bit than simple baselines?
+- Can recursive operator reuse generalize across scale better than a flat model?
+- Can learned semantic placement beat fixed Cartesian or graph baselines?
+- Can quantization reduce stored rate while preserving utility?
+- Does hyperbolic state help specifically when target structure is hierarchical?
+- Can interacting persistent fields outperform ordinary external-memory controls on retrieval/composition tasks?
 
-The laboratory should not choose one interpretation by definition. It should compare them.
+A negative result is useful if it identifies an interpretation that does not justify its cost.
 
-Examples:
+## Current evidence boundary
 
-- scalar versus vector;
-- flat vector versus equal-size tensor;
-- neural unit versus micro-transformer;
-- attention inside pixels versus attention between pixels;
-- ordinary state versus fast/slow memory;
-- flat field versus field-inside-field;
-- fixed spatial topology versus learned semantic geography;
-- floating state versus quantized state;
-- one field versus interacting persistent fields.
-
-The current trainable recurrent vector field is therefore one baseline in a larger experimental zoo.
-
-## Continue
-
-- [Run the Pixel Universe]({{ '/experiment/#pixelUniverseLab' | relative_url }})
-- [Start Here: interpretation-by-interpretation]({{ '/learn/' | relative_url }})
-- [Experimental program]({{ '/research/02-experiment-protocol/' | relative_url }})
-- [Closest research neighbors]({{ '/research/01-prior-art/' | relative_url }})
-- [Memory and compression]({{ '/research/07-memory-compression/' | relative_url }})
+The repository contains exact deterministic primitives, fixed-rule mechanics, small learned models and benchmark infrastructure. None is proof of a universal Pixel Photon architecture. The [Experiment Atlas]({{ '/experiment/' | relative_url }}) keeps these evidence classes separate.

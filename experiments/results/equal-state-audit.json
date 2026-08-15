@@ -1,0 +1,53 @@
+{
+  "protocol": "equal-state",
+  "status": "completed-audit-runs",
+  "grid": 12,
+  "state_scalars_per_pixel": 16,
+  "steps": 6,
+  "epochs": 12,
+  "train_examples": 1536,
+  "test_examples": 384,
+  "seeds": [7, 17, 29],
+  "note": "Nine completed local audit runs. Accuracy values are recorded to the precision retained in the audit log. These results expose seed/optimization variance and are not a winner table.",
+  "architectures": {
+    "vector": {
+      "parameters": 4036,
+      "internal_shape": "16D vector",
+      "runs": [
+        {"seed": 7, "near_accuracy": 0.768, "far_accuracy": 0.245},
+        {"seed": 17, "near_accuracy": 0.979, "far_accuracy": 0.331},
+        {"seed": 29, "near_accuracy": 0.888, "far_accuracy": 0.497}
+      ],
+      "near_mean": 0.8783,
+      "near_sd": 0.1058,
+      "far_mean": 0.3577,
+      "far_sd": 0.1281
+    },
+    "tensor": {
+      "parameters": 4588,
+      "internal_shape": "4x4 tensor",
+      "runs": [
+        {"seed": 7, "near_accuracy": 0.698, "far_accuracy": 0.354},
+        {"seed": 17, "near_accuracy": 0.745, "far_accuracy": 0.560},
+        {"seed": 29, "near_accuracy": 0.917, "far_accuracy": 0.560}
+      ],
+      "near_mean": 0.7867,
+      "near_sd": 0.1153,
+      "far_mean": 0.4913,
+      "far_sd": 0.1189
+    },
+    "transformer": {
+      "parameters": 3396,
+      "internal_shape": "2 tokens x 8D",
+      "runs": [
+        {"seed": 7, "near_accuracy": 0.6771, "far_accuracy": 0.3281},
+        {"seed": 17, "near_accuracy": 0.2578, "far_accuracy": 0.2500},
+        {"seed": 29, "near_accuracy": 0.7161, "far_accuracy": 0.3750}
+      ],
+      "near_mean": 0.5503,
+      "near_sd": 0.2541,
+      "far_mean": 0.3177,
+      "far_sd": 0.0631
+    }
+  }
+}

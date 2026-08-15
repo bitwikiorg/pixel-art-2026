@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('assert'),c=require('../assets/js/pixel-core.js');
+function seededBits(n,seed){const rand=c.xorshift32(seed);return Uint8Array.from({length:n},()=>rand()&1);}
+for(let seed=1;seed<=32;seed++){const bits=seededBits(256,seed),packed=c.bitsToBytes(bits);assert.equal(packed.length,32);assert.deepEqual(Array.from(c.bytesToBits(packed,bits.length)),Array.from(bits));}
+assert.equal(c.crcHex(new TextEncoder().encode('123456789')),'CBF43926');
+for(const text of['','HELLO PIXEL','πxel','binary → field']){const bits=c.textToCarrier(text,512);assert.equal(c.carrierToText(bits),text);}assert.throws(()=>c.textToCarrier('x'.repeat(31),256));
+const payload=seededBits(64,1234),encoded=c.hamming74Encode(payload);for(let i=0;i<encoded.length;i++){const damaged=Uint8Array.from(encoded);damaged[i]^=1;const decoded=c.hamming74Decode(damaged,payload.length);assert.equal(c.hammingDistance(decoded.bits,payload),0,`single-bit correction failed at encoded bit ${i}`);assert.equal(decoded.correctedBlocks,1);}
+for(let seed=10;seed<30;seed++){const bits=seededBits(256,seed),codec=c.motifCodec(bits,16,16),decoded=c.motifDecode(codec);assert.equal(c.hammingDistance(bits,decoded),0);assert.equal(codec.totalBits,codec.metadataBits+codec.dictionaryBits+codec.indexBits);}
+const memory=c.makeHopfield(256,1),target=c.preset('checker');assert(memory.store(target));let corrupted=Uint8Array.from(target);for(let i=0;i<24;i++)corrupted[(i*37)%256]^=1;const result=memory.recall(corrupted,4);assert.equal(c.hammingDistance(result.bits,target),0,'single-pattern Hopfield memory should recover this controlled corruption');for(let i=1;i<result.energies.length;i++)assert(result.energies[i]<=result.energies[i-1]+1e-5,'asynchronous sequential Hopfield energy should not increase');
+for(const name of['checker','frame','smile']){const bits=c.preset(name),hv=c.buildFieldHypervector(bits,16,4096),accuracy=c.hypervectorAccuracy(hv,bits,16);assert(accuracy>=.80,`${name} hypervector retrieval too weak: ${accuracy}`);}
+const smile=c.preset('smile');assert.equal(c.hammingDistance(c.transform(c.transform(smile,'not'),'not'),smile),0);assert.equal(c.hammingDistance(c.transform(c.transform(smile,'mirror'),'mirror'),smile),0);console.log('pixel-core behavioral tests passed');

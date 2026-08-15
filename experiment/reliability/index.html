@@ -1,0 +1,31 @@
+---
+layout: experiment
+title: Corruption & Error Correction
+exp_id: "02"
+status: "EXACT · LIVE"
+category: "Foundation"
+deck: "Send the same binary field through an explicit noisy channel. Compare raw transmission against Hamming(7,4) redundancy under the same independent bit-flip probability."
+source: "256 source bits"
+interpretation: "communication channel"
+learned: "No"
+measure: "bit-error rate and exact recovery"
+shows: "Redundant coding can trade transmitted bits for recoverability, and the trade can be measured directly."
+does_not_show: "Unlimited robustness. Hamming(7,4) corrects one error per 7-bit block; multiple errors in one block can be miscorrected."
+styles:
+  - /assets/css/carrier.css
+scripts:
+  - /assets/js/pixel-core.js
+  - /assets/js/reliability-lab.js
+---
+<div data-reliability-lab>
+  <section class="lab-module">
+    <div class="lab-controls"><button class="btn" data-rel-preset="frame">Frame</button><button class="btn" data-rel-preset="checker">Checker</button><button class="btn" data-rel-preset="smile">Smile</button><label>Flip probability <input id="relNoise" type="range" min="0" max="20" value="5" step="1"></label><strong id="relNoiseValue">5%</strong><label>Seed <input id="relSeed" type="number" value="2026"></label><button id="relRun" class="btn primary">Run one channel</button><button id="relTrials" class="btn">Run 200 trials</button></div>
+  </section>
+  <section class="lab-three">
+    <div class="lab-module"><div class="lab-label">Source · 256 bits</div><div id="relSourceGrid" class="binary-grid small"></div></div>
+    <div class="lab-module"><div class="lab-label">Raw received · 256 transmitted bits</div><div id="relRawGrid" class="binary-grid small"></div></div>
+    <div class="lab-module"><div class="lab-label">Hamming decoded · 448 transmitted bits</div><div id="relEccGrid" class="binary-grid small"></div></div>
+  </section>
+  <div id="relSingleStatus" class="lab-status"></div><div id="relTrialStatus" class="lab-status">Run repeated trials to estimate residual BER.</div>
+  <div class="method-box"><strong>Interpretation:</strong> the ECC branch stores/transmits more bits. That extra redundancy is the mechanism; it is not free capacity.</div>
+</div>

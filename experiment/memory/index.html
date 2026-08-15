@@ -1,0 +1,25 @@
+---
+layout: experiment
+title: Associative Pixel Memory
+exp_id: "03"
+status: "DYNAMICAL MEMORY · LIVE"
+category: "Memory"
+deck: "Interpret a 16×16 binary image as a bipolar state in a classical Hopfield network, corrupt it, then follow energy and Hamming distance as the state settles toward an attractor."
+source: "16×16 binary patterns"
+interpretation: "bipolar Hopfield state"
+learned: "Weights are stored by the Hebbian rule"
+measure: "energy, Hamming distance, fixed-point convergence"
+shows: "A binary pixel field can serve as the state of a content-addressable memory and recover a stored whole from a partial/corrupted state."
+does_not_show: "That 2D spatial topology causes the recovery; the classical Hopfield weight graph is fully connected."
+styles:
+  - /assets/css/carrier.css
+scripts:
+  - /assets/js/pixel-core.js
+  - /assets/js/memory-lab.js
+---
+<div data-memory-lab>
+  <section class="lab-module"><div class="lab-controls"><button class="btn" data-mem-preset="checker">Checker</button><button class="btn" data-mem-preset="frame">Frame</button><button class="btn" data-mem-preset="smile">Smile</button><button id="memStore" class="btn primary">Store current</button><label>Noise <input id="memNoise" type="range" min="0" max="35" value="15"></label><strong id="memNoiseValue">15%</strong><label>Seed <input id="memSeed" type="number" value="99"></label><button id="memCorrupt" class="btn">Corrupt</button><button id="memSweep" class="btn">One sweep</button><button id="memConverge" class="btn">Run to fixed point</button><button id="memReset" class="btn">Clear memory</button></div></section>
+  <section class="lab-two"><div class="lab-module"><div class="lab-label">Current field</div><div id="memCurrentGrid" class="binary-grid small"></div></div><div class="lab-module"><div class="lab-label">Nearest stored pattern</div><div id="memNearestGrid" class="binary-grid small"></div></div></section>
+  <div id="memStatus" class="lab-status"></div>
+  <div class="information-ledger"><div><small>STATE</small><strong>256 spins</strong></div><div><small>STORED PATTERNS</small><strong id="memPatternCount">0</strong></div><div><small>FULL MATRIX STORAGE</small><strong id="memWeightStorage">256 KiB</strong></div><div><small>UPDATE</small><strong>sequential async</strong></div></div>
+</div>

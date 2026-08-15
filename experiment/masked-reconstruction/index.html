@@ -1,0 +1,23 @@
+---
+layout: experiment
+title: Masked Binary Reconstruction
+exp_id: "09"
+status: "LEARNED + BASELINE · LIVE"
+category: "Learning"
+deck: "Hide a controlled fraction of a structured binary field, then compare a local-majority reconstruction baseline with a tiny learned convolutional model on held-out hidden pixels."
+source: "synthetic structured 16×16 binary fields"
+interpretation: "observed bit + visibility channel"
+learned: "Yes · 745-parameter TensorFlow.js control"
+measure: "held-out hidden-pixel accuracy"
+shows: "A learned representation can infer missing carrier values better than a simple local rule on some controlled distributions."
+does_not_show: "An MPF advantage. The first learned model is intentionally a conventional convolutional baseline."
+tfjs: true
+scripts:
+  - /assets/js/masked-reconstruction.js
+---
+<div data-masked-reconstruction>
+  <section class="lab-module"><div class="lab-controls"><label>Mask rate <input id="maskRate" type="range" min="20" max="80" value="50"></label><strong id="maskRateValue">50%</strong><label>Epochs <input id="maskEpochs" type="range" min="5" max="30" value="15"></label><strong id="maskEpochsValue">15</strong><button id="maskTrain" class="btn primary">Train reconstruction model</button></div><div id="maskStatus" class="lab-status"></div><div class="progress-thin"><span id="maskProgress"></span></div></section>
+  <section class="canvas-triplet"><div class="lab-module canvas-panel"><small>GROUND TRUTH</small><canvas id="maskOriginal"></canvas></div><div class="lab-module canvas-panel"><small>INPUT · GRAY = HIDDEN</small><canvas id="maskInput"></canvas></div><div class="lab-module canvas-panel"><small>RECONSTRUCTION</small><canvas id="maskOutput"></canvas></div></section>
+  <div id="maskExampleStatus" class="lab-status"></div>
+  <div class="information-ledger"><div><small>MODEL PARAMS</small><strong id="maskParams">—</strong></div><div><small>LOCAL BASELINE</small><strong id="maskBaseline">—</strong></div><div><small>LEARNED</small><strong id="maskLearned">—</strong></div><div><small>TRAIN TIME</small><strong id="maskTime">—</strong></div></div><div class="lab-status">Loss: <span id="maskLoss">—</span>. The CPU reference in <code>experiments/masked_binary.py</code> uses the same scientific question and is intended for reproducible runs outside the browser.</div>
+</div>

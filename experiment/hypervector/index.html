@@ -1,0 +1,23 @@
+---
+layout: experiment
+title: Hypervector Field
+exp_id: "05"
+status: "HDC / VSA · LIVE"
+category: "Representation"
+deck: "Bind each pixel's x-coordinate, y-coordinate and bit value into a bipolar hypervector, bundle all 256 bindings, then query individual addresses back from the distributed representation."
+source: "256 source bits"
+interpretation: "distributed hypervector"
+learned: "No · deterministic shared codebook"
+measure: "address-query accuracy versus dimension"
+shows: "A field can be recoded into a high-dimensional distributed representation with measurable cross-talk and retrieval accuracy."
+does_not_show: "More independent source information. The 256 input bits generate the hypervector through a shared deterministic interpreter."
+styles:
+  - /assets/css/carrier.css
+scripts:
+  - /assets/js/pixel-core.js
+  - /assets/js/hypervector-lab.js
+---
+<div data-hypervector-lab>
+  <section class="lab-two"><div class="lab-module"><div class="lab-label">Source field</div><div id="hvSourceGrid" class="binary-grid small"></div><div class="lab-controls" style="margin-top:12px"><button class="btn" data-hv-preset="smile">Smile</button><button class="btn" data-hv-preset="checker">Checker</button><button class="btn" data-hv-preset="frame">Frame</button></div></div><div class="lab-module"><div class="lab-controls"><label>Dimension <select id="hvDim"><option>256</option><option>512</option><option>1024</option><option>2048</option><option selected>4096</option></select></label><button id="hvBuild" class="btn primary">Build hypervector</button><label>x <input id="hvX" type="number" min="0" max="15" value="4"></label><label>y <input id="hvY" type="number" min="0" max="15" value="4"></label><button id="hvQuery" class="btn">Query address</button></div><div class="information-ledger" style="margin-top:14px"><div><small>FULL QUERY ACCURACY</small><strong id="hvAccuracy">—</strong></div><div><small>SOURCE</small><strong>256 bits</strong></div></div><div id="hvQueryStatus" class="lab-status"></div><div class="lab-status"><span id="hvLogical"></span><br><span id="hvBrowser"></span></div></div></section>
+  <section class="lab-module"><div class="lab-label">Dimension sweep</div><p>Cross-talk should generally fall as the representation dimension grows, but storage grows too.</p><button id="hvRunSweep" class="btn">Run 256D → 4096D sweep</button><pre id="hvSweep" class="carrier-code" style="min-height:100px">No sweep yet.</pre></section>
+</div>

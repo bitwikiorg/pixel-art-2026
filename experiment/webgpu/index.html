@@ -1,0 +1,21 @@
+---
+layout: experiment
+title: WebGPU Pixel Compute
+exp_id: "08"
+status: "GPU + CPU CONTROL · LIVE"
+category: "Computation"
+deck: "Treat a 64×64 binary field as directly addressable compute state. Run the same local operation on a JavaScript CPU reference and a WGSL WebGPU compute shader, then compare every output address before looking at timing."
+source: "64×64 binary field = 4,096 source bits"
+interpretation: "compute-addressed field buffer"
+learned: "No"
+measure: "CPU↔GPU Hamming agreement and end-to-end time"
+shows: "The same spatial field can be visible data and a directly computable substrate."
+does_not_show: "GPU speedup for tiny problems. The displayed GPU time includes submission and readback and is not a kernel-only benchmark."
+scripts:
+  - /assets/js/webgpu-field.js
+---
+<div data-webgpu-lab>
+  <section class="lab-module"><div class="lab-controls"><label>Operation <select id="gpuOp"><option value="not">NOT</option><option value="dilate">3×3 dilation</option><option value="edge">binary neighborhood edge</option></select></label><button id="gpuRun" class="btn primary">Run CPU + WebGPU</button></div></section>
+  <section class="canvas-pair"><div class="lab-module canvas-panel"><small>SOURCE · 64×64</small><canvas id="gpuSource" class="pixel-canvas"></canvas></div><div class="lab-module canvas-panel"><small>OUTPUT</small><canvas id="gpuOutput" class="pixel-canvas"></canvas></div></section>
+  <div class="information-ledger"><div><small>ADDRESSES</small><strong>4,096</strong></div><div><small>CPU</small><strong id="gpuCpu">—</strong></div><div><small>WEBGPU</small><strong id="gpuGpu">—</strong></div><div><small>MISMATCHES</small><strong id="gpuMismatch">—</strong></div></div><div id="gpuStatus" class="lab-status">Run the experiment. If WebGPU is unavailable, the CPU reference still executes.</div>
+</div>

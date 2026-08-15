@@ -1,0 +1,14 @@
+---
+layout: default
+---
+<div class="page-shell experiment-shell">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiment Atlas</a><span>›</span><span>{{ page.exp_id }}</span></nav>
+  <header class="experiment-hero">
+    <div class="experiment-meta"><span class="exp-number">{{ page.exp_id }}</span><span class="exp-status">{{ page.status }}</span><span class="exp-category">{{ page.category }}</span></div>
+    <h1>{{ page.title }}</h1><p class="hero-deck">{{ page.deck }}</p>
+    <div class="experiment-facts"><div><small>SOURCE</small><strong>{{ page.source }}</strong></div><div><small>PIXEL INTERPRETATION</small><strong>{{ page.interpretation }}</strong></div><div><small>LEARNED?</small><strong>{{ page.learned }}</strong></div><div><small>PRIMARY MEASURE</small><strong>{{ page.measure }}</strong></div></div>
+  </header>
+  <div class="experiment-boundary"><div><small>THIS EXPERIMENT CAN SHOW</small><p>{{ page.shows }}</p></div><div><small>IT DOES NOT ESTABLISH</small><p>{{ page.does_not_show }}</p></div></div>
+  <article class="experiment-content">{{ content }}</article>
+  <nav class="experiment-next"><a class="btn" href="{{ '/experiment/' | relative_url }}">← Experiment Atlas</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Research protocol</a></nav>
+</div>

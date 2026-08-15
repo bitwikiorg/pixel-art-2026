@@ -3,208 +3,127 @@ layout: research
 title: Start Here
 ---
 
-# From pixel to computational object
+# Start with one bit
 
-<div class="plain-box"><strong>One-sentence version:</strong> Pixel Neural Net Lab asks what happens when a pixel stops meaning “a few color channels” and becomes a spatial address for an arbitrary computational object: scalar, vector, tensor, neural unit, token set, memory, subfield, or recursively larger structure.</div>
+<div class="plain-box"><strong>Core idea:</strong> Pixel Photon Lab studies what happens when a spatial address is treated as a finite information carrier whose interpretation can be changed deliberately. We begin with a black/white bit because its information budget is exact. Only then do we add vectors, tensors, memories, neural rules, attention, and recursive fields.</div>
 
-The project is broader than one recurrent neural grid. A recurrent vector field is one important implementation because it is simple enough to train and inspect, but it sits inside a much larger design space.
+## 1. Ground truth: a binary pixel field
 
-## 1. Pixel: address first, interpretation second {#cell}
-
-### Plain English
-
-A normal display pixel is associated with a location such as `(i,j)` and a small set of visible channel values. In this project, the useful primitive is the **address**.
-
-What lives at the address is a design choice.
+Take a 16×16 black/white image:
 
 ```text
-pixel(i,j) → scalar
-pixel(i,j) → vector
-pixel(i,j) → tensor
-pixel(i,j) → neural unit
-pixel(i,j) → micro-transformer
-pixel(i,j) → memory object
-pixel(i,j) → subfield
+black = 0
+white = 1
+16 × 16 = 256 source bits = 32 packed bytes
 ```
 
-The visible RGB value can still exist, but it is only a projection that helps humans inspect the internal state.
+The bitmap, row-major bitstream and packed bytes are different views of the same finite object. [Open Experiment 01: Binary Pixel Carrier]({{ '/carrier/' | relative_url }}).
 
-This is why “more colors” is not the point. Hex, RGB and named colors are alternate encodings of visible color; they do not create new independent dimensions. The additional state comes from the computational object associated with the address.
+This gives the laboratory an accounting reference. When a later experiment creates a 4,096-dimensional hypervector or a 256×256 Hopfield matrix, that additional state is visible in the ledger rather than mistaken for free information.
 
-## 2. The dimensionality is open-ended; implementations are finite
-
-Conceptually, there is no architectural rule that says a pixel must stop at 3, 8, 64 or 4,096 dimensions. A pixel could contain nested structured state or even another field.
-
-But a real computer always stores a finite object. So the useful distinction is:
+## 2. Pixel = address + carrier state + interpretation
 
 ```text
-open-ended interpretation space
-            ≠
-actually infinite stored information
+pixel = address + carrier state + interpretation
 ```
 
-Human interpretability is also finite. A person cannot directly inspect thousands of latent dimensions at once. Visualization therefore projects, slices, summarizes or probes the state.
+An address tells us **where** the object lives. The carrier state is what is physically represented in the experiment. The interpretation says what that state means or how it participates in computation.
 
-A useful carrier analogy is a photon. Perceived brightness is not a complete physical description; frequency, phase, polarization, momentum and helicity can also matter. A computational pixel is not literally a photon, but the analogy warns us not to confuse what is visible with everything the carrier can represent.
+A binary carrier can become a signed state, coordinate/value tuple, vector, tensor, hypervector binding, neural state, token set, memory state or subfield. A richer interpretation can be computationally useful, but it does not manufacture new independent source information.
 
-## 3. The interpretation ladder
+## 3. Why the photon analogy is useful—and where it stops
 
-### Scalar pixel
+“Pixel Photon” is a computational analogy. A photon is not adequately described as a colored dot; physical information systems can use degrees of freedom such as frequency, phase, polarization, momentum and path/spatial modes. Likewise, the visible value of a computational pixel need not exhaust the state associated with its address.
+
+This is **not** a claim that photons store arbitrary software state or infinite classical information. Every implementation here has finite bits, finite parameters, finite compute and finite measurements.
+
+> **One visible projection can correspond to a richer finite computational object. The architecture space is open-ended; implementations are not infinite.**
+
+## 4. The experiment sequence
 
 ```text
-x_ij ∈ R
+01  exact carrier
+02  reliability / error correction
+03  associative memory
+04  exact motif coding
+05  distributed hypervector representation
+06  alternative pixel interpretations
+07  learned local vector field
+08  direct GPU pixel computation
+09  learned masked reconstruction
+10  controlled primitive benchmark
+11  generative Pixel Genome
+A1  original hand-designed field mechanics
 ```
 
-One value per location. This is the simplest spatial control.
+[Browse the Experiment Atlas]({{ '/experiment/' | relative_url }}).
 
-### Vector pixel
+Every experiment states its source information, interpretation, operation, evidence level, measurement and boundary. This is the defense against a visually interesting demo being mistaken for scientific evidence.
 
-```text
-x_ij ∈ R^D
-```
+## 5. The interpretation ladder
 
-A learned multidimensional state. This is the structural family used by Neural Cellular Automata and by the current learned MPF-Local experiment.
+### Scalar
+`x_ij ∈ R` — one value at one address.
 
-### Tensor pixel
+### Vector
+`x_ij ∈ R^D` — a multidimensional state. Neural Cellular Automata are a major prior-art family for learned vector-valued local cells.
 
-```text
-x_ij ∈ R^(A × B × C)
-```
+### Tensor
+`X_ij ∈ R^(A×B×C)` — a structured internal array. A meaningful test uses operations that respect those axes and compares against a flat vector under a declared resource budget.
 
-One visible address contains a structured latent object. Two cells can have the same number of scalar values while organizing them differently—for example, a flat 64D vector versus an 8×8 tensor.
-
-Learn more: [Tensor (Wikipedia)](https://en.wikipedia.org/wiki/Tensor).
-
-### Neural-unit pixel
-
-The pixel contains state and is transformed by a shared nonlinear neural rule:
-
-```text
-x_ij' = fθ(x_ij, neighborhood_ij)
-```
-
-The weights can be shared across locations so the field does not require a completely separate network for every pixel.
+### Neural pixel
+`x_ij' = fθ(x_ij, message_ij)` — the address has state and a shared learned rule updates many addresses. Shared weights are system cost, not free information stored in each pixel.
 
 ### Micro-transformer pixel
+`X_ij ∈ R^(K×D)` — several latent tokens exist **inside one address**. This differs from a field Transformer, where outer addresses are tokens and attention occurs **between** addresses.
 
-One address can contain several internal latent tokens:
+### Memory object
+A cell can maintain fast state, slow state, confidence or routing information. A real memory experiment requires write → delay/interference → query.
 
-```text
-X_ij ∈ R^(K × D)
-```
+### Subfield / recursive object
+`F_outer[i,j] = F_inner^(i,j)` — one address contains another field. “Recursive” becomes meaningful when an interface/operator is actually reused across levels; ordinary pooling is not enough.
 
-A shared attention block can mix those tokens internally while the pixel exchanges a compressed message with other pixels.
+[Open Experiment 06: Pixel Interpretation Sandbox]({{ '/experiment/interpretation/' | relative_url }}).
 
-This is different from a **field Transformer**, where each pixel is itself one token and attention happens between pixel addresses.
+## 6. Communication is independent of pixel type
 
-### Memory-object pixel
+What a pixel contains does not determine how pixels communicate. Candidate mechanisms include local convolution, graph messages, sparse long-range links, global/windowed attention, regional summaries, learned routing and parent/child messages in recursive fields.
 
-A cell can separate rapidly changing state from slower persistent state:
+This separation matters. A vector pixel with global attention and a transformer pixel with only nearest-neighbor messages are different systems even if both contain high-dimensional state.
 
-```text
-x_ij = [activity, memory]
-```
+## 7. Time is another independent axis
 
-Now the address is not merely a feature location; it can become a persistent local memory object.
+A field may evolve `F_0 → F_1 → … → F_T`. Repeated updates can propagate information, maintain working state or implement iterative computation. But recurrence is one design choice, not the definition of MPF.
 
-### Subfield pixel
+## 8. What counts as evidence?
 
-A visible pixel can itself contain a smaller field:
+- **EXACT** — deterministic codec/operator checked against an exact reference;
+- **DYNAMICAL / MECHANICS** — executable fixed-rule evolution, not a learned result;
+- **LEARNED** — parameters optimized against a task with held-out evaluation;
+- **BENCHMARK** — repeated controlled comparison across architectures/resources;
+- **PROCEDURAL BASELINE** — deterministic generative interpreter, not learned AI.
 
-```text
-outer field → pixel → inner field
-```
+A learned model solving a task proves only that **that model under that protocol** learned the task. It does not establish superiority until relevant controls are run.
 
-That turns the system into a field of fields and provides a concrete route toward recursive or multiscale organization.
-
-[Run all seven interpretations in the browser]({{ '/experiment/#pixelUniverseLab' | relative_url }}).
-
-## 4. Communication is another independent choice {#local-rule}
-
-Changing the internal pixel does not determine how pixels communicate.
-
-Possible communication rules include:
-
-- fixed local neighborhoods;
-- convolution;
-- graph message passing;
-- sparse long-range links;
-- global attention;
-- learned routing;
-- region summaries;
-- communication between fields.
-
-A simple local vector field uses
+## 9. The information ledger
 
 ```text
-x_ij^(t+1) = x_ij^t + gθ(x_ij^t, N_ij(F_t))
+source carrier bits
++ hidden / persistent state bits
++ metadata
++ codebook / side information
++ shared model parameters (under a declared amortization rule)
+= accounted system resources
 ```
 
-where `N_ij` is a neighborhood and `gθ` is a learned update shared across positions.
+For neural experiments we also report update depth, runtime, training examples and seeds. For compression we report total stored bits and reconstruction fidelity. For memory we report recovery versus corruption. For reasoning, later tasks need known intermediate traces.
 
-This is closely related to [Growing Neural Cellular Automata](https://distill.pub/2020/growing-ca/) and to graph message passing. [Distill: A Gentle Introduction to Graph Neural Networks](https://distill.pub/2021/gnn-intro/).
+## 10. The research question
 
-## 5. Time and recurrence are optional tools, not the definition {#recurrence}
+> **One pixel. Many possible universes.**
 
-A field can change through repeated updates:
+Technical version:
 
-```text
-F_0 → F_1 → F_2 → … → F_T
-```
+> **What computational object should occupy an address, how should many such objects interact, and what representation, memory, compression, robustness, computation or reasoning becomes possible for the measured cost?**
 
-Recurrence is useful because local communication needs multiple steps to propagate globally and because repeated computation can create persistent intermediate states.
-
-But an MPF experiment does not have to be recurrent. A tensor pixel, attention pixel, stored-memory field or field-to-field retrieval system can test different parts of the idea.
-
-Related reading: [Scholarpedia: Recurrent neural networks](https://www.scholarpedia.org/article/Recurrent_neural_networks) · [Self-classifying MNIST Digits](https://distill.pub/2020/selforg/mnist/).
-
-## 6. Regions and recursion {#hierarchy}
-
-Spatial addresses naturally permit larger structures:
-
-```text
-cell → region → field
-```
-
-The stronger recursive version is:
-
-```text
-album → field → region → subregion → cell → inner subfield
-```
-
-The same representational or computational mechanism might eventually operate at multiple levels. If the same rule is demonstrably reused across scales, “recursive” or possibly “fractal” becomes technically meaningful. Otherwise the safer term is **multiresolution**.
-
-## 7. What can be learned? {#training}
-
-Different experiments can learn different things:
-
-- the contents of vector or tensor states;
-- the update rule inside a neural pixel;
-- attention weights inside a transformer pixel;
-- where information is written;
-- which cells communicate;
-- regional summaries;
-- memory gates;
-- codebooks for quantization;
-- semantic geometry;
-- field-to-field retrieval.
-
-The current TensorFlow.js neural-field experiment learns only a narrow subset: vector-valued cell state, a shared local convolutional update and a classifier readout. That makes it a useful baseline rather than a complete implementation of the project.
-
-## 8. The larger research object
-
-The project becomes a family of questions about **representation + topology + computation + memory + scale + geometry**.
-
-Examples:
-
-- Does a 4×4 tensor inside each pixel behave differently from an equal-size flat vector?
-- Does attention work better inside a pixel, between pixels, or at regional scales?
-- Can a pixel preserve state after its input disappears?
-- Can an outer field route computation into inner subfields only when needed?
-- Can semantic organization emerge spatially rather than being assigned?
-- Can very high-dimensional or vector-symbolic state improve compositional operations?
-- Can hyperbolic geometry help hierarchy-related state? [Poincaré embeddings](https://arxiv.org/abs/1705.08039)
-- Can quantized fields preserve useful information per stored bit? [VQ-VAE](https://arxiv.org/abs/1711.00937)
-- Can multiple persistent fields retrieve and modify one another as a semantic album?
-
-<div class="note-box"><strong>Where to go next:</strong> the <a href="{{ '/experiment/' | relative_url }}">live laboratory</a> now starts with the pixel-interpretation ladder. The <a href="{{ '/research/02-experiment-protocol/' | relative_url }}">experimental program</a> expands that ladder into trained comparisons, recursive fields, memory, compression, semantic topology and field-to-field systems.</div>
+Next: [Experiment Atlas]({{ '/experiment/' | relative_url }}).
