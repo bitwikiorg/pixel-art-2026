@@ -3,62 +3,77 @@ layout: research
 title: Geometry and Vector-Symbolic State
 ---
 
-# Geometry, hyperbolic hierarchy and vector-symbolic state
+# Geometry, hierarchy, and vector-symbolic state
 
-<div class="plain-box"><strong>Plain English:</strong> the 2D grid tells us which cells are physically adjacent, but the vectors inside those cells can live in a very different mathematical space. That gives the project two independent notions of “nearby”: grid-near and meaning-near.</div>
-
-## Physical geometry versus semantic geometry
-
-A cell has a physical coordinate `(i,j)`, but its vector state can also define a semantic distance.
+A computational field can contain two different notions of distance. The outer grid defines physical or graph proximity between addresses. The internal representation can define a separate semantic distance between states.
 
 ```text
-physical distance: distance between grid addresses
-semantic distance: distance between learned vectors
+physical distance: distance between addresses
+semantic distance: distance between representations
 ```
 
-These do not need to agree.
+These distances can agree, disagree, or interact through learned routing.
 
-Possible architecture:
+## Physical geometry
 
-- local 2D neighbors for cheap communication;
-- learned semantic neighbors for occasional long-range communication;
-- hierarchical parent/child connections across scales.
+A regular Cartesian field gives every address a fixed coordinate `(i,j)` and a predictable neighborhood. Local communication is inexpensive and translation-compatible, but long-range interaction may require many update steps.
+
+Alternative outer structures include:
+
+- toroidal grids;
+- fixed random graphs;
+- sparse small-world graphs;
+- learned nearest-neighbor graphs;
+- hierarchical parent/child edges;
+- content-dependent routing;
+- global or windowed attention.
+
+Changing the connectivity while holding state and update rule fixed tests whether Cartesian spatial structure itself matters.
+
+## Semantic geometry
+
+A vector state can define similarity independently of physical location. Two distant addresses may contain nearly identical semantic vectors, while neighboring addresses may represent unrelated content.
+
+A hybrid system can therefore use
+
+```text
+cheap local physical neighbors
++ occasional semantic long-range neighbors
+```
+
+The measurable question is whether semantic routing improves task performance enough to justify the search, indexing, or attention cost required to create those edges.
 
 ## Hyperbolic geometry
 
-Hyperbolic space has negative curvature. Its volume grows rapidly with radius, which makes it a natural candidate for embedding branching structures.
+Hyperbolic space has negative curvature. Its available volume grows rapidly with radius, making it a natural candidate for representing branching structures such as trees and taxonomies.
 
-[Poincaré Embeddings](https://arxiv.org/abs/1705.08039) demonstrated strong results on hierarchical symbolic data.
+[Poincaré Embeddings](https://arxiv.org/abs/1705.08039) established an important precedent for hierarchical symbolic data.
 
-Important precision:
+Several distinctions matter:
 
-- hyperbolic geometry is not “4D”;
-- it does not create storage capacity for free;
+- hyperbolic geometry is not an extra physical dimension;
+- high dimensionality is not the same as hyperbolic curvature;
 - not all semantic data is hierarchical;
-- optimization is more complex than ordinary Euclidean vectors.
+- optimization on a curved manifold introduces additional complexity;
+- any benefit should be tested against an equal-dimensional Euclidean representation.
 
-## A conservative hybrid MPF
+## A conservative hybrid state
 
-Do not make every cell fully hyperbolic first. Split state:
+A first hierarchy-specific model can separate ordinary content from hierarchy coordinates:
 
 ```text
 x_ij = [e_ij | h_ij]
 ```
 
-where:
+where `e_ij` is Euclidean content used by ordinary computation and `h_ij` is a smaller representation whose distance is hyperbolic.
 
-- `e` is ordinary Euclidean content used by the recurrent computation;
-- `h` is a smaller hierarchy representation trained with hyperbolic distance.
+The control replaces `h_ij` with an equal-dimensional Euclidean vector while keeping the rest of the architecture unchanged.
 
-Compare `h` against an equal-dimensional Euclidean hierarchy representation.
+Suitable targets contain explicit hierarchy: tree depth, ancestor relationships, taxonomies, nested containment, or hierarchical retrieval. A flat image classification task would not isolate the reason for using hyperbolic geometry.
 
-Tasks should contain explicit tree structure: taxonomies, nested relations, or hierarchical retrieval.
+## Semantic routing with hyperbolic state
 
-## Hyperbolic neighborhood versus physical neighborhood
-
-A useful later mechanism is to add sparse edges to semantically close hyperbolic neighbors while preserving local grid connections.
-
-Then test:
+A later model can preserve local grid edges and add sparse links between addresses that are close in semantic geometry:
 
 ```text
 local grid only
@@ -68,55 +83,79 @@ vs
 local + hyperbolic semantic neighbors
 ```
 
-This makes geometry a measurable routing choice.
+Report routing cost, number of active edges, task accuracy, and sensitivity to hierarchy depth.
 
-## Vector-Symbolic Architectures (VSA) / Hyperdimensional Computing (HDC)
+A positive result would show a hierarchy-specific routing advantage, not generic “higher-dimensional” capacity.
 
-VSA/HDC represents information with high-dimensional vectors and defines algebraic operations that preserve distributed structure.
+## Vector-Symbolic Architectures and Hyperdimensional Computing
 
-Common ideas:
+VSA/HDC represents information with high-dimensional distributed vectors and defines algebraic operations for structured composition.
+
+Common operations include:
 
 - **binding** — combine two items into a representation of their relationship;
-- **bundling / superposition** — combine several vectors;
-- **permutation** — encode order or role;
-- **similarity** — retrieve related structures.
+- **bundling** — superpose several items into one distributed vector;
+- **permutation** — encode role, position, or order;
+- **similarity** — retrieve a related item from noisy distributed state.
 
-Start with [A Survey on Hyperdimensional Computing](https://arxiv.org/abs/2111.06077) and Plate's [Holographic Reduced Representations](https://pubmed.ncbi.nlm.nih.gov/18263348/).
+Useful background includes [A Survey on Hyperdimensional Computing](https://arxiv.org/abs/2111.06077) and Plate's [Holographic Reduced Representations](https://pubmed.ncbi.nlm.nih.gov/18263348/).
 
-## Why combine VSA with a field?
+## Binding address and value
 
-One possible synthesis:
+For a binary field, deterministic random hypervectors can represent x-coordinate, y-coordinate, and bit value:
 
 ```text
-cell vector        = local distributed representation
-field position     = persistent address / routing context
-VSA operations     = explicit composition
-recurrent updates  = iterative refinement
-region hierarchy   = coarse context
+h_xyv = X_x ⊙ Y_y ⊙ V_v
 ```
 
-For example, a cell can bind an entity vector with a relation vector, while neighboring cells propagate context that determines which bindings should interact.
+Bundling all addresses gives
 
-## What to test
+```text
+H = Σ_(x,y) h_xyv
+```
 
-### Binding inside cells
-Compare ordinary learned concatenation/MLP composition with an explicit VSA binding operation.
+Querying an address approximately reverses the coordinate binding and compares the result with the 0 and 1 value vectors. Retrieval is imperfect because all 256 bound items share one superposed vector.
 
-### Spatial retrieval
-Ask whether a bound representation is easier to retrieve when related structures occupy stable field neighborhoods.
+This produces an explicit capacity/robustness tradeoff: increasing dimension can reduce crosstalk but increases derived state and codebook cost.
+
+## Combining VSA with a field
+
+A field and a VSA representation provide different structure:
+
+```text
+field position     = persistent address and routing context
+VSA state          = distributed compositional representation
+local/global rule  = mechanism that changes or moves the state
+```
+
+One address might bind an entity with a relation while spatial communication determines which bindings interact next.
+
+The combination should be compared with ordinary learned vectors, because high-dimensional expansion can otherwise be mistaken for an automatic improvement.
+
+## Tests for VSA state
+
+### Compositional binding
+
+Compare explicit binding with learned concatenation plus an MLP under matched state and task conditions.
+
+### Address retrieval
+
+Measure whether stable spatial organization improves recovery of bound structures compared with an unordered store.
 
 ### Generalization
-VSA operations are attractive partly because they can encode compositional structure. Test longer unseen relation chains and novel entity combinations.
 
-### Robustness
-High-dimensional distributed codes can be noise tolerant. Compare cell-state corruption with ordinary dense latent representations.
+Test novel entity combinations and relation chains longer than those seen during training.
 
-## Keep the layers conceptually separate
+### Corruption tolerance
 
-The field, hyperbolic geometry and VSA are three different ideas:
+Inject equal amounts of state noise into HDC and ordinary dense latent representations, then compare retrieval accuracy per stored bit.
 
-1. **field** — where state persists and communicates;
-2. **geometry** — how distances/relationships inside state are measured;
-3. **VSA** — how high-dimensional structures are algebraically composed.
+## Keep the axes separate
 
-Combining them only becomes informative after each has a clean control.
+Three mechanisms can coexist without being the same thing:
+
+1. **field structure** — where state persists and which addresses communicate;
+2. **geometry** — how distance is defined inside some representation components;
+3. **VSA/HDC algebra** — how distributed high-dimensional objects are composed and retrieved.
+
+A combined model becomes interpretable only after each mechanism has a control that can fail independently.
