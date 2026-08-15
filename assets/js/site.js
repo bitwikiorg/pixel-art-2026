@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const tabs=[...document.querySelectorAll('[data-lab-tab]')];
   const sections=[...document.querySelectorAll('[data-lab-section]')];
+  const deepLinks={
+    '#pixelUniverseLab':'universe',
+    '#neuralFieldLab':'neural',
+    '#originalFieldLab':'dynamics',
+    '#experimentMap':'methods'
+  };
   const activateLab=(target)=>{
     if(!target||!tabs.some(tab=>tab.dataset.labTab===target))return;
     tabs.forEach(tab=>tab.classList.toggle('active',tab.dataset.labTab===target));
@@ -21,6 +27,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   };
   const activateFromHash=()=>{
     if(!location.hash)return;
+    if(deepLinks[location.hash]){
+      activateLab(deepLinks[location.hash]);
+      return;
+    }
     const section=document.querySelector(location.hash);
     if(section&&section.dataset&&section.dataset.labSection)activateLab(section.dataset.labSection);
   };
