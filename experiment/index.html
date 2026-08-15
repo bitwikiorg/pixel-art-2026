@@ -3,26 +3,23 @@ layout: default
 title: Experiments
 description: Controlled experiments in binary and color information, coding, representation, memory, computation, learning, comparison, generation, and artificial-life mechanics.
 ---
-<div class="page-shell">
+<div class="page-shell library-page" data-library-page="experiments">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Experiments</span></nav>
-  <header class="library-hero"><div class="eyebrow">Experiments</div><h1>What can a pixel-addressed field represent, preserve, compute, and learn?</h1><p class="hero-deck">The experiments begin with exact binary information, expand to finite color state, and then introduce redundancy, reusable motifs, distributed codes, memory, fixed computation, learned state, architecture comparisons, generative descriptions, and inherited controllers. Each mechanism is measured against the resources it adds.</p></header>
+  <header class="library-hero compact-library"><div class="library-kicker">Controlled experiments</div><h1>What can a pixel-addressed field represent, preserve, compute, learn, and generate?</h1><p class="hero-deck">The experimental progression begins with exact carriers and coding, changes the internal object at each address, adds computation and memory, introduces learned models and matched comparisons, then moves to generative descriptions and inherited controllers.</p></header>
 
-  <nav class="category-jump-nav" aria-label="Experiment categories"><a href="#information-and-coding">Information & coding</a><a href="#representation">Representation</a><a href="#computation-and-memory">Computation & memory</a><a href="#learning-and-comparison">Learning & comparison</a><a href="#generation">Generation</a></nav>
+  <nav class="experiment-path" aria-label="Experiment progression">
+    {% for group in site.data.experiment_groups %}<a href="#{{ group.id }}"><small>0{{ forloop.index }}</small><strong>{{ group.title }}</strong><span>{{ group.short }}</span></a>{% endfor %}
+  </nav>
 
-  {% assign groups = "Information and coding|Representation|Computation and memory|Learning and comparison|Generation" | split: "|" %}
-  {% for group in groups %}
-    {% case group %}
-      {% when 'Information and coding' %}{% assign ids = "01,01C,02,04" | split: "," %}{% assign group_text = "Binary and color carriers make source bits, alternate encodings, corruption, redundancy, description length, and lossless recovery directly measurable." %}
-      {% when 'Representation' %}{% assign ids = "05,06" | split: "," %}{% assign group_text = "The same outer address can carry a distributed code or a different internal mathematical object without changing the original source information." %}
-      {% when 'Computation and memory' %}{% assign ids = "03,08,A1" | split: "," %}{% assign group_text = "Fields can participate in content-addressable recall, exact GPU/CPU neighborhood computation, and fixed recurrent state evolution under direct interventions." %}
-      {% when 'Learning and comparison' %}{% assign ids = "07,09,10" | split: "," %}{% assign group_text = "Learned rules are scored on held-out data and compared under explicit state, parameter, and runtime constraints." %}
-      {% when 'Generation' %}{% assign ids = "11,12" | split: "," %}{% assign group_text = "Compact inherited descriptions can generate visible fields, palettes, physiology, and controllers when a shared interpreter supplies the generative structure." %}
-    {% endcase %}
-    <section id="{{ group | slugify }}" class="atlas-group anchor-section"><h2>{{ group }}</h2><p>{{ group_text }}</p><div class="atlas-list">
-      {% for id in ids %}{% assign exp = site.data.experiments | where: "id", id | first %}
-      <a class="atlas-row" href="{{ exp.url | relative_url }}"><span class="atlas-id">{{ exp.id }}</span><h3>{{ exp.title }}</h3><p>{{ exp.shows }}</p><span class="atlas-measure">{{ exp.status_label }}<br>{{ exp.measure }}</span></a>
-      {% endfor %}
-    </div></section>
+  {% for group in site.data.experiment_groups %}
+    <section id="{{ group.id }}" class="atlas-group anchor-section">
+      <div class="atlas-group-heading"><span>0{{ forloop.index }}</span><div><h2>{{ group.title }}</h2><p>{{ group.short }}</p></div></div>
+      <div class="atlas-list">
+        {% for id in group.ids %}{% assign exp = site.data.experiments | where: "id", id | first %}
+        <a class="atlas-row" href="{{ exp.url | relative_url }}"><span class="atlas-id">{{ exp.id }}</span><h3>{{ exp.title }}</h3><p>{{ exp.shows }}</p><span class="atlas-measure">{{ exp.status_label }}<br>{{ exp.measure }}</span></a>
+        {% endfor %}
+      </div>
+    </section>
   {% endfor %}
 
   <section class="section" style="padding-left:0;padding-right:0"><p class="core-note"><strong>Resource boundary.</strong> Derived state, redundancy, model parameters, dictionaries, palettes, inherited controllers, runtime state, and memory weights are additional or shared resources. They may improve robustness or computation, but they are not new independent source information.</p></section>

@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "_data" / "experiments.json"
 CONTROLS = ROOT / "_data" / "experiment_controls.json"
 REFERENCES = ROOT / "_data" / "experiment_references.json"
+GROUPS = ROOT / "_data" / "experiment_groups.json"
 SITE = ROOT / "_site"
 REQUIRED = {
     "id", "title", "category", "status", "status_label", "url",
@@ -16,6 +17,7 @@ REQUIRED = {
 }
 CONTROL_REQUIRED = {"control", "changes", "fixed", "watch"}
 REFERENCE_REQUIRED = {"title", "url", "note"}
+GROUP_REQUIRED = {"id", "title", "short", "ids"}
 ALLOWED_STATUS = {"exact", "deterministic", "mechanics", "learned", "benchmark"}
 
 
@@ -30,6 +32,7 @@ def main() -> int:
     data = json.loads(REGISTRY.read_text(encoding="utf-8"))
     controls = json.loads(CONTROLS.read_text(encoding="utf-8"))
     references = json.loads(REFERENCES.read_text(encoding="utf-8"))
+    groups = json.loads(GROUPS.read_text(encoding="utf-8"))
     if not isinstance(data, list) or not data:
         errors.append("experiment registry must be a non-empty list")
         data = []
@@ -39,6 +42,9 @@ def main() -> int:
     if not isinstance(references, dict):
         errors.append("experiment references must be an object keyed by experiment id")
         references = {}
+    if not isinstance(groups, list) or not groups:
+        errors.append("experiment groups must be a non-empty list")
+        groups = []
 
     ids: set[str] = set()
     urls: set[str] = set()
@@ -94,7 +100,7 @@ def main() -> int:
                     errors.append(f"{exp_id}: rendered experiment page missing: {target.relative_to(ROOT)}")
                 else:
                     rendered = target.read_text(encoding="utf-8")
-                    for marker in ('class="experiment-side-nav"', 'id="controls"', 'id="apparatus"', 'id="evidence"', 'id="references"'):
+                    for marker in ('class="experiment-side-nav experiment-side-nav-v2"', 'class="side-group-nav"', 'id="controls"', 'id="apparatus"', 'id="evidence"', 'id="references"'):
                         if marker not in rendered:
                             errors.append(f"{exp_id}: rendered clarity marker missing: {marker}")
 
@@ -106,12 +112,31 @@ def main() -> int:
     if set(references) != expected:
         errors.append(f"reference IDs differ from canonical atlas: got {sorted(references)}, expected {sorted(expected)}")
 
+    grouped_ids: list[str] = []
+    group_names: set[str] = set()
+    for i, group in enumerate(groups):
+        if not isinstance(group, dict) or GROUP_REQUIRED - set(group):
+            errors.append(f"group {i} must contain {sorted(GROUP_REQUIRED)}")
+            continue
+        group_id = str(group["id"])
+        if group_id in group_names:
+            errors.append(f"duplicate experiment group id: {group_id}")
+        group_names.add(group_id)
+        if not isinstance(group["ids"], list) or not group["ids"]:
+            errors.append(f"{group_id}: group must contain experiment ids")
+            continue
+        grouped_ids.extend(str(exp_id) for exp_id in group["ids"])
+    if len(grouped_ids) != len(set(grouped_ids)):
+        errors.append("an experiment appears in more than one navigation group")
+    if set(grouped_ids) != expected:
+        errors.append(f"navigation groups differ from canonical atlas: got {sorted(set(grouped_ids))}, expected {sorted(expected)}")
+
     if errors:
         print("EXPERIMENT AUDIT FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
-    print(f"EXPERIMENT AUDIT PASSED: {len(data)} canonical experiments with controls and references")
+    print(f"EXPERIMENT AUDIT PASSED: {len(data)} canonical experiments with grouped navigation, controls and references")
     return 0
 
 
