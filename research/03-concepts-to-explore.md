@@ -1,304 +1,319 @@
 ---
 layout: research
-title: Concepts to Explore
+title: Open Mechanisms
 ---
 
-# Concepts to explore
+# Open mechanisms
 
-This page is a branching map. MPF is not defined by one recurrent-grid implementation. The project can vary the **object inside a pixel**, the **relationships between pixels**, and the **larger structures made from fields**.
+The broad object `F[i,j] = O_ij` leaves several independent choices unresolved: what one address contains, how addresses communicate, how state persists, how scales interact, how representations are compressed, and how geometry or routing changes computation.
 
-## Pixel interpretation itself
+## What one address contains
 
-Before asking how a field communicates, ask what one address contains.
+### Tensor structure inside a pixel
 
-Possible computational pixels include:
-
-- scalar state;
-- flat vector state;
-- structured tensor state;
-- shared neural unit;
-- multiple latent tokens with internal attention;
-- fast/slow memory object;
-- vector-symbolic object;
-- subfield;
-- recursively nested object.
-
-These are not only changes in dimensionality. They change the internal computation available at one spatial address.
-
-A useful comparison ladder is:
+A tensor-valued pixel can use the same scalar count as a flat vector while imposing an internal factorization.
 
 ```text
-scalar
-→ vector
-→ tensor
-→ neural unit
-→ micro-transformer
-→ memory object
-→ subfield
+flat vector:  x_ij ∈ R^64
+structured:   X_ij ∈ R^(8×8)
 ```
 
-[Run the current interpretation sandbox]({{ '/experiment/interpretation/' | relative_url }}).
+The tensor becomes a distinct hypothesis only if the operator respects its axes—for example through separable transforms, low-rank factors, internal convolution, structured sparsity, or attention over axes.
 
-## Semantic topology {#semantic-topology}
+**Measurement:** compare equal-state vector and tensor cells on accuracy, sample efficiency, runtime, generalization, and compressibility.
 
-**Idea:** the organization of computational pixels might become part of the representation.
+**Failure condition:** the tensor gives no consistent benefit once scalar state, parameters, compute, and optimization are controlled.
 
-Possible neighborhood structures:
+### Internal attention
 
-- physical 2D neighbors;
-- fixed random graph neighbors;
-- learned content-based neighbors;
-- hybrid local + long-range edges;
-- multiscale parent/child links;
-- dynamic routing between addresses.
-
-Key distinction:
+A micro-transformer pixel contains several tokens inside one outer address:
 
 ```text
-stable address ≠ 2D geometry ≠ semantic neighborhood
+X_ij ∈ R^(K×D)
 ```
 
-An experiment should separate those three.
+Self-attention mixes those `K` internal tokens before a compact message leaves the address.
 
-Related background: [Kohonen Self-Organizing Maps](https://www.scholarpedia.org/article/Kohonen_network) and [Graph Neural Networks](https://distill.pub/2021/gnn-intro/).
-
-## Purposeful cell and region roles
-
-A pixel state can be entirely distributed, but it is worth testing whether training produces recurring functional types.
-
-Candidate roles include:
-
-- entity/state storage;
-- relation integration;
-- routing;
-- uncertainty;
-- temporal memory;
-- coarse context;
-- query-conditioned control.
-
-The form of specialization can depend on the pixel primitive. A vector may specialize through subspaces; a tensor through factors; a micro-transformer through internal tokens or heads; a subfield through inner regions.
-
-Related work: [Slot Attention](https://arxiv.org/abs/2006.15055).
-
-## Tensor structure inside a pixel
-
-A tensor-valued pixel can have the same scalar count as a flat vector while imposing a different internal organization.
-
-Examples:
+A field Transformer uses a different factorization:
 
 ```text
-R^64
-versus
-R^(8×8)
+one outer address = one token
+attention occurs between addresses
 ```
 
-Possible tensor-specific operations:
+**Measurement:** compare internal attention, outer-field attention, and local vector updates under matched state, parameters, and compute.
 
-- internal convolution;
-- separable transforms;
-- low-rank factorization;
-- attention over axes;
-- sparse slices;
-- scale-specific factors.
+**Failure condition:** internal attention adds cost without improving tasks that require within-address factorization or compositional state.
 
-This is useful only if the architecture respects the tensor structure rather than immediately flattening it.
+### Memory objects
 
-## Attention inside versus between pixels
-
-There are at least two distinct ways to introduce Transformers.
-
-### Micro-transformer pixel
+One address can contain state with different time constants or learned access rules:
 
 ```text
-one address = K internal tokens
-attention occurs inside the pixel
+x_ij = [fast state | slow state | write gate | read gate]
 ```
 
-### Field Transformer
+Fast state may support transient computation while slow state preserves information through interference.
 
-```text
-one address = one token
-attention occurs between pixels
-```
+**Measurement:** write information, remove the source, inject distractors, delay, then query. Report retention, interference, overwrite, and stored-state cost.
 
-A hybrid can combine internal attention, local outer communication and occasional region-level attention.
+**Failure condition:** ordinary recurrent hidden state or an external key-value memory retains the same information more efficiently.
 
-The important research question is **where attention should live**.
+### Field inside field
 
-## Multiresolution representation
-
-Represent computation at several scales:
-
-```text
-cell → region → super-region → field
-```
-
-Questions:
-
-- Does coarse state reduce communication distance?
-- Can fine detail be reconstructed from coarse summaries plus local state?
-- Can a query selectively activate only the scale it needs?
-- Can the same update module operate at every scale?
-
-If the same transform is genuinely reused recursively across scales, terms such as **scale-reused** or eventually **fractal** become technically meaningful. Otherwise use **multiresolution**.
-
-## Field inside field
-
-The stronger recursive interpretation treats one outer address as a complete inner field:
+An outer address may contain an active inner field:
 
 ```text
 F_outer[i,j] = F_inner^(i,j)
 ```
 
-Now computation can occur:
+Computation can occur inside each subfield, between outer addresses, upward through summaries, and downward through contextual messages.
 
-- inside each subfield;
-- between outer addresses;
-- upward from inner summaries;
-- downward from outer context.
+Pooling alone is not enough. A stronger recursive system reuses the same or closely related interface or update rule across several levels.
 
-This is different from ordinary multiresolution pooling because the inner object remains an active computational field.
+**Measurement:** train on some field sizes or hierarchy depths and test on larger unseen scales.
 
-## Learned routing
+**Failure condition:** a flat model with comparable resources generalizes equally well or better.
 
-Some tasks may require occasional long-range communication.
+## How addresses communicate
 
-Options:
+### Semantic topology
 
-- sparse learned edges;
-- routing channels inside each pixel;
+A spatial address can have at least three distinct properties:
+
+```text
+stable identity
+≠ Cartesian coordinate
+≠ semantic neighborhood
+```
+
+Possible connectivity includes physical 2D neighbors, fixed random graphs, learned content-based neighbors, local plus sparse long-range edges, parent/child links, or dynamic routing.
+
+**Measurement:** keep cell state and update rule fixed while changing only the connectivity pattern. Compare Cartesian grid, torus, scrambled fixed graph, learned graph, and attention-based communication.
+
+**Failure condition:** performance depends only on communication capacity and not on stable or semantic arrangement.
+
+Related background: [Kohonen Self-Organizing Maps](https://www.scholarpedia.org/article/Kohonen_network) and [Graph Neural Networks](https://distill.pub/2021/gnn-intro/).
+
+### Learned routing
+
+Local communication is cheap but slow over long distances. Global attention is direct but expensive. Sparse routing can occupy the middle ground.
+
+Candidate mechanisms include:
+
+- learned long-range edges;
+- routing channels stored inside each pixel;
 - region-to-region attention;
-- global broadcast every `k` steps;
+- periodic global broadcast;
 - content-addressed memory lookup;
 - dynamic field-to-field messages.
 
-The goal is to measure which routing structures are useful rather than assume local or global communication is always preferable.
+**Measurement:** plot task accuracy against communication cost, message distance, and number of active long-range edges.
 
-## Persistent memory
+**Failure condition:** a simpler fixed sparse pattern or periodic global operator gives the same result.
 
-A pixel or a whole field can be treated as a memory object that continues to exist after one forward pass.
+### Local plus global computation
 
-Experiments:
-
-- save and restore a field;
-- resume computation from stored state;
-- retrieve one field from a collection by similarity;
-- merge information from two fields;
-- update a field without catastrophic corruption;
-- consolidate many fields into a coarse summary field.
-
-Related work: [Neural Map](https://arxiv.org/abs/1702.08360).
-
-## Albums: fields of fields
-
-A higher-level collection can contain multiple fields representing episodes, hypotheses, modalities or time points.
+A field can combine frequent local updates with occasional global correction:
 
 ```text
-internal pixel object → pixel → region → field → album
+local → local → local → global → local → ...
 ```
 
-The album is another level at which the interpretation can change: a whole field can become one object inside a larger structure.
+This can reduce the number of recurrent steps required to move information across a large field.
 
-## Vector quantization
+**Measurement:** hold approximate compute constant while varying the ratio of local to global operations.
 
-A stored vector or tensor can be replaced partly or wholly by learned codebook indices.
+**Failure condition:** pure local recurrence or pure global attention dominates at the same cost.
+
+## Scale and hierarchy
+
+### Multiresolution state
+
+Computation can occur simultaneously at cell, region, and field scales:
 
 ```text
-continuous active state → quantized stored state → restored active state
+cell → region → super-region → field
 ```
 
-Product VQ can split a state into sub-vectors and quantize each separately. Tensor pixels may support structured or factorized codebooks. Report codebook cost and side information. Start with [VQ-VAE](https://arxiv.org/abs/1711.00937).
+Coarse state can move information over larger effective distances, while fine state preserves detail.
 
-## Predictive / multiscale compression
+Questions include whether coarse summaries reduce communication depth, whether fine detail can be reconstructed from coarse state plus residuals, and whether queries can activate only the resolution they require.
 
-Rather than storing every fine state independently, store coarse state plus residual detail only where needed.
+**Measurement:** accuracy or reconstruction quality versus compute and stored state at each scale.
 
-Possible mechanisms:
+**Failure condition:** ordinary pooling or a flat larger-receptive-field model gives the same behavior.
 
-- low-rank tensor state;
-- learned residual coding;
-- sparse exception maps;
-- entropy models;
-- repeated-pattern dictionaries;
-- shared recursive rules;
-- query-dependent reconstruction.
+### Recursive operator reuse
 
-The measurement is a rate–utility curve, not visual compactness.
+Recursion becomes stronger when the same interface is reused across levels:
 
-## Hyperbolic hierarchy
+```text
+U(field)
+U(region)
+U(inner field)
+```
 
-A physical grid can remain Euclidean while some semantic state uses hyperbolic distance.
+The attraction is not visual self-similarity but parameter reuse and scale generalization.
 
-A conservative first variant:
+**Measurement:** train at limited depths or sizes and evaluate beyond the training hierarchy.
+
+**Failure condition:** performance collapses outside the trained scale or requires level-specific parameters.
+
+## Functional specialization
+
+A distributed field may develop stable computational roles even when no roles are assigned by hand.
+
+Possible roles include:
+
+- content storage;
+- relation integration;
+- routing;
+- uncertainty estimation;
+- temporal memory;
+- coarse context;
+- query-conditioned control.
+
+The form of specialization depends on the primitive: vector subspaces, tensor factors, internal tokens, attention heads, memory slots, experts, or subregions can each specialize differently.
+
+**Measurement:** train probes across examples and seeds, then intervene on candidate role-bearing components.
+
+**Failure condition:** apparent roles disappear under causal intervention or vary randomly across seeds.
+
+Related work: [Slot Attention](https://arxiv.org/abs/2006.15055).
+
+## Persistence beyond one field
+
+### Persistent field memory
+
+A complete field can be serialized after computation and restored later:
+
+```text
+compute → save F_T → delay → restore → continue or query
+```
+
+The important question is whether the stored field preserves useful working information that would be expensive to reconstruct from the original input.
+
+**Measurement:** retained task performance, restart latency, storage bits, and degradation after quantization or corruption.
+
+**Failure condition:** storing a smaller ordinary latent vector preserves the same useful information.
+
+### Semantic Album
+
+A collection of persistent fields can become a higher-order memory:
+
+```text
+A = {F_1, F_2, ..., F_n}
+```
+
+Fields may represent episodes, hypotheses, modalities, or time points and can be retrieved, compared, merged, or consolidated.
+
+**Measurement:** retrieval accuracy, composition quality, interference, update cost, and total storage compared with vector databases or key-value memory.
+
+**Failure condition:** field structure adds no benefit beyond storing one embedding per item.
+
+## Compression and discrete state
+
+### Vector quantization
+
+Continuous state can be replaced with learned codebook indices:
+
+```text
+continuous state → code index → restored state
+```
+
+Product quantization can split a large vector or tensor into factors and quantize them separately.
+
+**Measurement:** total bits include indices, codebooks, metadata, and any residuals. Plot rate against reconstruction distortion or retained task utility.
+
+**Failure condition:** the representation saves latent bytes but loses the advantage once codebook and side-information costs are counted.
+
+Primary reference: [VQ-VAE](https://arxiv.org/abs/1711.00937).
+
+### Predictive multiscale coding
+
+Fine state can be predicted from coarser state and only the residual stored:
+
+```text
+fine state = predicted from parent + encoded residual
+```
+
+Sparse exception maps, low-rank factors, entropy models, motif dictionaries, and recursive prediction can all exploit repeated structure.
+
+**Measurement:** total accounted rate versus exact recovery, distortion, or task utility.
+
+**Failure condition:** raw quantization or a standard codec gives a better rate–utility curve.
+
+## Geometry of meaning
+
+### Hyperbolic hierarchy
+
+A physical grid can remain Euclidean while selected semantic coordinates use hyperbolic distance:
 
 ```text
 pixel state = [ordinary content | hierarchy coordinates]
 ```
 
-Only hierarchy-related coordinates use a Poincaré or Lorentz geometry. Compare against an equal-dimensional Euclidean version on explicitly hierarchical data.
+Negatively curved spaces are attractive for tree-like structures because distance can represent branching hierarchies efficiently.
+
+**Measurement:** compare equal-dimensional Euclidean and hyperbolic hierarchy state on data with explicit tree structure.
+
+**Failure condition:** no hierarchy-specific advantage appears, or the benefit disappears on matched Euclidean controls.
 
 Primary reference: [Poincaré Embeddings](https://arxiv.org/abs/1705.08039).
 
-## Vector-Symbolic / Hyperdimensional state
+### Vector-symbolic / hyperdimensional state
 
-A pixel, region or field can contain a high-dimensional vector designed for operations such as binding, bundling and permutation.
+High-dimensional distributed vectors support operations such as binding, bundling, permutation, and similarity retrieval.
 
-Possible synthesis:
+A field can combine VSA algebra with stable spatial address and routing:
 
-- VSA encodes entity + relation composition;
-- spatial topology provides persistent location or routing;
-- memory preserves bound structures;
-- regions provide multiscale context;
-- recurrence, attention or other dynamics can manipulate the state.
+```text
+VSA composition
++ spatial persistence
++ local or global communication
+```
 
-This is a separate representational axis and should be compared directly with ordinary learned vectors rather than treated as an automatic upgrade.
+**Measurement:** compare compositional generalization, retrieval noise, corruption tolerance, and memory cost against ordinary learned vectors.
 
-## Attractor-like computation
-
-Any recurrent variant may learn stable states that act like memories or solutions. Instead of reading after a fixed number of steps, the system could stop when change becomes small or a learned halting signal fires.
-
-Related reading: [Scholarpedia: Attractor network](https://www.scholarpedia.org/article/Attractor_network).
+**Failure condition:** high-dimensional expansion increases state without improving the measured compositional or robustness task.
 
 ## Adaptive computation
 
-Different problems may need different amounts or types of computation.
+Different inputs may require different amounts of computation.
 
-Possible adaptive choices include:
+A system can adapt:
 
-- number of recurrent steps;
-- which pixels activate;
+- recurrent depth;
+- number of active pixels;
 - whether an inner subfield expands;
-- whether regional attention is invoked;
+- whether regional or global attention runs;
 - whether another stored field is retrieved.
+
+**Measurement:** accuracy versus actual compute used per example, not only maximum configured depth.
+
+**Failure condition:** adaptive mechanisms learn to use the maximum budget everywhere or add overhead without reducing average compute.
 
 ## Learned coordinate systems
 
-The field does not have to keep a fixed interpretation of position. It may learn a coordinate system or soft transport mechanism that moves representations to useful regions.
+Representations do not have to remain aligned to sensor pixels. A learned writer can place content into persistent computational addresses or create soft semantic neighborhoods.
 
-Questions:
+Questions include whether positions remain stable enough for memory, whether content should move between addresses, and whether coordinates should be absolute, relative, or content-addressed.
 
-- Can positions remain stable enough for memory while content moves?
-- Can a learned writer discover useful neighborhoods?
-- Should coordinates be absolute, relative or content-addressed?
-- Can topology itself depend on the current task?
+**Measurement:** compare fixed physical coordinates, learned placements, graph layouts, and permutation-invariant controls.
 
-## Mechanistic visualization
+**Failure condition:** learned layout is unstable across examples or offers no advantage over nonspatial memory.
 
-RGB projection is only the beginning. Richer pixels require richer inspection tools:
+## Causal inspection of rich pixels
 
-- tensor slices;
-- internal token views;
-- attention matrices;
-- fast versus slow memory traces;
-- inner-subfield views;
-- update-magnitude heatmaps;
-- local message norm;
-- region-to-region flow;
-- probe accuracy by location;
-- intervention sensitivity maps;
-- PCA/UMAP trajectories;
-- role-consistency maps across seeds;
-- damage/recovery curves;
-- accuracy versus computation depth.
+High-dimensional state grows faster than direct human inspection. Useful views include tensor slices, internal tokens, attention matrices, fast/slow memory traces, inner subfields, update magnitude, message norm, region flow, probe accuracy, and low-dimensional trajectories.
 
-The central interpretability problem is simple: **the possible internal state can grow much faster than a human can directly inspect it**. Visualization therefore has to select useful projections and pair them with causal interventions.
+Visualization alone remains descriptive. Stronger interpretation comes from intervention:
+
+```text
+observe candidate role
+→ mute / freeze / swap / erase it
+→ measure predicted behavioral change
+```
+
+A causal role is credible when the intervention changes the output in a repeatable and mechanism-specific way.
