@@ -216,11 +216,18 @@
       regenerate(`Deterministic mutation #${mutationCounter}: flipped exactly ${changed} genome bit${changed === 1 ? '' : 's'}, then regenerated traits, palette, and color indices.`);
     });
     root.querySelector('#genomeCross').addEventListener('click', () => {
-      parentB = genomeFromSeed(root.querySelector('#genomeParentB').value); genome = crossGenomes(parentA, parentB, root.querySelector('#genomeSeed').value); regenerate('Crossed Parent A and Parent B genomes byte-by-byte using a deterministic selection mask.');
+      const seedA = root.querySelector('#genomeSeed').value;
+      const seedB = root.querySelector('#genomeParentB').value;
+      parentA = genomeFromSeed(seedA); parentB = genomeFromSeed(seedB);
+      genome = crossGenomes(parentA, parentB, `${seedA}:${seedB}:cross`); mutationCounter = 0;
+      regenerate('Crossed the currently visible Parent A and Parent B seeds byte-by-byte using a deterministic selection mask.');
     });
     root.querySelector('#genomeInterpolate').addEventListener('input', e => {
-      parentB = genomeFromSeed(root.querySelector('#genomeParentB').value);
-      const t = Number(e.target.value) / 100; genome = interpolateGenomes(parentA, parentB, t); regenerate(`Interpolated Parent A and the currently visible Parent B seed at t=${t.toFixed(2)}.`); root.querySelector('#genomeT').textContent = t.toFixed(2);
+      const seedA = root.querySelector('#genomeSeed').value;
+      const seedB = root.querySelector('#genomeParentB').value;
+      parentA = genomeFromSeed(seedA); parentB = genomeFromSeed(seedB);
+      const t = Number(e.target.value) / 100; genome = interpolateGenomes(parentA, parentB, t); mutationCounter = 0;
+      regenerate(`Interpolated the currently visible Parent A and Parent B seeds at t=${t.toFixed(2)}.`); root.querySelector('#genomeT').textContent = t.toFixed(2);
     });
     root.querySelector('#genomeDamage').addEventListener('click', () => {
       const original = renderGenome(genome, SIZE); const d = damage(original, 0.15, `${genomeHex(genome)}:damage`); raster = d.bits; paint(); root.querySelector('#genomeStatus').textContent = `Damaged ${d.flips}/${raster.length} visible color indices. The genome and derived palette were not changed.`;
