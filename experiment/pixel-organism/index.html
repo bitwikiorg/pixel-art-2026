@@ -1,0 +1,146 @@
+---
+layout: experiment
+title: Pixel Organism
+exp_id: "12"
+status: "GENOME + CONTROLLER · LIVE"
+category: "Generation"
+question: "Can one finite genome deterministically generate both a visible pixel organism and an inherited recurrent controller whose mutations change behavior under a fixed environment?"
+explanation: "A 256-bit genome is split into two inherited halves. The first 128 bits generate a 24×24 indexed-color body and palette. The second 128 bits encode a tiny recurrent neural controller plus physiology. The organism is then placed in a deterministic 32×32 food world. Mutations change inherited bits; selection evaluates the parent and eight mutants on exactly the same world before choosing the highest-scoring candidate."
+deck: "One finite genome generates body, palette, recurrent controller, physiology, and a measurable lifetime."
+source: "256-bit genome + fixed world seed"
+interpretation: "128-bit morphology/palette + 128-bit recurrent controller/physiology"
+measure: "genome Hamming distance, changed body pixels, food eaten, survival, energy, world score, held-out score"
+shows: "A finite random seed can deterministically specify both a visible phenotype and a small inherited controller. Bit mutations can alter morphology, physiology, or behavior, and selection can be measured under a fixed task."
+does_not_show: "Open-ended evolution, consciousness, general intelligence, gradient learning, ecological realism, or a universal advantage for pixel organisms. Selection here is a deterministic one-generation hill-climbing baseline."
+mental_model: "Think of the 256-bit genome as a tiny inherited instruction tape. The first half is interpreted as a body-building program. The second half is interpreted as a recurrent steering circuit. A lifetime is what happens when that inherited tape is decoded and placed inside a particular world."
+background:
+  - "Genotype is inherited description; phenotype is the generated visible organism and its expressed traits. A mutation changes genotype bits before the phenotype is regenerated."
+  - "A recurrent neural controller keeps a small hidden state through time. Its outputs depend on current sensors and its previous hidden state. In this baseline the weights are decoded from the genome rather than learned by gradient descent."
+  - "Selection is meaningful only relative to an environment and score. The selected-world score and three held-out worlds are reported separately because a mutation can overfit one environment."
+terms:
+  - term: "genotype"
+    definition: "the 256 inherited bits that persist across regeneration and mutation"
+  - term: "phenotype"
+    definition: "the body, palette, physiology, and behavior expressed when the genome is decoded in an environment"
+  - term: "recurrent state"
+    definition: "two transient hidden values carried from one controller step to the next; they reset to zero at the beginning of every lifetime"
+  - term: "selection"
+    definition: "evaluating parent and mutants under the same scoring rule and retaining the highest-scoring candidate"
+outcomes:
+  - label: "Mutation changes the body"
+    meaning: "A flipped bit in the morphology half can alter occupancy, symmetry, pattern, or palette. Body-pixel distance reports the visible consequence."
+  - label: "Mutation changes behavior without changing the body"
+    meaning: "A flipped bit in the controller half can change weights or physiology while the 24×24 phenotype remains visually identical."
+  - label: "Selected-world score rises but held-out score does not"
+    meaning: "Selection improved one deterministic environment without generalizing to the three held-out food worlds. That is environment-specific adaptation, not general intelligence."
+steps:
+  - label: "Decode one inherited genome"
+    text: "The first sixteen bytes generate the indexed-color body and palette. The second sixteen bytes are unpacked into signed four-bit controller weights and physiological traits."
+  - label: "Run one lifetime"
+    text: "Four sensors feed a two-unit recurrent controller. Three outputs steer left, straight, or right through a toroidal 32×32 food field while energy, food, and survival are measured."
+  - label: "Mutate and select"
+    text: "A selection step compares the parent with eight deterministic one-to-three-bit mutants on the same world, then reports the winner again on three held-out worlds."
+technical: |
+  **Inherited description.** The genome contains `32 bytes = 256 bits`. Bytes `0–15` are interpreted as morphology and palette state. Bytes `16–31` are interpreted as controller and physiology state. The split is experimental convention, not biological realism.
+
+  **Morphogenesis.** The morphology half seeds a deterministic pseudorandom process that creates a bounded occupancy field, applies a symmetry probability, adds a connected random walk, performs one to three local neighbor-count smoothing steps, and assigns one of four indexed colors to occupied addresses. The visible body contains `24 × 24 = 576` two-bit palette indices after generation. Those 1,152 rendered index bits are derived phenotype, not additional inherited information.
+
+  **Genome-encoded recurrent controller.** Sixteen controller bytes contain thirty-two 4-bit nibbles. The first twenty-three nibbles map linearly to signed weights in `[-1,1]`: `4×2 = 8` input-to-hidden weights, `2×2 = 4` recurrent weights, `2` hidden biases, `2×3 = 6` hidden-to-output weights, and `3` output biases. The remaining nine nibbles control vision range, movement cost, food energy gain, starting energy, turning bias, sensor gain, body cost, activity gain, and reserve.
+
+  **Transient state.** The recurrent hidden state has two `Float64` values in the browser implementation. That is `2 × 64 = 128` transient implementation bits if persisted. It is reset to `[0,0]` at the start of every lifetime and is therefore not inherited genome information.
+
+  **Sensors and actions.** The four inputs are food-ray strength forward, left, and right plus normalized current energy. Food rays inspect two to six cells depending on inherited vision. The three controller outputs choose steering left, straight, or right. Every action advances one wrapped grid cell, so the world has toroidal boundary conditions.
+
+  **World and score.** A world seed deterministically places 72 food cells on a `32×32` toroidal grid. All candidates in one selection event see exactly the same food layout. The displayed score is `20 × food_eaten + remaining_energy + 0.05 × survived_steps`. It is an explicit task utility, not a biological fitness law.
+
+  **Selection baseline.** One generation evaluates the current parent plus eight deterministic mutants. Each mutant flips one to three inherited genome bits. The candidate with the highest selected-world score is retained; ties preserve the earlier candidate. Three additional deterministic worlds are then scored without affecting selection. Repeated clicks implement greedy hill climbing, not a population ecology or open-ended evolutionary algorithm.
+
+  **Information boundary.** Random-number generation does not create independent information beyond the genome, world seed, shared decoder, and runtime state. The body, palette, weights, trajectories, and scores are deterministic consequences of those inputs. Calling the controller a “pixel brain” is an intuitive shorthand; formally it is a two-state recurrent neural controller with genome-encoded weights.
+scripts:
+  - /assets/js/pixel-organism.js
+---
+<div data-pixel-organism>
+  <section class="lab-module organism-controls">
+    <div class="lab-controls organism-control-grid">
+      <label>Genome seed <input id="organismSeed" value="PIXEL-ORGANISM-01"></label>
+      <label>World seed <input id="organismWorldSeed" value="FORAGE-WORLD-01"></label>
+      <label>Lifetime steps <input id="organismSteps" type="range" min="40" max="320" step="20" value="160"><strong id="organismStepsOut">160</strong></label>
+      <button id="organismGenerate" class="btn primary">Generate organism</button>
+      <button id="organismRun" class="btn">Run lifetime</button>
+      <button id="organismMutate" class="btn">Mutate 1–3 bits</button>
+      <button id="organismSelect" class="btn secondary">Select one generation</button>
+    </div>
+  </section>
+
+  <section class="organism-stage">
+    <div class="lab-module organism-card">
+      <small>24×24 GENERATED PHENOTYPE</small>
+      <canvas id="organismBodyCanvas" class="pixel-canvas organism-body-canvas"></canvas>
+      <div class="genome-palette organism-palette">
+        <div class="palette-entry" data-organism-palette="0"><span class="palette-swatch"></span><code>00 → —</code></div>
+        <div class="palette-entry" data-organism-palette="1"><span class="palette-swatch"></span><code>01 → —</code></div>
+        <div class="palette-entry" data-organism-palette="2"><span class="palette-swatch"></span><code>10 → —</code></div>
+        <div class="palette-entry" data-organism-palette="3"><span class="palette-swatch"></span><code>11 → —</code></div>
+      </div>
+      <div class="organism-nameplate"><strong>Pixel Organism</strong><span>seed → genome → body + controller</span></div>
+    </div>
+
+    <div class="lab-module organism-arena-panel">
+      <small>32×32 TOROIDAL FORAGING WORLD</small>
+      <canvas id="organismArenaCanvas" class="pixel-canvas organism-arena-canvas"></canvas>
+      <div class="arena-legend"><span><i class="food-dot"></i> food</span><span><i class="path-dot"></i> trajectory</span><span><i class="eaten-dot"></i> consumed</span><span><i class="agent-dot"></i> final position</span></div>
+    </div>
+  </section>
+
+  <section class="lab-module">
+    <div class="lab-label">Inherited information ledger</div>
+    <div class="information-ledger organism-ledger">
+      <div><small>GENOME</small><strong>256 bits</strong><span>32 bytes inherited</span></div>
+      <div><small>MORPHOLOGY + PALETTE</small><strong>128 bits</strong><span>bytes 0–15</span></div>
+      <div><small>CONTROLLER + PHYSIOLOGY</small><strong>128 bits</strong><span>bytes 16–31</span></div>
+      <div><small>TRANSIENT HIDDEN STATE</small><strong>128 bits</strong><span>2 × Float64 · reset each lifetime</span></div>
+    </div>
+    <pre id="organismGenomeHex" class="carrier-code wrap organism-genome-hex">—</pre>
+  </section>
+
+  <section class="lab-two organism-measures">
+    <div class="lab-module">
+      <div class="lab-label">Expressed traits</div>
+      <div class="carrier-readout-grid organism-traits">
+        <div><small>GENERATION</small><strong id="organismGeneration">0</strong></div>
+        <div><small>VISION</small><strong id="organismVision">—</strong></div>
+        <div><small>MOVE + BODY COST</small><strong id="organismMoveCost">—</strong></div>
+        <div><small>FOOD GAIN</small><strong id="organismFoodGain">—</strong></div>
+        <div><small>START ENERGY</small><strong id="organismStartEnergy">—</strong></div>
+        <div><small>GENOME Δ BITS</small><strong id="organismGenomeDistance">—</strong></div>
+        <div><small>BODY Δ PIXELS</small><strong id="organismBodyDistance">—</strong></div>
+      </div>
+    </div>
+
+    <div class="lab-module">
+      <div class="lab-label">Lifetime result</div>
+      <div class="carrier-readout-grid organism-results">
+        <div><small>WORLD SCORE</small><strong id="organismScore">—</strong></div>
+        <div><small>HELD-OUT MEAN</small><strong id="organismHeldOut">—</strong></div>
+        <div><small>FOOD EATEN</small><strong id="organismFood">—</strong></div>
+        <div><small>FINAL ENERGY</small><strong id="organismEnergy">—</strong></div>
+        <div><small>SURVIVAL</small><strong id="organismSurvival">—</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lab-module organism-brain-panel">
+    <div class="lab-label">Genome-encoded recurrent controller · “pixel brain”</div>
+    <div class="organism-brain-flow">
+      <div><small>SENSORS</small><strong>food forward · left · right · energy</strong><code id="organismInputs">—</code></div>
+      <span>→</span>
+      <div><small>RECURRENT STATE</small><strong>2 tanh units</strong><code id="organismHidden">—</code></div>
+      <span>→</span>
+      <div><small>ACTIONS</small><strong>left · straight · right</strong><code id="organismOutputs">—</code></div>
+    </div>
+    <details class="organism-weight-drawer"><summary>23 inherited four-bit controller weights</summary><pre id="organismBrainWeights" class="carrier-code wrap">—</pre></details>
+    <p class="lab-explain">The controller is neural but not gradient-trained. Its weights are inherited from genome nibbles. Repeated selection can change those weights indirectly by changing genome bits.</p>
+  </section>
+
+  <div id="organismStatus" class="lab-status"></div>
+</div>
