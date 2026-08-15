@@ -132,15 +132,16 @@ def main() -> int:
 
     required = [
         "index.html", "learn/index.html", "experiment/index.html", "carrier/index.html",
-        "experiment/reliability/index.html", "experiment/memory/index.html",
-        "experiment/motif-codec/index.html", "experiment/hypervector/index.html",
-        "experiment/interpretation/index.html", "experiment/learned-local-field/index.html",
-        "experiment/webgpu/index.html", "experiment/masked-reconstruction/index.html",
-        "experiment/primitive-benchmark/index.html", "experiment/pixel-genome/index.html",
-        "experiment/dynamics/index.html", "research/index.html",
-        "research/11-color-light-state/index.html", "glossary/index.html",
-        "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
+        "experiment/color-carrier/index.html", "experiment/reliability/index.html",
+        "experiment/memory/index.html", "experiment/motif-codec/index.html",
+        "experiment/hypervector/index.html", "experiment/interpretation/index.html",
+        "experiment/learned-local-field/index.html", "experiment/webgpu/index.html",
+        "experiment/masked-reconstruction/index.html", "experiment/primitive-benchmark/index.html",
+        "experiment/pixel-genome/index.html", "experiment/dynamics/index.html", "research/index.html",
+        "research/11-color-light-state/index.html", "research/12-generative-pixel-engineering/index.html",
+        "glossary/index.html", "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
         "assets/css/clarity-v2.css", "assets/js/site.js", "assets/js/pixel-core.js",
+        "assets/js/color-carrier.js",
     ]
     for rel in required:
         if not (SITE / rel).exists():
