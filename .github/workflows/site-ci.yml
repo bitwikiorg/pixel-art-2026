@@ -37,7 +37,7 @@ jobs:
 
       - name: Check Python experiment syntax
         run: |
-          python3 -m py_compile experiments/mpf_relations.py scripts/validate_site.py
+          python3 -m py_compile experiments/mpf_relations.py experiments/pixel_primitives.py scripts/validate_site.py
 
       - name: Build Jekyll site
         env:
