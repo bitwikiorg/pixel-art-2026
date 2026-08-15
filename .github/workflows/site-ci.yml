@@ -29,6 +29,7 @@ jobs:
           node --check assets/js/site.js
           node --check assets/js/field.js
           node --check assets/js/neural-field.js
+          node --check assets/js/pixel-universe.js
 
       - name: Check Python experiment syntax
         run: |
