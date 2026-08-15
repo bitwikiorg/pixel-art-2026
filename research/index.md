@@ -1,14 +1,14 @@
 ---
 layout: default
 title: Research
-description: Multidimensional Pixel Fields: representation, computation, memory, compression, topology, geometry, learning, color, light, generation, and recursive systems.
+description: Multidimensional Pixel Fields: representation, computation, memory, compression, topology, geometry, learning, color, light, generation, artificial life, and recursive systems.
 ---
 <div class="page-shell">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Research</span></nav>
   <header class="library-hero">
     <div class="eyebrow">Multidimensional Pixel Fields</div>
     <h1>What computational object should occupy a spatial address?</h1>
-    <p class="hero-deck">Internal state, generation, communication, memory, topology, scale, geometry, learning, physical measurement, semantic interpretation, and resource cost are separate variables that can be controlled and measured.</p>
+    <p class="hero-deck">Internal state, generation, communication, memory, topology, scale, geometry, learning, physical measurement, semantic interpretation, inheritance, environment, and resource cost are separate variables that can be controlled and measured.</p>
   </header>
 
   <section class="atlas-group"><h2>Foundations and measurement</h2><p>Source information, stored state, derived coordinates, physical measurements, model complexity, and empirical evidence require separate accounting.</p><div class="research-topic-list">
@@ -18,9 +18,10 @@ description: Multidimensional Pixel Fields: representation, computation, memory,
     <div class="research-topic-row"><h3>Research neighborhood</h3><div><p>Neural Cellular Automata, recurrent convolution, structured memory, graph message passing, vector quantization, HDC/VSA, and hyperbolic representation.</p><a class="card-link" href="{{ '/research/01-prior-art/' | relative_url }}">Prior art →</a></div></div>
   </div></section>
 
-  <section class="atlas-group"><h2>State, generation, and learning</h2><p>Pixel type, generative process, and communication topology are independent architectural choices.</p><div class="research-topic-list">
+  <section class="atlas-group"><h2>State, generation, and learning</h2><p>Pixel type, generative process, inherited description, controller, environment, and communication topology are independent architectural choices.</p><div class="research-topic-list">
     <div class="research-topic-row"><h3>Primitive map</h3><div><p>Bits, colors, vectors, tensors, internal tokens, memory objects, subfields, GPU state, and distributed representations connected to concrete mechanisms.</p><a class="card-link" href="{{ '/research/10-pixel-photon-primitives/' | relative_url }}">Primitive map →</a></div></div>
     <div class="research-topic-row"><h3>Generative pixel engineering</h3><div><p>Seeds, symmetry, cellular rules, vector fields, shaders, layer composition, particles, palettes, and shared decoders as mechanisms that construct visible pixels.</p><a class="card-link" href="{{ '/research/12-generative-pixel-engineering/' | relative_url }}">Generative pixel engineering →</a></div></div>
+    <div class="research-topic-row"><h3>Pixel organisms and artificial life</h3><div><p>Inherited genomes, generated phenotypes, recurrent controllers, metabolism, mutation, selection, environment fields, emergence, and held-out ecological tests.</p><a class="card-link" href="{{ '/research/13-pixel-organisms-artificial-life/' | relative_url }}">Pixel organisms and artificial life →</a></div></div>
     <div class="research-topic-row"><h3>Vector-field baseline</h3><div><p>A learned vector at each address, shared 3×3 communication, recurrent updates, and a weak readout.</p><a class="card-link" href="{{ '/research/05-neural-architecture/' | relative_url }}">Vector-field architecture →</a></div></div>
     <div class="research-topic-row"><h3>Learning and training</h3><div><p>Optimization for vector, tensor, token, memory, recursive, quantized, and semantically organized state.</p><a class="card-link" href="{{ '/research/06-learning-and-training/' | relative_url }}">Learning and training →</a></div></div>
   </div></section>

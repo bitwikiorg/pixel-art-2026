@@ -62,7 +62,7 @@ def main() -> int:
                 if not target.is_file():
                     errors.append(f"{exp_id}: rendered experiment page missing: {target.relative_to(ROOT)}")
 
-    expected = {"01", "01C", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "A1"}
+    expected = {"01", "01C", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "A1"}
     if ids != expected:
         errors.append(f"registry IDs differ from canonical atlas: got {sorted(ids)}, expected {sorted(expected)}")
 

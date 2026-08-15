@@ -38,6 +38,7 @@ jobs:
           node scripts/test-webgpu-field.js
           node scripts/test-masked-reconstruction.js
           node scripts/test-pixel-genome.js
+          node scripts/test-pixel-organism.js
           node scripts/test-pixel-universe.js
 
       - name: Lint and compile Python
