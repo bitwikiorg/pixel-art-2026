@@ -101,6 +101,8 @@ def main() -> int:
         for phrase in METADISCOURSE:
             if phrase in lowered:
                 errors.append(f"Structural metadiscourse {phrase!r}: {html_file.relative_to(SITE)}")
+        if 'aria-label="Primary"' not in text:
+            errors.append(f"Primary navigation missing: {html_file.relative_to(SITE)}")
         parser = PageParser(); parser.feed(text); parsed_pages[html_file.resolve()] = parser
         seen: set[str] = set()
         for node_id in parser.ids:
@@ -140,20 +142,30 @@ def main() -> int:
         "experiment/pixel-genome/index.html", "experiment/pixel-organism/index.html",
         "experiment/dynamics/index.html", "research/index.html",
         "research/11-color-light-state/index.html", "research/12-generative-pixel-engineering/index.html",
+        "research/13-pixel-organisms-artificial-life/index.html",
         "glossary/index.html", "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
-        "assets/css/clarity-v2.css", "assets/js/site.js", "assets/js/pixel-core.js",
-        "assets/js/color-carrier.js", "assets/js/pixel-organism.js",
+        "assets/css/clarity-v2.css", "assets/css/clarity-v3.css", "assets/js/site.js", "assets/js/pixel-core.js",
+        "assets/js/color-carrier.js", "assets/js/pixel-organism.js", "assets/js/experiment-help.js",
     ]
     for rel in required:
         if not (SITE / rel).exists():
             errors.append(f"Required render output missing: {rel}")
+
+    experiment_index = SITE / "experiment" / "index.html"
+    if experiment_index.exists():
+        text = experiment_index.read_text(encoding="utf-8")
+        if ">Archive<" in text or "LEGACY MECHANICS" in text:
+            errors.append("Experiment index contains an Archive/legacy group marker")
+        for anchor in ("information-and-coding", "representation", "computation-and-memory", "learning-and-comparison", "generation"):
+            if f'id="{anchor}"' not in text:
+                errors.append(f"Experiment category navigation target missing: {anchor}")
 
     if errors:
         print("SITE VALIDATION FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
-    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, fragments, IDs and copy constraints validated")
+    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, navigation, fragments, IDs and copy constraints validated")
     return 0
 
 

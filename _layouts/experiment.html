@@ -3,87 +3,150 @@ layout: default
 ---
 {% assign exp = site.data.experiments | where: "id", page.exp_id | first %}
 {% assign teach = site.data.experiment_teaching[page.exp_id] %}
+{% assign controls = site.data.experiment_controls[page.exp_id] %}
+{% assign references = site.data.experiment_references[page.exp_id] %}
 {% assign mental_model = teach.mental_model | default: page.mental_model %}
 {% assign background = teach.background | default: page.background %}
 {% assign terms = teach.terms | default: page.terms %}
 {% assign outcomes = teach.outcomes | default: page.outcomes %}
 {% assign category_slug = page.category | slugify %}
-<div class="page-shell experiment-shell exp-{{ category_slug }} experiment-shell-v2">
+<div class="page-shell experiment-shell exp-{{ category_slug }} experiment-shell-v3">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiments</a><span>›</span><span>{{ page.exp_id }}</span></nav>
 
-  <header class="experiment-hero experiment-hero-v2">
-    <div class="experiment-meta"><span class="exp-number">{{ page.exp_id }}</span><span class="exp-status">{{ page.status }}</span><span class="exp-category">{{ page.category }}</span></div>
-    <h1>{{ page.title }}</h1>
-    {% if page.question %}<p class="research-question">{{ page.question }}</p>{% endif %}
-  </header>
+  <div class="experiment-reading-layout">
+    <aside class="experiment-side-nav" aria-label="Experiment navigation">
+      <div class="side-nav-block">
+        <strong class="side-nav-title">{{ page.exp_id }} · {{ page.title }}</strong>
+        <a href="#overview">Overview</a>
+        {% if controls %}<a href="#controls">Controls</a>{% endif %}
+        {% if page.steps %}<a href="#method">Method</a>{% endif %}
+        {% if outcomes %}<a href="#outcomes">Possible outcomes</a>{% endif %}
+        <a href="#apparatus">Live experiment</a>
+        <a href="#evidence">Evidence boundary</a>
+        {% if page.technical %}<a href="#technical">Technical details</a>{% endif %}
+        {% if references %}<a href="#references">References</a>{% endif %}
+      </div>
+      <div class="side-nav-block side-experiment-list">
+        <strong class="side-nav-title">Experiments</strong>
+        {% for nav_exp in site.data.experiments %}
+          <a href="{{ nav_exp.url | relative_url }}"{% if nav_exp.id == page.exp_id %} aria-current="page" class="current"{% endif %}><span>{{ nav_exp.id }}</span>{{ nav_exp.title }}</a>
+        {% endfor %}
+      </div>
+      <div class="side-nav-block side-nav-links">
+        <a href="{{ '/learn/' | relative_url }}">Foundations</a>
+        <a href="{{ '/research/02-experiment-protocol/' | relative_url }}">Experimental method</a>
+        <a href="{{ '/research/04-references/' | relative_url }}">All references</a>
+      </div>
+    </aside>
 
-  <section class="experiment-schema" aria-label="Experimental schema">
-    <div class="schema-node"><small>INPUT</small><strong>{{ page.source }}</strong></div>
-    <span class="schema-arrow" aria-hidden="true">→</span>
-    <div class="schema-node"><small>PIXEL STATE</small><strong>{{ page.interpretation }}</strong></div>
-    <span class="schema-arrow" aria-hidden="true">→</span>
-    <div class="schema-node"><small>OPERATION</small><strong>{{ exp.operation }}</strong></div>
-    <span class="schema-arrow" aria-hidden="true">→</span>
-    <div class="schema-node"><small>MEASURE</small><strong>{{ page.measure }}</strong></div>
-  </section>
+    <div class="experiment-reading-main">
+      <section id="overview" class="anchor-section">
+        <header class="experiment-hero experiment-hero-v2">
+          <div class="experiment-meta"><span class="exp-number">{{ page.exp_id }}</span><span class="exp-status">{{ page.status }}</span><span class="exp-category">{{ page.category }}</span></div>
+          <h1>{{ page.title }}</h1>
+          {% if page.question %}<p class="research-question">{{ page.question }}</p>{% endif %}
+        </header>
 
-  <section class="experiment-outline">
-    <div class="outline-row">
-      <h2>What it is</h2>
-      <p>{{ page.explanation | default: page.deck }}</p>
+        <section class="experiment-schema" aria-label="Experimental schema">
+          <div class="schema-node"><small>INPUT <span class="help-tip" tabindex="0" data-tip="The source data or starting state supplied to the experiment.">?</span></small><strong>{{ page.source }}</strong></div>
+          <span class="schema-arrow" aria-hidden="true">→</span>
+          <div class="schema-node"><small>PIXEL STATE <span class="help-tip" tabindex="0" data-tip="The finite object associated with each address, or the field-level interpretation being tested.">?</span></small><strong>{{ page.interpretation }}</strong></div>
+          <span class="schema-arrow" aria-hidden="true">→</span>
+          <div class="schema-node"><small>OPERATION <span class="help-tip" tabindex="0" data-tip="The transformation, update rule, learning procedure, codec, or simulation applied to the state.">?</span></small><strong>{{ exp.operation }}</strong></div>
+          <span class="schema-arrow" aria-hidden="true">→</span>
+          <div class="schema-node"><small>MEASURE <span class="help-tip" tabindex="0" data-tip="The quantities used to judge what happened. A visible pattern alone is not a measurement.">?</span></small><strong>{{ page.measure }}</strong></div>
+        </section>
+
+        <section class="experiment-outline">
+          <div class="outline-row">
+            <h2>What it is</h2>
+            <p>{{ page.explanation | default: page.deck }}</p>
+          </div>
+          {% if mental_model %}
+          <div class="outline-row">
+            <h2>How to think about it</h2>
+            <p>{{ mental_model }}</p>
+          </div>
+          {% endif %}
+          {% if background %}
+          <div class="outline-row">
+            <h2>Know first</h2>
+            <ul>{% for item in background %}<li>{{ item }}</li>{% endfor %}</ul>
+          </div>
+          {% endif %}
+        </section>
+
+        {% if terms %}
+        <details class="definition-drawer">
+          <summary>Definitions used in this experiment</summary>
+          <div class="definition-list">{% for item in terms %}<div><strong class="term-with-tip">{{ item.term }} <span class="help-tip" tabindex="0" data-tip="{{ item.definition | escape }}">?</span></strong><p>{{ item.definition }}</p></div>{% endfor %}</div>
+        </details>
+        {% endif %}
+      </section>
+
+      {% if controls %}
+      <section id="controls" class="interaction-guide anchor-section">
+        <div class="section-head compact"><div class="kicker">Interaction guide</div><h2>What each control changes</h2></div>
+        <div class="control-guide-list">
+          {% for item in controls %}
+          <article class="control-guide-row">
+            <div class="control-name"><strong>{{ item.control }}</strong></div>
+            <div><small>CHANGES</small><p>{{ item.changes }}</p></div>
+            <div><small>STAYS FIXED</small><p>{{ item.fixed }}</p></div>
+            <div><small>WATCH</small><p>{{ item.watch }}</p></div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if page.steps %}
+      <section id="method" class="method-block method-block-v2 anchor-section">
+        <h2>Method</h2>
+        <ol class="method-outline">{% for step in page.steps %}<li><strong>{{ step.label }}</strong><span>{{ step.text }}</span></li>{% endfor %}</ol>
+      </section>
+      {% endif %}
+
+      {% if outcomes %}
+      <section id="outcomes" class="result-guide anchor-section">
+        <h2>Possible outcomes</h2>
+        <div class="result-outline">{% for item in outcomes %}<div><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div>
+      </section>
+      {% endif %}
+
+      <section id="apparatus" class="apparatus-block apparatus-v2 anchor-section">
+        <div class="apparatus-heading"><span class="section-token">LIVE EXPERIMENT</span><h2>{{ page.title }}</h2></div>
+        <article class="experiment-content">{{ content }}</article>
+      </section>
+
+      <section id="evidence" class="evidence-panel evidence-v2 anchor-section">
+        <div><small>SUPPORTED</small><p>{{ page.shows }}</p></div>
+        <div><small>NOT SUPPORTED</small><p>{{ page.does_not_show }}</p></div>
+      </section>
+
+      {% if page.technical %}
+      <details id="technical" class="technical-section anchor-section">
+        <summary>Technical details · equations, implementation, formal definitions</summary>
+        <div class="technical-intro">Formal state definitions, equations, resource counts, and implementation assumptions for the experiment.</div>
+        <div class="deep-dive-body">{{ page.technical | markdownify }}</div>
+      </details>
+      {% endif %}
+
+      {% if references %}
+      <section id="references" class="experiment-references anchor-section">
+        <div class="section-head compact"><div class="kicker">References</div><h2>Sources and context</h2></div>
+        <div class="reference-cards">
+          {% for ref in references %}
+          <a class="reference-card" href="{% if ref.url contains '://' %}{{ ref.url }}{% else %}{{ ref.url | relative_url }}{% endif %}">
+            <strong>{{ ref.title }}</strong><span>{{ ref.note }}</span>
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <nav class="experiment-next"><a class="btn" href="{{ '/experiment/' | relative_url }}">← All experiments</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Experimental method</a></nav>
     </div>
-    {% if mental_model %}
-    <div class="outline-row">
-      <h2>How to think about it</h2>
-      <p>{{ mental_model }}</p>
-    </div>
-    {% endif %}
-    {% if background %}
-    <div class="outline-row">
-      <h2>Know first</h2>
-      <ul>{% for item in background %}<li>{{ item }}</li>{% endfor %}</ul>
-    </div>
-    {% endif %}
-  </section>
-
-  {% if terms %}
-  <details class="definition-drawer">
-    <summary>Definitions used in this experiment</summary>
-    <div class="definition-list">{% for item in terms %}<div><strong>{{ item.term }}</strong><p>{{ item.definition }}</p></div>{% endfor %}</div>
-  </details>
-  {% endif %}
-
-  {% if page.steps %}
-  <section class="method-block method-block-v2">
-    <h2>Method</h2>
-    <ol class="method-outline">{% for step in page.steps %}<li><strong>{{ step.label }}</strong><span>{{ step.text }}</span></li>{% endfor %}</ol>
-  </section>
-  {% endif %}
-
-  {% if outcomes %}
-  <section class="result-guide">
-    <h2>Possible outcomes</h2>
-    <div class="result-outline">{% for item in outcomes %}<div><strong>{{ item.label }}</strong><p>{{ item.meaning }}</p></div>{% endfor %}</div>
-  </section>
-  {% endif %}
-
-  <section class="apparatus-block apparatus-v2">
-    <div class="apparatus-heading"><span class="section-token">EXPERIMENT</span><h2>{{ page.title }}</h2></div>
-    <article class="experiment-content">{{ content }}</article>
-  </section>
-
-  <section class="evidence-panel evidence-v2">
-    <div><small>SUPPORTED</small><p>{{ page.shows }}</p></div>
-    <div><small>NOT SUPPORTED</small><p>{{ page.does_not_show }}</p></div>
-  </section>
-
-  {% if page.technical %}
-  <details class="technical-section">
-    <summary>Technical section: equations, implementation, and formal definitions</summary>
-    <div class="technical-intro">The formal description is isolated here so the conceptual model and measured result can be understood first. Every symbol, state variable, resource count, and implementation assumption should be interpreted within the experiment above.</div>
-    <div class="deep-dive-body">{{ page.technical | markdownify }}</div>
-  </details>
-  {% endif %}
-
-  <nav class="experiment-next"><a class="btn" href="{{ '/experiment/' | relative_url }}">← Experiments</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Experimental method</a></nav>
+  </div>
 </div>
+<script src="{{ '/assets/js/experiment-help.js' | relative_url }}" defer></script>

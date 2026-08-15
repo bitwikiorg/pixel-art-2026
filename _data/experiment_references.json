@@ -1,0 +1,65 @@
+{
+  "01": [
+    {"title":"Foundations · finite carriers","url":"/learn/","note":"Background on bits, addresses, carrier state, storage cost, and interpretation."},
+    {"title":"Research thesis · information ledger","url":"/research/00-research-thesis/","note":"Why alternate encodings do not create new independent source information."}
+  ],
+  "01C": [
+    {"title":"Color, light, and pixel state","url":"/research/11-color-light-state/","note":"Stored, derived, physical, contextual, and assigned color quantities separated explicitly."},
+    {"title":"CIE Colorimetry, 4th Edition","url":"https://www.cie.co.at/publications/colorimetry-4th-edition","note":"Primary colorimetric reference for tristimulus and related color measurements."},
+    {"title":"W3C CSS Color 4","url":"https://www.w3.org/TR/css-color-4/","note":"Computational definitions and conversions for modern color spaces."}
+  ],
+  "02": [
+    {"title":"R. W. Hamming · Error Detecting and Error Correcting Codes","url":"https://doi.org/10.1002/j.1538-7305.1950.tb00463.x","note":"Foundational source for Hamming codes and explicit redundancy."},
+    {"title":"Experimental method","url":"/research/02-experiment-protocol/","note":"Why rate, corruption protocol, and repeated trials must be reported together."}
+  ],
+  "03": [
+    {"title":"J. J. Hopfield · Neural networks and physical systems with emergent collective computational abilities","url":"https://www.pnas.org/doi/10.1073/pnas.79.8.2554","note":"Foundational associative-memory model used by this baseline."},
+    {"title":"Attractor network · Scholarpedia","url":"https://www.scholarpedia.org/article/Attractor_network","note":"Background on attractors, recurrent dynamics, and associative memory."}
+  ],
+  "04": [
+    {"title":"Memory and compression","url":"/research/07-memory-compression/","note":"Description length, side information, and rate accounting used throughout the compression experiments."},
+    {"title":"Experimental method","url":"/research/02-experiment-protocol/","note":"Why the complete dictionary, metadata, and index stream must all be counted."}
+  ],
+  "05": [
+    {"title":"Kleyko et al. · A Survey on Hyperdimensional Computing","url":"https://arxiv.org/abs/2111.06077","note":"Survey of high-dimensional distributed representation and vector-symbolic operations."},
+    {"title":"Geometry and VSA","url":"/research/08-geometry-vsa/","note":"MPF-specific distinction between distributed high-dimensional state and spatial/semantic geometry."}
+  ],
+  "06": [
+    {"title":"Foundations","url":"/learn/","note":"Operational definitions of pixel address, finite carrier state, interpretation, projection, and resource accounting."},
+    {"title":"Pixel Photon primitives","url":"/research/10-pixel-photon-primitives/","note":"Maps bits, colors, vectors, tensors, tokens, memory objects, and subfields to concrete mechanisms."},
+    {"title":"Color, light, and pixel state","url":"/research/11-color-light-state/","note":"Explains when color is stored state versus a derived or projected view."}
+  ],
+  "07": [
+    {"title":"Growing Neural Cellular Automata · Distill","url":"https://distill.pub/2020/growing-ca/","note":"Local recurrent multidimensional cell state with a shared learned update rule."},
+    {"title":"Vector-field architecture","url":"/research/05-neural-architecture/","note":"The exact local recurrent baseline and its intended experimental role."},
+    {"title":"Learning and training","url":"/research/06-learning-and-training/","note":"Training protocol and architecture families considered for MPF."}
+  ],
+  "08": [
+    {"title":"WebGPU specification","url":"https://www.w3.org/TR/webgpu/","note":"Browser GPU compute model used by the live experiment."},
+    {"title":"WGSL specification","url":"https://www.w3.org/TR/WGSL/","note":"Shading language used for the compute kernels."},
+    {"title":"Experimental method","url":"/research/02-experiment-protocol/","note":"Correctness-before-performance and matched-input comparison principles."}
+  ],
+  "09": [
+    {"title":"He et al. · Masked Autoencoders Are Scalable Vision Learners","url":"https://arxiv.org/abs/2111.06377","note":"Influential masked-reconstruction reference; the live baseline is intentionally much smaller and conventional."},
+    {"title":"Experimental method","url":"/research/02-experiment-protocol/","note":"Why hidden-only evaluation and a simple local baseline are necessary controls."}
+  ],
+  "10": [
+    {"title":"Experimental method","url":"/research/02-experiment-protocol/","note":"Equal-state, equal-parameter, equal-compute, repeated-seed, and variance-reporting rules."},
+    {"title":"Pixel Photon primitives","url":"/research/10-pixel-photon-primitives/","note":"Defines the vector, tensor, and inner-token objects being compared."}
+  ],
+  "11": [
+    {"title":"Generative pixel engineering","url":"/research/12-generative-pixel-engineering/","note":"Procedural descriptions, shared decoders, symmetry, cellular rules, palettes, and exact description-length accounting."},
+    {"title":"Deep-Fold SpriteGenerator","url":"https://github.com/Deep-Fold/SpriteGenerator","note":"Creative mechanism reference for seeded structure, symmetry, local rules, and procedural color."},
+    {"title":"Interactive Pixel Sprite Generator","url":"https://deep-fold.itch.io/pixel-sprite-generator","note":"Visual reference for the broader space of procedurally generated sprite families."}
+  ],
+  "12": [
+    {"title":"Pixel organisms and artificial life","url":"/research/13-pixel-organisms-artificial-life/","note":"Genotype, phenotype, recurrent control, environment, selection, and stronger artificial-life extensions."},
+    {"title":"The Bibites","url":"https://thebibites.itch.io/the-bibites","note":"Design reference for coupling genes, procedural bodies, neural controllers, energy, sensing, reproduction, and mutation."},
+    {"title":"The Sapling","url":"https://woseseltops.itch.io/thesapling","note":"Design reference for organism construction, mutation, ecological interaction, and lineage."}
+  ],
+  "A1": [
+    {"title":"Cellular automata · Scholarpedia","url":"https://www.scholarpedia.org/article/Cellular_automata","note":"Background on local state-transition systems and repeated neighborhood updates."},
+    {"title":"Growing Neural Cellular Automata · Distill","url":"https://distill.pub/2020/growing-ca/","note":"Learned local recurrent fields; useful contrast with this hand-designed fixed-rule mechanics experiment."},
+    {"title":"Open mechanisms","url":"/research/03-concepts-to-explore/","note":"Where fixed local dynamics connect to later learned routing, recursion, topology, and causal intervention experiments."}
+  ]
+}
