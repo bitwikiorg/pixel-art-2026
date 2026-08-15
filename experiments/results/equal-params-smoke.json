@@ -7,9 +7,9 @@
   "seeds": [7,17,29],
   "selection": {"vector":16,"tensor":16,"transformer":18},
   "summary": {
-    "vector": {"scalars_per_pixel":16,"parameters":4036,"internal_shape":"16D vector","near_mean":0.3506944444444444,"near_sd":0.06992024501945233,"far_mean":0.3802083333333333,"far_sd":0.02976810451299,"inference_us_per_example_mean":62.87673229176486,"train_seconds_mean":1.2639030526667436},
-    "tensor": {"scalars_per_pixel":16,"parameters":4588,"internal_shape":"4x4 tensor","near_mean":0.3003472222222222,"near_sd":0.01070210764404337,"far_mean":0.3715277777777778,"far_sd":0.046649405703279176,"inference_us_per_example_mean":128.42508020843488,"train_seconds_mean":2.018163400666708},
-    "transformer": {"scalars_per_pixel":18,"parameters":4261,"internal_shape":"2 tokens x 9D","near_mean":0.2881944444444444,"near_sd":0.028315115330382095,"far_mean":0.3107638888888889,"far_sd":0.043437486122211114,"inference_us_per_example_mean":311.8746260417045,"train_seconds_mean":5.196473473333147}
+    "vector": {"scalars_per_pixel":16,"parameters":4036,"internal_shape":"16D vector","near_mean":0.3506944444444444,"near_sd":0.08563446149401754,"far_mean":0.3802083333333333,"far_sd":0.03645833333333332,"inference_us_per_example_mean":62.87673229176486,"train_seconds_mean":1.2639030526667436},
+    "tensor": {"scalars_per_pixel":16,"parameters":4588,"internal_shape":"4x4 tensor","near_mean":0.3003472222222222,"near_sd":0.013107351450122838,"far_mean":0.3715277777777778,"far_sd":0.05713362038855671,"inference_us_per_example_mean":128.42508020843488,"train_seconds_mean":2.018163400666708},
+    "transformer": {"scalars_per_pixel":18,"parameters":4261,"internal_shape":"2 tokens x 9D","near_mean":0.2881944444444444,"near_sd":0.03467879228374683,"far_mean":0.3107638888888889,"far_sd":0.053199838354321384,"inference_us_per_example_mean":311.8746260417045,"train_seconds_mean":5.196473473333147}
   },
   "runs": [
     {"mode":"vector","scalars_per_pixel":16,"internal_shape":"16D vector","parameters":4036,"grid":12,"epochs":6,"steps":6,"seed":7,"train_accuracy":0.33203125,"near_accuracy":0.3177083333333333,"far_accuracy":0.40625,"train_seconds":1.2769001730002856,"inference_us_per_example":64.5076624998353},
@@ -22,5 +22,5 @@
     {"mode":"transformer","scalars_per_pixel":18,"internal_shape":"2 tokens x 9D","parameters":4261,"grid":12,"epochs":6,"steps":6,"seed":17,"train_accuracy":0.3111979166666667,"near_accuracy":0.3177083333333333,"far_accuracy":0.3489583333333333,"train_seconds":5.125226529000429,"inference_us_per_example":298.92089374996544},
     {"mode":"transformer","scalars_per_pixel":18,"internal_shape":"2 tokens x 9D","parameters":4261,"grid":12,"epochs":6,"steps":6,"seed":29,"train_accuracy":0.29296875,"near_accuracy":0.296875,"far_accuracy":0.3333333333333333,"train_seconds":5.158313831999294,"inference_us_per_example":332.5010585939481}
   ],
-  "note":"Equal-state and equal-parameter protocols answer different questions. Neither protocol equalizes FLOPs; empirical inference time is reported instead."
+  "note":"Equal-state and equal-parameter protocols answer different questions. Standard deviations are sample standard deviations across seeds. Neither protocol equalizes FLOPs; empirical inference time is reported instead."
 }
