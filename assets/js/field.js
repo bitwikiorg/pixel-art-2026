@@ -4,17 +4,18 @@
   if(!canvas)return;
 
   const ctx=canvas.getContext('2d');
-  const N=32,D=8;
+  const N=32,D=8,BASE_SEED=20260815;
   canvas.width=N;
   canvas.height=N;
 
   let state,buffer,step=0,running=false,timer=null,history=[];
-  const rand=()=>Math.random()*2-1;
+  function seeded(seed){let x=(seed>>>0)||0x9E3779B9;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return(x>>>0)/4294967296;};}
 
   function fresh(){
+    const rng=seeded(BASE_SEED);
     state=new Float32Array(N*N*D);
     buffer=new Float32Array(state.length);
-    for(let i=0;i<state.length;i++)state[i]=rand()*.35;
+    for(let i=0;i<state.length;i++)state[i]=(rng()*2-1)*.35;
     for(let y=12;y<20;y++)for(let x=12;x<20;x++){
       const k=(y*N+x)*D;
       state[k]+=1;
@@ -43,8 +44,9 @@
 
   function shuffledCells(){
     const p=Array.from({length:N*N},(_,i)=>i);
+    const rng=seeded((BASE_SEED^Math.imul(step+1,2654435761))>>>0);
     for(let i=p.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
+      const j=Math.floor(rng()*(i+1));
       [p[i],p[j]]=[p[j],p[i]];
     }
     return p;
@@ -148,6 +150,7 @@
   q('#exportBtn').addEventListener('click',()=>{
     const payload={
       timestamp:new Date().toISOString(),
+      reproducibility_seed:BASE_SEED,
       grid:[N,N],
       dimensions:D,
       steps:step,
@@ -163,7 +166,7 @@
         occupancy:q('#occupancy').textContent,
         stability:q('#stability').textContent
       },
-      note:'Toy MPF dynamics demonstrator; not a trained neural reasoning result.'
+      note:'Fixed MPF dynamics demonstrator; not a trained neural reasoning result.'
     };
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
     const a=document.createElement('a');
