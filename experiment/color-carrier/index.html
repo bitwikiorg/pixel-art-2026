@@ -1,0 +1,137 @@
+---
+layout: experiment
+title: Color Pixel Carrier
+exp_id: "01C"
+status: "EXACT DERIVATIONS · LIVE"
+category: "Foundation"
+question: "What information is actually stored in one RGB pixel, what can be derived from it, and what requires additional physical or semantic state?"
+explanation: "One RGB888 pixel stores exactly three 8-bit channel values. Those 24 bits can be written as channels, binary, hexadecimal, or one unsigned integer without changing the source information. Color-space coordinates, luminance, and perceptual distances can be deterministically derived under declared conventions. Wavelength, spectral distribution, polarization, material response, and arbitrary semantic roles are not intrinsic extra bits hidden inside RGB."
+deck: "Inspect one 24-bit color as stored data, deterministic color coordinates, perceptual relations, indexed representation, and assigned computational meaning."
+source: "one RGB888 color + one comparison color"
+interpretation: "24-bit direct color carrier; optional 2-bit indexed-color interpretation"
+measure: "stored bits, deterministic coordinates, color distances, contrast, palette accounting"
+shows: "A color pixel carries more structured state than a binary pixel, while stored, derived, contextual, physical, and assigned properties remain distinguishable under explicit accounting."
+does_not_show: "That every color-related quantity is an independent information dimension, or that an RGB value uniquely determines a wavelength, spectrum, material, illumination state, or semantic meaning."
+mental_model: "Treat the RGB pixel as a 24-switch codeword. The same switches can be read as three channels, a hex value, or an integer. Fixed mathematics can re-express them in other color coordinates. A palette can replace the 24-bit value with a shorter index when many pixels share a small codebook. Other meanings can be assigned to the same bits, but those meanings come from an interpretation rule."
+background:
+  - "RGB888 stores red, green, and blue as three integers from 0 through 255: 24 raw bits total."
+  - "HSL, HSV, XYZ, Lab, OKLab, OKLCH, and relative luminance are deterministic functions of RGB once the color space, transfer function, and white-point assumptions are fixed. They do not add independent source bits."
+  - "Two stimuli can share a displayed color while differing spectrally. RGB alone therefore cannot reconstruct a unique wavelength, spectral power distribution, polarization state, material reflectance, or illumination geometry."
+terms:
+  - term: "RGB888"
+    definition: "three 8-bit channels: red, green, and blue; 24 bits per directly stored pixel"
+  - term: "derived coordinate"
+    definition: "a value computed deterministically from stored state under declared conventions, such as Lab or OKLCH from sRGB"
+  - term: "ΔE76"
+    definition: "Euclidean distance between two CIELAB coordinates; useful here as a transparent color-difference baseline"
+  - term: "indexed color"
+    definition: "a small integer stored per pixel that selects a color from a shared palette or codebook"
+outcomes:
+  - label: "Many views, same 24 bits"
+    meaning: "RGB channels, binary, hex, uint24, HSL, XYZ, Lab, and OKLab change representation or coordinates without creating additional source information."
+  - label: "Palette saves bits"
+    meaning: "When many pixels use only four shared colors, 2-bit indices plus one 96-bit RGB palette can be smaller than storing 24 RGB bits at every address."
+  - label: "Physical state remains underdetermined"
+    meaning: "A displayed RGB value cannot uniquely recover spectrum, wavelength composition, polarization, surface reflectance, or lighting conditions. Those require additional measurements or assumptions."
+steps:
+  - label: "Choose a stored RGB value"
+    text: "The selected color is encoded as three bytes. The exact 24-bit word is shown as RGB channels, binary, hexadecimal, and uint24."
+  - label: "Derive alternate coordinates"
+    text: "Fixed sRGB/D65 conversions produce linear RGB, HSL, HSV, XYZ, Lab, OKLab, OKLCH, and relative luminance. A second RGB color supplies relational measurements."
+  - label: "Change the interpretation budget"
+    text: "The same visible color can instead be selected by a 2-bit palette index when a four-entry palette is shared. Total palette and index bits are counted explicitly."
+technical: |
+  **Stored RGB state.** RGB888 stores three integers `R,G,B ∈ {0,…,255}`. A directly stored pixel therefore has `8 + 8 + 8 = 24` raw bits and `2^24 = 16,777,216` possible codewords. Hexadecimal and uint24 are exact serializations of the same 24-bit word.
+
+  **sRGB transfer function.** Colorimetric calculations first convert each encoded sRGB channel `c` in `[0,1]` to linear-light `c_lin`. For `c ≤ 0.04045`, `c_lin = c / 12.92`; otherwise `c_lin = ((c + 0.055) / 1.055)^2.4`. Linear RGB is not three new independent values; it is a deterministic transform of the stored RGB codeword.
+
+  **XYZ under D65.** Linear sRGB is multiplied by the standard sRGB-to-CIE-XYZ matrix. The implementation uses the D65 reference white `(X_n,Y_n,Z_n) = (0.95047,1,1.08883)`. CIELAB is then computed from normalized XYZ using the standard piecewise cube-root function. The declared sRGB encoding and D65 white point are shared interpretation assumptions.
+
+  **OKLab and OKLCH.** Linear sRGB is transformed to LMS-like coordinates, cube-rooted, and linearly recombined into OKLab `(L,a,b)`. OKLCH is a cylindrical re-expression with `C = sqrt(a²+b²)` and hue angle `h = atan2(b,a)`. The cylindrical coordinates contain no extra source information beyond their Cartesian parent representation.
+
+  **Relational quantities.** `ΔE76` is Euclidean distance in CIELAB. The OKLab distance shown is Euclidean distance in OKLab. Relative luminance is the Y component of linear-light sRGB transformed to XYZ. Contrast ratio is `(L_high + 0.05)/(L_low + 0.05)`. These values depend on two colors or on declared viewing/encoding conventions; they are not independently stored inside color A.
+
+  **Indexed-color accounting.** Four palette entries require `log2(4) = 2` bits per pixel index. If the palette is stored independently as four RGB888 values, palette cost is `4 × 24 = 96` bits. For `N` pixels, the simple exact ledger is `B_indexed = 2N + 96` versus `B_direct = 24N`. Indexed color is smaller only when all pixels are representable by that four-color palette and the saved per-pixel state outweighs palette overhead. A universal, reused, or deterministically derived palette changes the side-information ledger.
+
+  **Assigned computational meanings.** The uint24 codeword can be mapped to a class, token ID, normalized scalar, memory address, checksum fragment, or other semantic object. Such a mapping is an interpretation. If the mapping rule is shared, it adds no instance bits; if the rule or lookup table varies per instance, that metadata must be counted.
+
+  **What RGB does not determine.** RGB tristimulus values do not uniquely specify the physical spectrum that produced them. A unique wavelength, spectral power distribution, polarization state, coherence, material reflectance, transmittance, fluorescence, or illumination geometry requires additional state or measurement.
+scripts:
+  - /assets/js/color-carrier.js
+---
+<div data-color-carrier>
+  <section class="lab-module color-carrier-controls">
+    <div class="color-pair">
+      <label><small>COLOR A · STORED PIXEL</small><span class="color-input-row"><input id="colorA" type="color" value="#44A791"><code>#44A791</code></span></label>
+      <div id="colorSwatchA" class="color-carrier-swatch" aria-label="Color A"></div>
+      <label><small>COLOR B · COMPARISON</small><span class="color-input-row"><input id="colorB" type="color" value="#7357C7"><code>#7357C7</code></span></label>
+      <div id="colorSwatchB" class="color-carrier-swatch" aria-label="Color B"></div>
+    </div>
+  </section>
+
+  <section class="lab-module">
+    <div class="lab-label">Stored state · exact 24-bit carrier</div>
+    <div class="carrier-readout-grid">
+      <div><small>HEX</small><strong id="storedHex">—</strong></div>
+      <div><small>RGB BYTES</small><strong id="storedRgb">—</strong></div>
+      <div><small>UINT24</small><strong id="storedInt">—</strong></div>
+      <div class="wide"><small>24 BITS · R | G | B</small><code id="storedBits">—</code></div>
+      <div><small>R BITS</small><code id="storedRBits">—</code></div>
+      <div><small>G BITS</small><code id="storedGBits">—</code></div>
+      <div><small>B BITS</small><code id="storedBBits">—</code></div>
+    </div>
+  </section>
+
+  <section class="lab-module">
+    <div class="lab-label">Derived coordinates · fixed conversions, zero new source bits</div>
+    <div class="color-coordinate-table">
+      <div><small>LINEAR RGB</small><code id="derivedLinear">—</code></div>
+      <div><small>HSL</small><code id="derivedHsl">—</code></div>
+      <div><small>HSV</small><code id="derivedHsv">—</code></div>
+      <div><small>XYZ · sRGB/D65</small><code id="derivedXyz">—</code></div>
+      <div><small>CIELAB · D65</small><code id="derivedLab">—</code></div>
+      <div><small>OKLAB</small><code id="derivedOklab">—</code></div>
+      <div><small>OKLCH</small><code id="derivedOklch">—</code></div>
+      <div><small>RELATIVE LUMINANCE</small><code id="derivedLuminance">—</code></div>
+    </div>
+  </section>
+
+  <section class="lab-module">
+    <div class="lab-label">Relational measurements · color A versus color B</div>
+    <div class="information-ledger color-compare-ledger">
+      <div><small>ΔE76</small><strong id="compareDeltaE">—</strong></div>
+      <div><small>OKLAB DISTANCE</small><strong id="compareOklab">—</strong></div>
+      <div><small>LUMINANCE CONTRAST</small><strong id="compareContrast">—</strong></div>
+    </div>
+    <p class="lab-explain">These measurements require a second color or a viewing convention. They are relational calculations, not additional values secretly stored inside color A.</p>
+  </section>
+
+  <section class="lab-module">
+    <div class="lab-label">Assigned computational readings · same codeword, different interpretation</div>
+    <div class="semantic-reading-grid">
+      <div><small>UINT24 PAYLOAD</small><strong id="assignedUint">—</strong></div>
+      <div><small>CLASS · MOD 16</small><strong id="assignedClass">—</strong></div>
+      <div><small>TOKEN ID · MOD 8192</small><strong id="assignedToken">—</strong></div>
+      <div><small>NORMALIZED SCALAR</small><strong id="assignedScalar">—</strong></div>
+    </div>
+    <p class="lab-explain">Class, token, and scalar are deliberately arbitrary deterministic readings. They demonstrate interpretation, not intrinsic properties of visible color.</p>
+  </section>
+
+  <section class="lab-module">
+    <div class="lab-label">Direct RGB versus four-color indexed representation</div>
+    <div class="palette-slider-row"><label>Pixels sharing one four-entry RGB palette <input id="palettePixelCount" type="range" min="1" max="1024" value="64"></label><strong id="palettePixelCountOut">64</strong></div>
+    <div class="information-ledger palette-ledger">
+      <div><small>DIRECT RGB888</small><strong id="paletteDirectBits">—</strong><span>bits total</span></div>
+      <div><small>2-BIT INDICES + 96-BIT PALETTE</small><strong id="paletteIndexedBits">—</strong><span>bits total</span></div>
+      <div><small>INDEXED AMORTIZED</small><strong id="paletteAmortized">—</strong><span>bits / pixel</span></div>
+      <div><small>DIRECT − INDEXED</small><strong id="paletteDifference">—</strong><span>bits</span></div>
+    </div>
+    <div class="lab-status"><strong id="paletteVerdict">—</strong>. The comparison is valid only when every pixel belongs to the four-color palette.</div>
+  </section>
+
+  <section class="lab-module physical-boundary">
+    <div class="lab-label">Not recoverable from RGB888 alone</div>
+    <div class="boundary-tags"><span>unique wavelength</span><span>spectral power distribution</span><span>polarization</span><span>coherence</span><span>reflectance spectrum</span><span>material roughness</span><span>illumination direction</span><span>semantic role</span></div>
+    <p class="lab-explain">Any of these can become additional measured or assigned state in a richer computational pixel. They are not already present as independent dimensions merely because an RGB color is visible.</p>
+  </section>
+</div>
