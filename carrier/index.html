@@ -4,13 +4,28 @@ title: Binary Pixel Carrier
 exp_id: "01"
 status: "EXACT · LIVE"
 category: "Foundation"
-deck: "Begin with a ground truth that cannot hide behind neural-network language: one black/white address is one bit. Draw the field, inspect its binary and hexadecimal forms, and decode it exactly."
+question: "Can a black-and-white pixel field be treated as exact binary data and reconstructed without losing a bit?"
+explanation: "A 16×16 field contains 256 binary addresses. Reading them in row-major order produces 256 bits, or 32 packed bytes. The visible bitmap, bitstream, bytes, and hexadecimal representation are different encodings of the same finite source."
+deck: "A 16×16 black-and-white field is an exact 256-bit object."
 source: "16×16 field = 256 independent source bits"
 interpretation: "binary carrier"
 learned: "No"
 measure: "exact round-trip, bytes, entropy, CRC-32"
 shows: "The image, bit matrix, packed bytes and hexadecimal are losslessly related views of the same finite object."
 does_not_show: "That a derived high-dimensional state contains more independent source information than the original 256 bits."
+steps:
+  - label: "Choose a field"
+    text: "Every black or white address contributes exactly one source bit. Presets and direct editing change those bits explicitly."
+  - label: "Serialize the bits"
+    text: "Read the field row by row, pack each group of eight bits into one byte, and compute deterministic checks such as CRC-32."
+  - label: "Decode exactly"
+    text: "Unpack the 32 bytes and compare all 256 recovered addresses with the source. Exact recovery requires Hamming distance zero."
+technical: |
+  For a binary field `B ∈ {0,1}^{16×16}`, row-major serialization gives a vector `b ∈ {0,1}^{256}`. Packing maps each consecutive group of eight bits to one byte, so the raw payload is exactly `256 / 8 = 32` bytes.
+
+  The displayed entropy is the empirical binary entropy `H(p) = -p log2 p - (1-p) log2(1-p)`, where `p` is the fraction of one-bits. It measures symbol balance in one bitmap; it is not a spatial compressor.
+
+  CRC-32 is used as a deterministic integrity checksum. A short UTF-8 payload can also be placed in the same 256-bit carrier; two bytes encode payload length, leaving at most 30 UTF-8 bytes.
 styles:
   - /assets/css/carrier.css
 scripts:
@@ -20,7 +35,7 @@ scripts:
 <div data-carrier-lab>
   <section class="lab-two">
     <div class="lab-module">
-      <div class="lab-label">Editable source</div><h2>Click pixels. Change bits.</h2>
+      <div class="lab-label">Source field</div><h2>Edit the 256 source bits.</h2>
       <div id="carrierSourceGrid" class="binary-grid"></div>
       <div class="lab-controls" style="margin-top:12px">
         <button class="btn" data-carrier-preset="smile">Smile</button><button class="btn" data-carrier-preset="checker">Checker</button><button class="btn" data-carrier-preset="frame">Frame</button><button class="btn" data-carrier-preset="random">Seeded random</button>
@@ -28,31 +43,31 @@ scripts:
       <div class="lab-controls" style="margin-top:8px"><button class="btn" data-carrier-transform="not">NOT</button><button class="btn" data-carrier-transform="mirror">Mirror</button><button class="btn" data-carrier-transform="shift">Shift right</button><button class="btn" data-carrier-transform="dilate">Dilate</button></div>
     </div>
     <div class="lab-module">
-      <div class="lab-label">Information ledger</div><h2>Nothing up our sleeve.</h2>
+      <div class="lab-label">Information accounting</div><h2>Source size stays fixed at 256 bits.</h2>
       <div class="information-ledger">
-        <div><small>SOURCE BITS</small><strong id="carrierBitCount">256</strong></div><div><small>PACKED BYTES</small><strong id="carrierByteCount">32</strong></div><div><small>WHITE BITS</small><strong id="carrierOnes">—</strong></div><div><small>ENTROPY</small><strong id="carrierEntropy">—</strong></div>
+        <div><small>SOURCE BITS</small><strong id="carrierBitCount">256</strong></div><div><small>PACKED BYTES</small><strong id="carrierByteCount">32</strong></div><div><small>WHITE BITS</small><strong id="carrierOnes">—</strong></div><div><small>BINARY ENTROPY</small><strong id="carrierEntropy">—</strong></div>
       </div>
       <div class="lab-status">CRC-32: <strong id="carrierCrc">—</strong></div>
-      <p class="lab-explain">Entropy here is the empirical binary entropy of this one bitmap. It is not a compressor and does not include spatial dependencies.</p>
+      <p class="lab-explain">Binary entropy depends only on the fraction of zeros and ones. It does not count spatial structure between neighboring addresses.</p>
     </div>
   </section>
 
   <section class="lab-two">
-    <div class="lab-module"><div class="lab-label">Row-major bits</div><pre class="carrier-code" id="carrierBits"></pre></div>
-    <div class="lab-module"><div class="lab-label">Packed bytes · hexadecimal</div><pre class="carrier-code wrap" id="carrierHex"></pre></div>
+    <div class="lab-module"><div class="lab-label">Row-major bitstream</div><pre class="carrier-code" id="carrierBits"></pre></div>
+    <div class="lab-module"><div class="lab-label">Packed hexadecimal bytes</div><pre class="carrier-code wrap" id="carrierHex"></pre></div>
   </section>
 
   <section class="lab-two">
     <div class="lab-module">
-      <div class="lab-label">Exact decode</div><h2>Pack, then reconstruct.</h2><button id="carrierDecode" class="btn primary">Decode packed bytes</button><div id="carrierRoundTrip" class="lab-status">No round-trip run yet.</div>
+      <div class="lab-label">Round-trip test</div><h2>Pack, unpack, compare every address.</h2><button id="carrierDecode" class="btn primary">Decode packed bytes</button><div id="carrierRoundTrip" class="lab-status">No round-trip run yet.</div>
     </div>
-    <div class="lab-module"><div class="lab-label">Recovered bitmap</div><div id="carrierDecodedGrid" class="binary-grid small"></div></div>
+    <div class="lab-module"><div class="lab-label">Recovered field</div><div id="carrierDecodedGrid" class="binary-grid small"></div></div>
   </section>
 
   <section class="lab-module">
-    <div class="lab-label">Benign data transport</div><h2>The same 256 bits can be interpreted as a short UTF-8 payload.</h2>
+    <div class="lab-label">Alternative interpretation</div><h2>The same carrier can hold a short UTF-8 payload.</h2>
     <div class="lab-controls"><label>Text <input id="carrierText" value="HELLO PIXEL" maxlength="30"></label><button id="carrierEncodeText" class="btn primary">Encode text into pixels</button><button id="carrierDecodeText" class="btn">Decode pixels as text</button></div>
     <div id="carrierTextStatus" class="lab-status">30 UTF-8 payload bytes maximum; 2 bytes are reserved for the length header.</div>
-    <p class="lab-explain">This is ordinary encoding, deliberately. The more ambitious research begins only after the source information is explicit.</p>
+    <p class="lab-explain">Changing from image interpretation to text interpretation does not change the carrier capacity: the field still contains 256 bits.</p>
   </section>
 </div>

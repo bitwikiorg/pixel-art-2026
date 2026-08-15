@@ -1,14 +1,30 @@
 ---
 layout: default
 ---
+{% assign exp = site.data.experiments | where: "id", page.exp_id | first %}
 <div class="page-shell experiment-shell">
-  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiment Atlas</a><span>›</span><span>{{ page.exp_id }}</span></nav>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><a href="{{ '/experiment/' | relative_url }}">Experiments</a><span>›</span><span>{{ page.exp_id }}</span></nav>
   <header class="experiment-hero">
     <div class="experiment-meta"><span class="exp-number">{{ page.exp_id }}</span><span class="exp-status">{{ page.status }}</span><span class="exp-category">{{ page.category }}</span></div>
-    <h1>{{ page.title }}</h1><p class="hero-deck">{{ page.deck }}</p>
-    <div class="experiment-facts"><div><small>SOURCE</small><strong>{{ page.source }}</strong></div><div><small>PIXEL INTERPRETATION</small><strong>{{ page.interpretation }}</strong></div><div><small>LEARNED?</small><strong>{{ page.learned }}</strong></div><div><small>PRIMARY MEASURE</small><strong>{{ page.measure }}</strong></div></div>
+    <h1>{{ page.title }}</h1>
+    {% if page.question %}<p class="research-question">{{ page.question }}</p>{% endif %}
+    <p class="experiment-summary">{{ page.explanation | default: page.deck }}</p>
+    <div class="experiment-facts">
+      <div><small>INPUT</small><strong>{{ page.source }}</strong></div>
+      <div><small>STATE</small><strong>{{ page.interpretation }}</strong></div>
+      <div><small>METHOD</small><strong>{{ exp.operation }}</strong></div>
+      <div><small>MEASURE</small><strong>{{ page.measure }}</strong></div>
+    </div>
   </header>
-  <div class="experiment-boundary"><div><small>THIS EXPERIMENT CAN SHOW</small><p>{{ page.shows }}</p></div><div><small>IT DOES NOT ESTABLISH</small><p>{{ page.does_not_show }}</p></div></div>
+  {% if page.steps %}
+  <section class="method-steps" aria-label="Experimental method">
+    {% for step in page.steps %}<div class="method-step"><small>{{ forloop.index | prepend: '0' }}</small><h2>{{ step.label }}</h2><p>{{ step.text }}</p></div>{% endfor %}
+  </section>
+  {% endif %}
+  {% if page.technical %}
+  <details class="deep-dive"><summary>Technical notes</summary><div class="deep-dive-body">{{ page.technical | markdownify }}</div></details>
+  {% endif %}
   <article class="experiment-content">{{ content }}</article>
-  <nav class="experiment-next"><a class="btn" href="{{ '/experiment/' | relative_url }}">← Experiment Atlas</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Research protocol</a></nav>
+  <details class="evidence-note"><summary>Evidence and limits</summary><div class="evidence-body"><div><strong>Supported</strong><p>{{ page.shows }}</p></div><div><strong>Not supported</strong><p>{{ page.does_not_show }}</p></div></div></details>
+  <nav class="experiment-next"><a class="btn" href="{{ '/experiment/' | relative_url }}">← Experiments</a><a class="btn" href="{{ '/research/02-experiment-protocol/' | relative_url }}">Methods</a></nav>
 </div>

@@ -4,13 +4,28 @@ title: Corruption & Error Correction
 exp_id: "02"
 status: "EXACT · LIVE"
 category: "Foundation"
-deck: "Send the same binary field through an explicit noisy channel. Compare raw transmission against Hamming(7,4) redundancy under the same independent bit-flip probability."
+question: "How much recoverability does explicit redundancy buy when binary data is corrupted in transit?"
+explanation: "The same 256-bit source is sent through an independent bit-flip channel in two forms. The raw branch transmits 256 bits. The coded branch applies Hamming(7,4), expanding every four source bits to seven transmitted bits and producing 448 transmitted bits."
+deck: "Compare raw binary transmission with Hamming(7,4) under the same bit-flip probability."
 source: "256 source bits"
 interpretation: "communication channel"
 learned: "No"
 measure: "bit-error rate and exact recovery"
 shows: "Redundant coding can trade transmitted bits for recoverability, and the trade can be measured directly."
 does_not_show: "Unlimited robustness. Hamming(7,4) corrects one error per 7-bit block; multiple errors in one block can be miscorrected."
+steps:
+  - label: "Encode"
+    text: "Transmit the source directly or split it into 64 four-bit blocks and encode each block as a seven-bit Hamming codeword."
+  - label: "Corrupt"
+    text: "Flip every transmitted bit independently with probability p. A seeded random generator makes individual trials reproducible."
+  - label: "Decode and score"
+    text: "Decode the coded branch, compare both recovered fields with the original 256 bits, and report residual errors across repeated trials."
+technical: |
+  Hamming(7,4) is a linear block code with code rate `4/7`. For 256 source bits, `256 / 4 = 64` codewords are required, so the coded transmission contains `64 × 7 = 448` bits.
+
+  A standard Hamming decoder uses parity checks to form a syndrome identifying a single corrupted position within each seven-bit codeword. One flipped bit in a codeword can therefore be corrected exactly. Two or more flipped bits in the same codeword exceed that guarantee and may produce an incorrect correction.
+
+  The raw and coded branches do not use equal transmitted rate. The 192 extra transmitted bits are the redundancy responsible for the error-correcting capability. Residual bit-error rate and exact whole-field recovery should be interpreted together.
 styles:
   - /assets/css/carrier.css
 scripts:
@@ -27,5 +42,5 @@ scripts:
     <div class="lab-module"><div class="lab-label">Hamming decoded · 448 transmitted bits</div><div id="relEccGrid" class="binary-grid small"></div></div>
   </section>
   <div id="relSingleStatus" class="lab-status"></div><div id="relTrialStatus" class="lab-status">Run repeated trials to estimate residual BER.</div>
-  <div class="method-box"><strong>Interpretation:</strong> the ECC branch stores/transmits more bits. That extra redundancy is the mechanism; it is not free capacity.</div>
+  <p class="lab-explain">The coded branch spends 448 transmitted bits to protect 256 source bits. Its recovery advantage must be read together with that 75% transmission overhead.</p>
 </div>

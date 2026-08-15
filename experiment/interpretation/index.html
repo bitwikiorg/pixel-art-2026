@@ -4,13 +4,28 @@ title: Pixel Interpretation Sandbox
 exp_id: "06"
 status: "FIXED RULES · LIVE"
 category: "Representation"
-deck: "Hold the outer 12×12 address space fixed while changing the object associated with each address: scalar, vector, tensor, neural state, internal tokens, fast/slow memory, or an inner subfield."
+question: "What changes when the outer spatial address stays fixed but the mathematical object stored at each address changes?"
+explanation: "A 12×12 outer field is reused while one address is interpreted in seven different ways: scalar, vector, tensor, fixed neural state, internal token set, fast/slow memory, or a 3×3 inner field. The purpose is to make the representational differences concrete before comparing learned models."
+deck: "Hold the outer address space fixed and change the object associated with every address."
 source: "12×12 visible addresses with seeded initial state"
 interpretation: "seven alternative cell types"
 learned: "No · all matrices/rules are fixed and seeded"
 measure: "stored scalar count and inspectable state evolution"
 shows: "The computational object at a spatial address can be factored in genuinely different ways."
 does_not_show: "Usefulness, learning, compression, semantic specialization or reasoning. This is a mechanics demonstrator."
+steps:
+  - label: "Choose an internal object"
+    text: "Keep the 144 outer addresses fixed while changing the shape and operator inside every address."
+  - label: "Inspect one address"
+    text: "Read the actual stored scalar count, internal matrix or token structure, and the visible projection used to draw the field."
+  - label: "Apply fixed dynamics"
+    text: "Run seeded hand-written update rules and compare state evolution without attributing the behavior to training."
+technical: |
+  A vector with eight components and a 4×4 tensor with sixteen components differ both in scalar count and internal factorization. A fair performance comparison therefore requires separate equal-state and equal-resource protocols; the sandbox only exposes mechanics.
+
+  The neural mode executes a shared deterministic nonlinear transform. The token mode executes real attention mathematics over three internal six-dimensional tokens. Their weights are seeded constants, so neither mode demonstrates learning.
+
+  The subfield mode makes the nesting explicit: one outer address contains a 3×3 inner grid. That is a useful structural primitive, but genuine recursive architecture would additionally reuse a common interface or operator across levels and measure whether the reuse improves generalization, computation, or storage.
 scripts:
   - /assets/js/pixel-universe.js
 ---
@@ -18,7 +33,7 @@ scripts:
   <div class="interpretation-ladder" aria-label="Pixel interpretation ladder"><div><strong>scalar</strong><small>1 value</small></div><div><strong>vector</strong><small>8D</small></div><div><strong>tensor</strong><small>4×4</small></div><div><strong>neural</strong><small>shared fixed MLP</small></div><div><strong>tokens</strong><small>3×6D attention</small></div><div><strong>memory</strong><small>8 fast + 8 slow</small></div><div><strong>subfield</strong><small>3×3 inner grid</small></div></div>
 </section>
 <section class="pixel-universe-grid" style="margin-top:18px">
-  <aside class="panel"><h2>Interpret pixel as…</h2><div class="pixel-mode-list"><button class="pixel-mode active" data-pixel-mode="scalar">Scalar</button><button class="pixel-mode" data-pixel-mode="vector">Vector</button><button class="pixel-mode" data-pixel-mode="tensor">Tensor · 4×4</button><button class="pixel-mode" data-pixel-mode="neural">Fixed neural unit</button><button class="pixel-mode" data-pixel-mode="transformer">Fixed micro-transformer</button><button class="pixel-mode" data-pixel-mode="memory">Fast/slow memory</button><button class="pixel-mode" data-pixel-mode="subfield">3×3 subfield</button></div><div class="cta-row"><button id="pixelUniverseRun" class="btn primary">Run</button><button id="pixelUniverseStepBtn" class="btn">Step</button><button id="pixelUniverseReset" class="btn">Reset</button><button id="pixelUniverseInject" class="btn secondary">Inject signal</button></div></aside>
-  <section class="lab-card"><div class="kicker">Current interpretation</div><h2 id="pixelModeTitle">Scalar pixel</h2><p id="pixelModeDesc" class="lab-explain"></p><code id="pixelModeFormula" class="universe-formula"></code><div class="lab-canvas-wrap pixel-universe-canvas"><div class="overlay-label">12×12 ADDRESSES · STEP <span id="pixelUniverseStep">0</span></div><canvas id="pixelUniverseCanvas"></canvas></div><p class="lab-explain">Color is only a projection of the stored state.</p></section>
-  <aside class="panel"><h2>Selected address</h2><div id="pixelInspector"></div><div class="metrics"><div class="metric"><small>SCALARS / PIXEL</small><strong id="pixelModeDims">1</strong></div><div class="metric"><small>FIELD SCALARS</small><strong id="pixelModeScalars">144</strong></div></div><div class="method-box" style="margin-top:14px"><strong>Fixed-rule label:</strong> the “neural” and “transformer” modes execute real nonlinear/attention mathematics with deterministic seeded weights, but those weights were not trained on a task.</div></aside>
+  <aside class="panel"><h2>Internal object</h2><div class="pixel-mode-list"><button class="pixel-mode active" data-pixel-mode="scalar">Scalar</button><button class="pixel-mode" data-pixel-mode="vector">Vector</button><button class="pixel-mode" data-pixel-mode="tensor">Tensor · 4×4</button><button class="pixel-mode" data-pixel-mode="neural">Fixed neural unit</button><button class="pixel-mode" data-pixel-mode="transformer">Fixed micro-transformer</button><button class="pixel-mode" data-pixel-mode="memory">Fast/slow memory</button><button class="pixel-mode" data-pixel-mode="subfield">3×3 subfield</button></div><div class="cta-row"><button id="pixelUniverseRun" class="btn primary">Run</button><button id="pixelUniverseStepBtn" class="btn">Step</button><button id="pixelUniverseReset" class="btn">Reset</button><button id="pixelUniverseInject" class="btn secondary">Inject signal</button></div></aside>
+  <section class="lab-card"><div class="kicker">Selected primitive</div><h2 id="pixelModeTitle">Scalar pixel</h2><p id="pixelModeDesc" class="lab-explain"></p><code id="pixelModeFormula" class="universe-formula"></code><div class="lab-canvas-wrap pixel-universe-canvas"><div class="overlay-label">12×12 ADDRESSES · STEP <span id="pixelUniverseStep">0</span></div><canvas id="pixelUniverseCanvas"></canvas></div><p class="lab-explain">Color is a low-dimensional projection of the stored state.</p></section>
+  <aside class="panel"><h2>Selected address</h2><div id="pixelInspector"></div><div class="metrics"><div class="metric"><small>SCALARS / PIXEL</small><strong id="pixelModeDims">1</strong></div><div class="metric"><small>FIELD SCALARS</small><strong id="pixelModeScalars">144</strong></div></div><div class="method-box" style="margin-top:14px"><strong>Fixed parameters.</strong> Neural and attention modes perform nonlinear computation with deterministic seeded weights. No objective or training data selected those weights.</div></aside>
 </section>

@@ -3,86 +3,91 @@ layout: research
 title: Current Frontier 2025–2026
 ---
 
-# Current frontier: recurrence, cellular reasoning and ARC
+# Recurrence, cellular reasoning, and ARC
 
-<div class="plain-box"><strong>Why this page exists:</strong> MPF is not developing in isolation. Recent work has renewed interest in recursive/recurrent latent computation, test-time depth, and Neural Cellular Automata on abstract reasoning tasks.</div>
+Recent work on Neural Cellular Automata, recurrent latent depth, cellular reasoning tasks, and ARC-style abstraction makes several baselines unavoidable. Iterative latent computation is already an active research direction; a persistent pixel field needs to isolate what spatial address, memory, topology, or internal cell structure contributes beyond recurrence itself.
 
-## Neural Cellular Automata for ARC-AGI (2025)
+## Neural Cellular Automata for ARC-AGI
 
 Kevin Xu and Risto Miikkulainen apply gradient-trained NCA update rules to ARC-AGI transformations. The system learns iterative local transformations from training examples and applies them to test inputs.
 
-- [UT Austin publication page](https://www.cs.utexas.edu/~ai-lab/pub-view.php?PubID=128129)
+- [UT Austin publication record](https://www.cs.utexas.edu/~ai-lab/pub-view.php?PubID=128129)
 - [arXiv](https://arxiv.org/abs/2506.15746)
 
-**Relevance to MPF:** abstract grid transformation is already an active NCA research direction. A pixel-field project therefore needs to go beyond “NCA can solve grid tasks” toward persistent semantic state, memory, hierarchy, learned organization or reasoning traces.
+Abstract grid transformation is therefore not an empty niche for computational-pixel research. A stronger contribution must go beyond showing that local recurrent cells can solve grid tasks and instead test persistent semantic state, alternative cell primitives, memory, learned organization, multiscale structure, or causal reasoning traces.
 
-## ARC-NCA and the ARC Prize ecosystem (2025)
+## ARC-NCA and neighboring methods
 
 ARC Prize's 2025 paper awards included **ARC-NCA: Towards Developmental Solutions to the Abstraction and Reasoning Corpus**, alongside work on tiny recursive models and vector-symbolic approaches.
 
-- [ARC Prize 2025 competition / paper awards](https://arcprize.org/competitions/2025)
+- [ARC Prize 2025 competition and paper awards](https://arcprize.org/competitions/2025)
 
-This is useful evidence that three neighboring directions—recursive latent computation, NCA and vector-symbolic methods—are converging on similar abstract-reasoning questions.
+The convergence is technically important: recurrence, cellular dynamics, and vector-symbolic representations can all be aimed at abstract transformation problems. Their differences need to be measured rather than blurred under a single “reasoning” label.
 
-## Recurrent latent reasoning (NeurIPS 2025)
+## Recurrent latent reasoning
 
 Geiping et al., **Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach**, repeatedly apply a recurrent block to increase latent computational depth at test time.
 
 - [NeurIPS 2025 proceedings](https://proceedings.neurips.cc/paper_files/paper/2025/hash/3b01972cf31e6fa0fe29e4b8b5c2a0a1-Abstract-Conference.html)
 
-**Relevance to MPF:** recurrence is not merely an old RNN idea. It is again being studied as a way to allocate more internal computation without representing every reasoning step as output tokens. MPF adds a persistent spatial state to that general recurrent-depth idea.
+Recurrence can therefore be treated as a controllable compute budget rather than only as sequence memory. A spatial field adds another variable: the latent state is not only recurrent but addressable and locally or hierarchically organized.
 
-## Cellular-automata reasoning depth (ACL 2026)
+A fair comparison asks whether that organization improves performance per unit of state or compute beyond a nonspatial recurrent block.
 
-Rodkin et al., **Beyond Memorization: Extending Reasoning Depth with Recurrence, Memory and Test-Time Compute Scaling**, use controlled cellular-automata-derived tasks with train/test rules separated to reduce memorization. They report that deeper reasoning remains difficult and that recurrence, memory and additional test-time computation improve effective reasoning depth, though limits remain.
+## Cellular reasoning depth
+
+Rodkin et al., **Beyond Memorization: Extending Reasoning Depth with Recurrence, Memory and Test-Time Compute Scaling**, use controlled cellular-automata-derived tasks with train/test rules separated to reduce memorization. They report that deeper reasoning remains difficult and that recurrence, memory, and additional test-time computation improve effective reasoning depth while leaving important limits.
 
 - [ACL Anthology — Findings of ACL 2026](https://aclanthology.org/2026.findings-acl.2103/)
 
-**Relevance to MPF:** this provides a useful experimental style. Rather than asking vaguely whether a network “reasons,” construct tasks where required computational depth is known and measure accuracy as depth increases.
+The experimental lesson is stronger than a vague “reasoning” score. Construct tasks where required computation depth is known, train on a limited range, and measure accuracy as the required depth exceeds training.
 
 ## ARC-AGI-2
 
-ARC-AGI-2 was introduced in 2025 as a harder abstraction/reasoning benchmark intended to stress current systems.
+ARC-AGI-2 was introduced as a harder abstraction and reasoning benchmark intended to stress current systems.
 
 - [ARC-AGI-2](https://arcprize.org/arc-agi/2)
 
-It is a later-stage target for MPF, not a first task. The early model should use generated problems where the correct intermediate computation is known.
+It is a late-stage target for a new architecture. Early mechanism tests are better served by generated tasks with known rules, controlled difficulty, and exact intermediate states.
 
-## What this changes about the MPF roadmap
+## Consequences for experimental design
 
-The current literature makes several priorities clearer:
+### Recurrent depth must be measured explicitly
 
-### 1. Recurrent depth should be a first-class axis
-Always report performance versus update count.
+Whenever recurrence is used, report performance versus update count rather than treating depth as an implementation detail.
 
-### 2. NCA is a baseline, not only inspiration
-A local recurrent MPF should be compared directly with a standard NCA formulation.
+### NCA is a direct baseline
 
-### 3. Abstract grid reasoning is no longer an empty niche
-ARC-oriented NCA work exists. MPF should emphasize semantic persistence, multiresolution state, memory and inspectable computation.
+A learned local vector field should be compared with a standard NCA or recurrent-convolution formulation under the same task and resource accounting.
 
-### 4. Controlled synthetic tasks remain valuable
-If a task exposes exact reasoning depth or intermediate states, it can tell us more about the mechanism than a single aggregate benchmark score.
+### Grid reasoning requires stronger differentiation
 
-### 5. Small recursive networks deserve serious comparison
-If a tiny recurrent network solves the same task with fewer resources and no persistent field, the field has not added useful structure yet.
+ARC-oriented NCA work already exists. Spatial fields therefore need to earn their additional claims through memory, semantic persistence, internal structure, learned topology, multiresolution state, or inspectable computation.
 
-## A good near-term progression
+### Controlled synthetic tasks remain essential
+
+If required depth and intermediate states are known, mechanism failures can be localized. A single aggregate benchmark score cannot reveal whether a model learned the intended computation or exploited a shortcut.
+
+### Small recursive networks are strong controls
+
+If a compact recurrent model solves the same task with fewer resources and no persistent spatial field, spatial structure has not yet justified its cost.
+
+## A defensible escalation of task difficulty
 
 ```text
-browser relation demo
+four-way spatial relation
     ↓
-PyTorch local field + shuffled controls
+local field + topology controls
     ↓
 longer relation composition
     ↓
-shortest-path trace task
+shortest-path trace prediction
     ↓
-multiresolution field
+multiresolution or persistent-memory task
     ↓
-CLUTRR / CellARC-like systematic generalization
+systematic compositional generalization
     ↓
 ARC-style abstract transformation
 ```
 
-The project should scale **complexity of the question**, not merely grid size.
+The useful escalation is in **difficulty of the computation and strength of the controls**, not simply in grid resolution.

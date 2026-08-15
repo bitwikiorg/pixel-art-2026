@@ -4,13 +4,30 @@ title: Associative Pixel Memory
 exp_id: "03"
 status: "DYNAMICAL MEMORY · LIVE"
 category: "Memory"
-deck: "Interpret a 16×16 binary image as a bipolar state in a classical Hopfield network, corrupt it, then follow energy and Hamming distance as the state settles toward an attractor."
+question: "Can a corrupted binary field recover a stored whole when the field itself is treated as an attractor state?"
+explanation: "A 16×16 bitmap becomes a vector of 256 bipolar spins, with 0 mapped to −1 and 1 mapped to +1. Stored patterns modify a fully connected Hopfield weight matrix. After corruption, sequential asynchronous updates can move the state toward a low-energy stored attractor."
+deck: "A classical Hopfield network turns the whole binary field into content-addressable memory state."
 source: "16×16 binary patterns"
 interpretation: "bipolar Hopfield state"
 learned: "Weights are stored by the Hebbian rule"
 measure: "energy, Hamming distance, fixed-point convergence"
 shows: "A binary pixel field can serve as the state of a content-addressable memory and recover a stored whole from a partial/corrupted state."
 does_not_show: "That 2D spatial topology causes the recovery; the classical Hopfield weight graph is fully connected."
+steps:
+  - label: "Store patterns"
+    text: "Convert each 256-bit bitmap to bipolar spins and add its pairwise correlations to the shared weight matrix using the Hebbian rule."
+  - label: "Corrupt the state"
+    text: "Flip a controlled fraction of the current pixels. The damaged field is now a noisy cue rather than an exact stored pattern."
+  - label: "Relax toward an attractor"
+    text: "Update one spin at a time from the weighted state of all other spins, then track Hamming distance and Hopfield energy until a fixed point is reached."
+technical: |
+  For bipolar state `s_i ∈ {-1,+1}`, a classical Hebbian Hopfield network stores patterns `ξ^μ` with weights proportional to `Σ_μ ξ_i^μ ξ_j^μ`, usually with zero diagonal. The energy is
+
+  `E(s) = -1/2 Σ_{i,j} w_ij s_i s_j`.
+
+  Under sequential asynchronous sign updates in a symmetric zero-diagonal network, energy does not increase. Reaching a low-energy fixed point does not guarantee recovery of the intended pattern: multiple stored memories interfere, and spurious attractors can exist.
+
+  The field has 256 visible spins, but the memory is not stored in those spins alone. A dense 256×256 weight matrix is additional persistent storage. The browser reports its full matrix footprint explicitly.
 styles:
   - /assets/css/carrier.css
 scripts:
@@ -19,7 +36,8 @@ scripts:
 ---
 <div data-memory-lab>
   <section class="lab-module"><div class="lab-controls"><button class="btn" data-mem-preset="checker">Checker</button><button class="btn" data-mem-preset="frame">Frame</button><button class="btn" data-mem-preset="smile">Smile</button><button id="memStore" class="btn primary">Store current</button><label>Noise <input id="memNoise" type="range" min="0" max="35" value="15"></label><strong id="memNoiseValue">15%</strong><label>Seed <input id="memSeed" type="number" value="99"></label><button id="memCorrupt" class="btn">Corrupt</button><button id="memSweep" class="btn">One sweep</button><button id="memConverge" class="btn">Run to fixed point</button><button id="memReset" class="btn">Clear memory</button></div></section>
-  <section class="lab-two"><div class="lab-module"><div class="lab-label">Current field</div><div id="memCurrentGrid" class="binary-grid small"></div></div><div class="lab-module"><div class="lab-label">Nearest stored pattern</div><div id="memNearestGrid" class="binary-grid small"></div></div></section>
+  <section class="lab-two"><div class="lab-module"><div class="lab-label">Current state</div><div id="memCurrentGrid" class="binary-grid small"></div></div><div class="lab-module"><div class="lab-label">Nearest stored pattern</div><div id="memNearestGrid" class="binary-grid small"></div></div></section>
   <div id="memStatus" class="lab-status"></div>
-  <div class="information-ledger"><div><small>STATE</small><strong>256 spins</strong></div><div><small>STORED PATTERNS</small><strong id="memPatternCount">0</strong></div><div><small>FULL MATRIX STORAGE</small><strong id="memWeightStorage">256 KiB</strong></div><div><small>UPDATE</small><strong>sequential async</strong></div></div>
+  <div class="information-ledger"><div><small>VISIBLE STATE</small><strong>256 spins</strong></div><div><small>STORED PATTERNS</small><strong id="memPatternCount">0</strong></div><div><small>FULL WEIGHT MATRIX</small><strong id="memWeightStorage">256 KiB</strong></div><div><small>UPDATE</small><strong>sequential async</strong></div></div>
+  <p class="lab-explain">The outer 16×16 arrangement is used for display. Recall is driven by the fully connected weight matrix, so spatial adjacency is not the causal memory mechanism in this baseline.</p>
 </div>

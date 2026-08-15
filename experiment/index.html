@@ -1,6 +1,28 @@
 ---
 layout: default
-title: Experiment Atlas
-description: A structured atlas of Pixel Photon and Multidimensional Pixel Field experiments, separated by evidence type and research question.
+title: Experiments
+description: Controlled experiments in binary information, coding, representation, memory, computation, learning, comparison, and generation.
 ---
-<div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Experiment Atlas</span></nav><header class="library-hero"><div class="eyebrow">Experiment Atlas</div><h1>One question per experiment.</h1><p class="hero-deck">The lab is organized as a research sequence rather than one overloaded dashboard. Every experiment states its source information, pixel interpretation, operation, evidence level, measurement, and boundary.</p></header>{% assign categories = "Foundation,Memory,Compression,Representation,Learning,Computation,Benchmark,Generation,Archive" | split: "," %}{% for category in categories %}{% assign items = site.data.experiments | where: "category", category %}{% if items.size > 0 %}<section class="section" style="padding-left:0;padding-right:0"><div class="section-head"><div><div class="kicker">{{ category }}</div><h2>{% case category %}{% when 'Foundation' %}Start from known bits.{% when 'Memory' %}Turn fields into states that persist.{% when 'Compression' %}Count every bit and side table.{% when 'Representation' %}Change what the carrier becomes.{% when 'Learning' %}Ask what can be learned from the field.{% when 'Computation' %}Operate directly on pixel-addressed state.{% when 'Benchmark' %}Compare architectures under explicit budgets.{% when 'Generation' %}Generate fields from compact descriptions.{% else %}Mechanics retained for reference.{% endcase %}</h2></div></div><div class="atlas-grid">{% for exp in items %}<article class="atlas-card"><div class="experiment-meta"><span class="exp-number">{{ exp.id }}</span><span class="exp-status">{{ exp.status_label }}</span></div><h3>{{ exp.title }}</h3><p>{{ exp.shows }}</p><div class="atlas-fact"><strong>Source:</strong> {{ exp.source }}</div><div class="atlas-fact"><strong>Measure:</strong> {{ exp.measure }}</div><div class="atlas-fact"><strong>Boundary:</strong> {{ exp.does_not_show }}</div><a class="card-link" href="{{ exp.url | relative_url }}">Open experiment →</a></article>{% endfor %}</div></section>{% endif %}{% endfor %}<section class="section" style="padding-left:0;padding-right:0"><div class="plain-box"><strong>Common rule:</strong> a larger state is not automatically more information. Each experiment distinguishes source bits, derived state, model parameters, side information and output measurements.</div></section></div>
+<div class="page-shell">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Experiments</span></nav>
+  <header class="library-hero"><div class="eyebrow">Experiments</div><h1>What can a pixel-addressed field represent, preserve, compute, and learn?</h1><p class="hero-deck">The experiments begin with exact binary information and then introduce redundancy, reusable motifs, distributed codes, memory, local computation, learned state, architecture comparisons, and generative descriptions. Each mechanism is measured against the resources it adds.</p></header>
+
+  {% assign groups = "Information and coding|Representation|Computation and memory|Learning and comparison|Generation|Archive" | split: "|" %}
+  {% for group in groups %}
+    {% case group %}
+      {% when 'Information and coding' %}{% assign ids = "01,02,04" | split: "," %}{% assign group_text = "Exact source bits make corruption, redundancy, description length, and lossless recovery directly measurable." %}
+      {% when 'Representation' %}{% assign ids = "05,06" | split: "," %}{% assign group_text = "The same outer address can carry a distributed code or a different internal mathematical object without changing the original source information." %}
+      {% when 'Computation and memory' %}{% assign ids = "03,08" | split: "," %}{% assign group_text = "A field can participate in state evolution, content-addressable recall, and direct neighborhood computation." %}
+      {% when 'Learning and comparison' %}{% assign ids = "07,09,10" | split: "," %}{% assign group_text = "Learned rules are scored on held-out data and compared under explicit state, parameter, and runtime constraints." %}
+      {% when 'Generation' %}{% assign ids = "11" | split: "," %}{% assign group_text = "Compact descriptions can generate larger fields when a shared interpreter supplies the generative structure." %}
+      {% else %}{% assign ids = "A1" | split: "," %}{% assign group_text = "Hand-designed recurrent dynamics remain useful as mechanics when they are not confused with learned evidence." %}
+    {% endcase %}
+    <section class="atlas-group"><h2>{{ group }}</h2><p>{{ group_text }}</p><div class="atlas-list">
+      {% for id in ids %}{% assign exp = site.data.experiments | where: "id", id | first %}
+      <a class="atlas-row" href="{{ exp.url | relative_url }}"><span class="atlas-id">{{ exp.id }}</span><h3>{{ exp.title }}</h3><p>{{ exp.shows }}</p><span class="atlas-measure">{{ exp.status_label }}<br>{{ exp.measure }}</span></a>
+      {% endfor %}
+    </div></section>
+  {% endfor %}
+
+  <section class="section" style="padding-left:0;padding-right:0"><p class="core-note"><strong>Resource boundary.</strong> Derived state, redundancy, model parameters, dictionaries, and memory weights are additional resources. They may improve robustness or computation, but they are not new independent source information.</p></section>
+</div>

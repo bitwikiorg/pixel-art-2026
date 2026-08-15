@@ -3,85 +3,77 @@ layout: research
 title: Vector-Field Baseline Architecture
 ---
 
-# One neural architecture: the learned vector field
+# A learned local vector field
 
-<div class="plain-box"><strong>Scope:</strong> this page documents the current trainable baseline, not the definition of MPF. Here a pixel is interpreted as a learned vector and every location shares a recurrent local neural update. Other experiments interpret a pixel as a tensor, neural unit, micro-transformer, memory object or subfield.</div>
-
-The broad project keeps three choices separate:
-
-```text
-1. what is inside a pixel?
-2. how do pixels communicate?
-3. how does the whole system learn / persist / compute?
-```
-
-This page chooses:
+One concrete computational-pixel architecture places a learned vector at every spatial address and reuses one local neural update through time.
 
 ```text
 pixel object      = vector
 communication     = local 3×3 neighborhood
 update            = shared neural rule
 computation       = recurrence
-readout            = small pooled classifier
+readout            = small classifier
 ```
 
-That combination is useful because it is close to Neural Cellular Automata, easy to train, and small enough to inspect.
+This architecture is deliberately close to recurrent convolution and Neural Cellular Automata. Its value is as a controlled baseline for testing which additional structures—tensor factorization, internal attention, memory, routing, or recursion—actually add something.
 
-## Minimal vector-field architecture
+## Field state
 
-Let the field state be
+Let
 
 ```text
-F_t: [B, H, W, D]
+F_t ∈ R^(B×H×W×D)
 ```
 
-where `B` is batch size, `H×W` is the grid, and `D` is the vector width of each pixel.
+where `B` is batch size, `H×W` is the spatial field, and `D` is the vector width at each address.
+
+A typical computation is
 
 ```text
-input items/query
-      ↓
+input
+  ↓
 field writer
-      ↓
-[B,H,W,D]
-      ↓
-3×3 local perception
-      ↓
-shared update MLP / 1×1 conv
-      ↓
-residual recurrent update
-      ↺ T times
-      ↓
-small pooled or query-conditioned readout
+  ↓
+F_0
+  ↓
+shared local perception
+  ↓
+shared nonlinear update
+  ↺ repeated T times
+  ↓
+small readout
 ```
 
-## 1. Field writer
+## Writing input into the field
 
-The writer converts raw input into the initial hidden field `F₀`.
+The writer converts raw input into the initial hidden state `F_0`.
 
-For a grid task, this may be a 1×1 convolution over input channels. For symbolic facts, an encoder can produce item embeddings and a learned assignment can write them into locations.
+For an image-like task, a 1×1 convolution can map input channels into `D` latent channels at the same location. For symbolic items, an encoder can produce item embeddings and a placement mechanism can assign them to addresses.
 
-A learned soft write can use
+A learned soft assignment can take the form
 
 ```text
 A[k,i,j] = softmax(q_k · key[i,j])
 F_0[i,j] = Σ_k A[k,i,j] value_k
 ```
 
-This allows placement itself to become learnable.
+Now placement itself becomes a learned variable rather than a fixed preprocessing step.
 
-## 2. Local perception
+## Local perception
 
-The current baseline uses a 3×3 convolution. Every pixel receives information from itself and its immediate neighbors.
+A 3×3 convolution gives each address access to itself and immediate neighbors:
 
-```python
-local = conv3x3(field)
+```text
+local = Conv3×3(F_t)
 ```
 
-The important property is weight sharing: parameter count does not grow with the number of spatial addresses.
+With stride one, a single update has a small communication radius. Repeating the same update increases the effective receptive field without adding a new parameter set at each depth.
 
-## 3. Shared update
+Weight sharing is important: parameter count can stay roughly independent of the number of outer addresses, even though runtime and activation state grow with field size.
 
-A gated residual update is a strong research default:
+## Shared nonlinear update
+
+A general gated residual rule could use
 
 ```text
 p_ij = [x_ij, local_ij, region_ij, global]
@@ -89,15 +81,17 @@ p_ij = [x_ij, local_ij, region_ij, global]
 x_ij' = x_ij + sigmoid(gate) ⊙ Δx
 ```
 
-The tiny browser implementation is simpler:
+A smaller baseline can use
 
 ```text
 F_(t+1) = tanh(F_t + Conv1x1(ReLU(Conv3x3(F_t))))
 ```
 
-## 4. Recurrence
+The shared rule means all addresses execute the same parameterized transition even though their states differ.
 
-The same transition weights are reused:
+## Recurrence and communication distance
+
+Repeated updates give
 
 ```text
 F_1 = Uθ(F_0)
@@ -106,13 +100,57 @@ F_2 = Uθ(F_1)
 F_T = Uθ(F_(T-1))
 ```
 
-Recurrence is useful for this architecture because a local neighborhood can only move information a short distance in one update.
+When communication is strictly local, required update depth grows with the spatial distance over which information must travel. This creates a direct experimental quantity:
 
-It is **not** a requirement for every computational-pixel experiment. A tensor-pixel or Transformer-pixel architecture may factor computation differently.
+```text
+accuracy = A(problem distance, recurrent depth)
+```
 
-## 5. Multiresolution extension
+A model that succeeds only when `T` is large may be using recurrence primarily as a communication mechanism rather than as deeper abstract reasoning.
 
-A vector-field hierarchy can add coarse states:
+## Readout strength matters
+
+A weak decoder keeps the burden of computation inside the field:
+
+```text
+z = pool(F_T)
+y = MLP(z)
+```
+
+A large Transformer or deep MLP attached after the field could solve the task externally and make the internal dynamics difficult to interpret.
+
+The readout should therefore be strong enough to expose useful state but not so strong that it dominates the problem.
+
+## Browser-scale relation model
+
+A compact configuration uses
+
+```text
+12×12 addresses
+12 latent values / address
+2 marker input channels
+shared 3×3 local convolution
+shared 1×1 nonlinear update
+2–10 recurrent steps
+4-way softmax relation output
+```
+
+The task predicts LEFT, RIGHT, ABOVE, or BELOW for two markers. It is a pipeline test for learned local state and distance-conditioned propagation, not a claim of novel reasoning.
+
+## Larger CPU reference
+
+A CPU/PyTorch implementation can use wider vector state, larger batches, repeated seeds, and controlled topology variants. The important measurements remain:
+
+- state values per address;
+- trainable parameters;
+- recurrent depth;
+- held-out accuracy by distance;
+- runtime or approximate compute;
+- sensitivity to topology changes.
+
+## Multiresolution extension
+
+A hierarchy can introduce coarse state alongside fine state:
 
 ```text
 F32: 32×32×D
@@ -124,48 +162,9 @@ F4:   4×4×D
 G:    1×1×D
 ```
 
-A stronger recursive architecture would allow the object associated with a location to itself be a field and would reuse related operations at several scales.
+Coarse summaries can reduce long communication paths. The useful comparison is against a flat model with a larger receptive field or occasional global communication at similar compute.
 
-## 6. Weak readout
-
-The baseline intentionally uses a small decoder:
-
-```text
-z = pool(F_T)
-y = MLP(z)
-```
-
-A powerful external decoder can hide where computation actually occurred.
-
-## Browser learning model
-
-```text
-12×12 addresses
-pixel = 12D vector
-2 marker input channels
-shared 3×3 convolution
-shared 1×1 update
-2–10 recurrent steps
-4-way softmax readout
-```
-
-This is small enough to train interactively with TensorFlow.js.
-
-## PyTorch reference baseline
-
-```text
-12×12 or larger field
-pixel = D-dimensional vector
-shared local update
-gated residual recurrence
-global max readout
-```
-
-The reference implementation exists to support repeatable runs, larger batches and controlled topology tests.
-
-## The next architecture comparisons
-
-The useful next step is not simply “make this vector field bigger.” It is to change the pixel primitive while controlling resources.
+## Changing the internal pixel primitive
 
 ### Vector versus tensor
 
@@ -175,40 +174,39 @@ versus
 R^(8×8)
 ```
 
-Same scalar state, different internal organization.
+The same scalar state count can be organized differently. Tensor-specific operations must preserve the internal axes for the comparison to test factorization rather than a reshape.
 
-### Neural unit versus micro-transformer
-
-```text
-shared MLP update
-versus
-shared internal attention over K tokens
-```
-
-### Attention inside versus between pixels
+### MLP versus internal attention
 
 ```text
-micro-transformer pixel
+one shared nonlinear vector update
 versus
-field Transformer
+K internal tokens + shared self-attention
 ```
 
-### Flat pixel versus subfield pixel
+Internal attention scales with the square of token count `K` at every outer address, so state and compute must be reported together.
+
+### Attention inside versus between addresses
 
 ```text
-one vector state
-versus
-small inner field at every outer address
+micro-transformer pixel: attention within O_ij
+field Transformer:        attention across (i,j)
 ```
 
-These comparisons are described in the [experimental program]({{ '/research/02-experiment-protocol/' | relative_url }}).
+The two systems place the same broad mechanism at different structural levels and can have very different scaling behavior.
+
+### Flat state versus subfield state
+
+```text
+one vector object
+versus
+small active field inside every outer address
+```
+
+Subfields become interesting when inner computation and parent/child communication provide measurable scale generalization or reusable structure rather than merely increasing state.
 
 ## Complexity intuition
 
-A fixed local neighborhood communicates with roughly linear scaling in the number of outer addresses, up to channel, tensor and internal-object costs. Full attention between `N = H×W` outer addresses introduces an `N²` interaction matrix. Internal attention inside every pixel instead scales with the square of the **internal token count** per pixel.
+For `N = H×W` outer addresses, fixed local communication can scale roughly linearly in `N` for fixed channel width and kernel size. Full attention between all outer addresses introduces an `N²` interaction matrix. Internal attention instead introduces approximately `N × K²` interactions for `K` internal tokens per address, before outer communication is counted.
 
-That distinction is one reason the pixel interpretation matters: the same ingredients can have very different computational structure depending on where they are placed.
-
-## Closest implementation analogy
-
-Growing Neural Cellular Automata is the closest structural analogy for this **specific vector-field baseline**: recurrent residual local computation over vector-valued cells. The broader Pixel Neural Net Lab deliberately extends beyond that baseline by varying what a cell actually is.
+Where an operation is placed—inside an address, between addresses, or between regions—is therefore a first-order computational design choice.
