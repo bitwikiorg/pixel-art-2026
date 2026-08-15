@@ -5,7 +5,7 @@ exp_id: "A1"
 status: "FIXED DYNAMICS · LIVE"
 category: "Computation"
 question: "How does a hand-designed multidimensional local field respond to coupling, persistence, regional feedback, source remapping, and damage?"
-explanation: "A 32×32 grid stores eight floating-point state values per address. Fixed local and regional rules evolve the field over time. The resulting patterns are dynamical behavior of the chosen equations, not learned semantics or task performance."
+explanation: "A 32×32 grid stores eight floating-point state values per address. Fixed local and regional rules evolve the field over time from a deterministic seed. The resulting patterns are dynamical behavior of the chosen equations, not learned semantics or task performance."
 deck: "A hand-designed 32×32×8 recurrent field exposes local coupling and damage mechanics."
 source: "32×32×8 floating-point state"
 interpretation: "hand-designed multidimensional field"
@@ -15,13 +15,15 @@ shows: "How this specific local dynamical rule responds to coupling, memory, reg
 does_not_show: "Semantic learning, reasoning, compression or an MPF advantage. Its metrics are descriptive diagnostics, not task performance."
 steps:
   - label: "Initialize state"
-    text: "Each of 1,024 addresses begins with eight continuous state values and a fixed hand-designed update rule."
+    text: "A fixed seed deterministically initializes 1,024 addresses with eight continuous values each. Reset reconstructs the same starting field."
   - label: "Change the dynamics"
-    text: "Local coupling, state memory, regional summaries, and source remapping alter how information propagates and persists."
+    text: "Local coupling, state memory, regional summaries, and seeded source remapping alter how information propagates and persists."
   - label: "Intervene and measure"
     text: "Zero an 8×8 region or step the system manually, then track coherence, magnitude, occupancy, and change through time."
 technical: |
   The field contains `32 × 32 × 8 = 8,192` floating-point state values. Local coupling mixes nearby state, a memory coefficient retains part of the previous state, and optional regional feedback adds a coarser summary signal.
+
+  Initialization uses the fixed reproducibility seed `20260815`. When source remapping is enabled, each step receives a deterministic pseudorandom permutation derived from that seed and the step number. Repeating Reset and the same control sequence therefore reproduces the same trajectory.
 
   The displayed diagnostics are descriptive. Local coherence measures similarity between neighboring states; RMS magnitude summarizes state amplitude; occupancy counts active projected locations; the stability statistic tracks change in aggregate magnitude. None is an externally defined task objective.
 
@@ -30,7 +32,7 @@ scripts:
   - /assets/js/field.js
 ---
 <section class="lab-grid">
-  <aside class="panel"><h2>Dynamics</h2><div class="control"><label><span>Local coupling</span><span data-value="coupling">0.72</span></label><input id="coupling" type="range" min="0" max="1.4" step="0.01" value="0.72"></div><div class="control"><label><span>State memory</span><span data-value="memory">0.70</span></label><input id="memory" type="range" min="0" max="0.98" step="0.01" value="0.70"></div><div class="toggle"><span>Regional summary</span><input id="hierarchy" type="checkbox" checked></div><div class="toggle"><span>Random source remap each step</span><input id="shuffle" type="checkbox"></div><div class="cta-row"><button id="runBtn" class="btn primary">Run</button><button id="stepBtn" class="btn">Step</button><button id="resetBtn" class="btn">Reset</button><button id="damageBtn" class="btn">Zero 8×8 region</button></div></aside>
+  <aside class="panel"><h2>Dynamics</h2><div class="control"><label><span>Local coupling</span><span data-value="coupling">0.72</span></label><input id="coupling" type="range" min="0" max="1.4" step="0.01" value="0.72"></div><div class="control"><label><span>State memory</span><span data-value="memory">0.70</span></label><input id="memory" type="range" min="0" max="0.98" step="0.01" value="0.70"></div><div class="toggle"><span>Regional summary</span><input id="hierarchy" type="checkbox" checked></div><div class="toggle"><span>Seeded source remap each step</span><input id="shuffle" type="checkbox"></div><div class="cta-row"><button id="runBtn" class="btn primary">Run</button><button id="stepBtn" class="btn">Step</button><button id="resetBtn" class="btn">Reset</button><button id="damageBtn" class="btn">Zero 8×8 region</button></div></aside>
   <section class="lab-canvas-wrap"><div class="overlay-label">32×32 · 8D · STEP <span id="stepCount">0</span></div><canvas id="fieldCanvas"></canvas></section>
   <aside class="panel"><h2>Descriptive diagnostics</h2><div class="metrics"><div class="metric"><small>LOCAL COHERENCE</small><strong id="coherence">—</strong></div><div class="metric"><small>RMS MAGNITUDE</small><strong id="energy">—</strong></div><div class="metric"><small>OCCUPANCY</small><strong id="occupancy">—</strong></div><div class="metric"><small>ENERGY-CHANGE STABILITY</small><strong id="stability">—</strong></div></div><button id="exportBtn" class="btn secondary" style="margin-top:14px">Export diagnostics JSON</button></aside>
 </section>
