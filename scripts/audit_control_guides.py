@@ -8,8 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTROLS = ROOT / "_data" / "experiment_controls.json"
 WIRING = ROOT / "_data" / "experiment_wiring.json"
 
-# A guide row may intentionally explain several tightly coupled DOM controls together.
-# These mappings make those groupings explicit instead of allowing accidental omissions.
+# Every rendered form control must appear here. A guide may additionally explain
+# canvas interactions or recorded protocols that are not form controls.
 GUIDE_COVERAGE = {
     "01": [["data-carrier-preset"], ["data-carrier-transform"], ["#carrierDecode"], ["#carrierText", "#carrierEncodeText"], ["#carrierDecodeText"]],
     "01C": [["#colorA"], ["#colorB"], ["#palettePixelCount"]],
@@ -45,14 +45,14 @@ def main() -> int:
             if extra:
                 errors.append(f"{exp_id}: guide coverage references nonexistent controls: {sorted(extra)}")
         rows = guides.get(exp_id, [])
-        if len(rows) != len(groups):
-            errors.append(f"{exp_id}: {len(rows)} guide rows but {len(groups)} declared control groups")
+        if len(rows) < len(groups):
+            errors.append(f"{exp_id}: only {len(rows)} guide rows for {len(groups)} rendered control groups")
     if errors:
         print("CONTROL GUIDE AUDIT FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
-    print("CONTROL GUIDE AUDIT PASSED: every rendered control is covered by an explicit guide row")
+    print("CONTROL GUIDE AUDIT PASSED: every rendered form control is covered by an explicit guide row")
     return 0
 
 
