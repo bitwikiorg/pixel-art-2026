@@ -28,6 +28,25 @@ METADISCOURSE = (
     "the project becomes",
 )
 
+EXPERIMENT_ROUTES = (
+    "/carrier/",
+    "/experiment/color-carrier/",
+    "/experiment/reliability/",
+    "/experiment/memory/",
+    "/experiment/motif-codec/",
+    "/experiment/hypervector/",
+    "/experiment/interpretation/",
+    "/experiment/learned-local-field/",
+    "/experiment/webgpu/",
+    "/experiment/masked-reconstruction/",
+    "/experiment/primitive-benchmark/",
+    "/experiment/pixel-genome/",
+    "/experiment/pixel-organism/",
+    "/experiment/dynamics/",
+)
+
+RESEARCH_ROUTES = tuple(f"/research/{i:02d}-" for i in range(14))
+
 
 class PageParser(HTMLParser):
     def __init__(self) -> None:
@@ -103,6 +122,8 @@ def main() -> int:
                 errors.append(f"Structural metadiscourse {phrase!r}: {html_file.relative_to(SITE)}")
         if 'aria-label="Primary"' not in text:
             errors.append(f"Primary navigation missing: {html_file.relative_to(SITE)}")
+        if 'class="nav-toggle"' not in text or 'aria-controls="primary-navigation"' not in text:
+            errors.append(f"Mobile primary-navigation control missing: {html_file.relative_to(SITE)}")
         parser = PageParser(); parser.feed(text); parsed_pages[html_file.resolve()] = parser
         seen: set[str] = set()
         for node_id in parser.ids:
@@ -144,13 +165,31 @@ def main() -> int:
         "research/11-color-light-state/index.html", "research/12-generative-pixel-engineering/index.html",
         "research/13-pixel-organisms-artificial-life/index.html",
         "glossary/index.html", "assets/css/style.css", "assets/css/atlas.css", "assets/css/clarity.css",
-        "assets/css/clarity-v2.css", "assets/css/clarity-v3.css", "assets/css/clarity-v4.css",
+        "assets/css/clarity-v2.css", "assets/css/clarity-v3.css", "assets/css/clarity-v4.css", "assets/css/clarity-v5.css",
         "assets/js/site.js", "assets/js/pixel-core.js", "assets/js/color-carrier.js",
         "assets/js/pixel-organism.js", "assets/js/experiment-help.js",
     ]
     for rel in required:
         if not (SITE / rel).exists():
             errors.append(f"Required render output missing: {rel}")
+
+    home = SITE / "index.html"
+    if home.exists():
+        text = home.read_text(encoding="utf-8")
+        for marker in ('class="home-definition"', 'class="home-route"', 'class="home-map"', 'class="home-library-grid"', 'class="home-boundary"'):
+            if marker not in text:
+                errors.append(f"Homepage research-orientation marker missing: {marker}")
+        for route in EXPERIMENT_ROUTES:
+            expected = f'{BASEURL}{route}'
+            if expected not in text:
+                errors.append(f"Homepage does not expose canonical experiment route: {route}")
+        for prefix in RESEARCH_ROUTES:
+            expected_prefix = f'{BASEURL}{prefix}'
+            if expected_prefix not in text:
+                errors.append(f"Homepage does not expose research route family: {prefix}")
+        for nav_label in (">Foundations<", ">Experiments<", ">Research<", ">Glossary<", ">References<", ">Code<"):
+            if nav_label not in text:
+                errors.append(f"Homepage primary navigation missing item: {nav_label}")
 
     experiment_index = SITE / "experiment" / "index.html"
     if experiment_index.exists():
@@ -174,22 +213,65 @@ def main() -> int:
         text = glossary_index.read_text(encoding="utf-8")
         if 'data-library-page="glossary"' not in text or text.count('class="glossary-card"') < 20:
             errors.append("Glossary landing page did not render its grouped definitions")
+        if text.count('class="external-ref"') < 20:
+            errors.append("Glossary rendered with insufficient external source links")
         for anchor in ("glossary-core", "glossary-compute", "glossary-memory", "glossary-color", "glossary-geometry", "glossary-evaluation"):
             if f'id="{anchor}"' not in text:
                 errors.append(f"Glossary group missing: {anchor}")
+
+    canonical_refs = SITE / "research" / "04-references" / "index.html"
+    if canonical_refs.exists():
+        lowered = canonical_refs.read_text(encoding="utf-8").lower()
+        for forbidden in ("deep-fold", "itch.io", "0xmons"):
+            if forbidden in lowered:
+                errors.append(f"Creative inspiration leaked into rendered canonical references: {forbidden}")
+
+    color = SITE / "experiment" / "color-carrier" / "index.html"
+    if color.exists():
+        text = color.read_text(encoding="utf-8")
+        required_color = (
+            'data-color-carrier', '#44A791', 'id="storedHex">#44A791',
+            'id="storedBits">01000100 10100111 10010001',
+            'id="paletteDirectBits">1,536', 'id="paletteIndexedBits">224',
+        )
+        for marker in required_color:
+            if marker not in text:
+                errors.append(f"Color Carrier fallback/live state marker missing: {marker}")
+        apparatus_pos = text.find('id="apparatus"')
+        controls_pos = text.find('id="controls"')
+        if apparatus_pos < 0 or controls_pos < 0 or apparatus_pos > controls_pos:
+            errors.append("Color Carrier apparatus must render before the long interaction guide")
+
+    genome = SITE / "experiment" / "pixel-genome" / "index.html"
+    if genome.exists():
+        text = genome.read_text(encoding="utf-8")
+        for marker in ('id="genomeFamily"', "orb", "biped", "quadruped", "winged", "crawler", "radial"):
+            if marker not in text:
+                errors.append(f"Pixel Genome morphology-diversity marker missing: {marker}")
 
     for exp_path in [SITE / "carrier" / "index.html", *sorted((SITE / "experiment").glob("*/index.html"))]:
         if exp_path.exists():
             text = exp_path.read_text(encoding="utf-8")
             if 'class="side-group-nav"' not in text or 'class="side-local-outline"' not in text:
                 errors.append(f"Grouped experiment navigation missing: {exp_path.relative_to(SITE)}")
+            apparatus_pos = text.find('id="apparatus"')
+            evidence_pos = text.find('id="evidence"')
+            if apparatus_pos < 0 or evidence_pos < 0 or apparatus_pos > evidence_pos:
+                errors.append(f"Experiment apparatus must precede evidence/exposition: {exp_path.relative_to(SITE)}")
+
+    css_v5 = SITE / "assets" / "css" / "clarity-v5.css"
+    if css_v5.exists():
+        text = css_v5.read_text(encoding="utf-8")
+        for marker in (".nav-toggle", "@media(min-width:840px)", ".experiment-reading-layout", ".home-map"):
+            if marker not in text:
+                errors.append(f"Mobile-first stylesheet missing required rule: {marker}")
 
     if errors:
         print("SITE VALIDATION FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
-    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked, navigation, library maps, fragments, IDs and copy constraints validated")
+    print(f"SITE VALIDATION PASSED: {len(html_files)} HTML files checked; complete homepage map, mobile navigation, sourced glossary, early apparatus, links, fragments, IDs and copy constraints validated")
     return 0
 
 

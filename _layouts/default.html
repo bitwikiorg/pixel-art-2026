@@ -15,19 +15,35 @@
   <link rel="stylesheet" href="{{ '/assets/css/clarity-v2.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/clarity-v3.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/clarity-v4.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/clarity-v5.css' | relative_url }}">
   {% if page.styles %}{% for style in page.styles %}<link rel="stylesheet" href="{{ style | relative_url }}">{% endfor %}{% endif %}
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="site-header"><div class="header-inner"><a class="brand" href="{{ '/' | relative_url }}" aria-label="Pixel Photon Lab home"><span class="brand-mark" aria-hidden="true"></span><span><strong>PIXEL PHOTON LAB</strong><small>Multidimensional Pixel Fields · 2026</small></span></a><nav class="top-nav" aria-label="Primary">
-    <a href="{{ '/learn/' | relative_url }}"{% if page.url contains '/learn/' %} class="active" aria-current="page"{% endif %}>Foundations</a>
-    <a href="{{ '/experiment/' | relative_url }}"{% if page.url contains '/experiment/' or page.url == '/carrier/' %} class="active" aria-current="page"{% endif %}>Experiments</a>
-    <a href="{{ '/research/' | relative_url }}"{% if page.url contains '/research/' %} class="active" aria-current="page"{% endif %}>Research</a>
-    <a href="{{ '/glossary/' | relative_url }}"{% if page.url contains '/glossary/' %} class="active" aria-current="page"{% endif %}>Glossary</a>
-    <a href="https://github.com/bitwikiorg/pixel-art-2026">Code</a>
-  </nav></div></header>
+  <header class="site-header" data-site-header>
+    <div class="header-inner">
+      <a class="brand" href="{{ '/' | relative_url }}" aria-label="Pixel Photon Lab home"><span class="brand-mark" aria-hidden="true"></span><span><strong>PIXEL PHOTON LAB</strong><small>Multidimensional Pixel Fields · 2026</small></span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span>MENU</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      <nav id="primary-navigation" class="top-nav" aria-label="Primary">
+        <a href="{{ '/learn/' | relative_url }}"{% if page.url contains '/learn/' %} class="active" aria-current="page"{% endif %}>Foundations</a>
+        <a href="{{ '/experiment/' | relative_url }}"{% if page.url contains '/experiment/' or page.url == '/carrier/' %} class="active" aria-current="page"{% endif %}>Experiments</a>
+        <a href="{{ '/research/' | relative_url }}"{% if page.url contains '/research/' %}{% unless page.url contains '/research/04-references/' %} class="active" aria-current="page"{% endunless %}{% endif %}>Research</a>
+        <a href="{{ '/glossary/' | relative_url }}"{% if page.url contains '/glossary/' %} class="active" aria-current="page"{% endif %}>Glossary</a>
+        <a href="{{ '/research/04-references/' | relative_url }}"{% if page.url contains '/research/04-references/' %} class="active" aria-current="page"{% endif %}>References</a>
+        <a class="nav-code" href="https://github.com/bitwikiorg/pixel-art-2026">Code</a>
+      </nav>
+    </div>
+  </header>
   <main id="main-content">{{ content }}</main>
-  <footer class="site-footer"><div><strong>Pixel Photon Lab</strong><br><span>pixel = address + finite carrier state + interpretation</span></div><div class="footer-links"><a href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a href="{{ '/experiment/' | relative_url }}">Experiments</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="https://github.com/bitwikiorg/pixel-art-2026">Source</a></div></footer>
+  <footer class="site-footer site-footer-v2">
+    <div><strong>Pixel Photon Lab</strong><br><span>pixel = address + finite carrier state + interpretation</span></div>
+    <nav class="footer-map" aria-label="Footer navigation">
+      <div><strong>Start</strong><a href="{{ '/learn/' | relative_url }}">Foundations</a><a href="{{ '/carrier/' | relative_url }}">Binary carrier</a><a href="{{ '/experiment/color-carrier/' | relative_url }}">Color carrier</a></div>
+      <div><strong>Investigate</strong><a href="{{ '/experiment/' | relative_url }}">Experiments</a><a href="{{ '/research/' | relative_url }}">Research</a><a href="{{ '/research/02-experiment-protocol/' | relative_url }}">Method</a></div>
+      <div><strong>Look up</strong><a href="{{ '/glossary/' | relative_url }}">Glossary</a><a href="{{ '/research/04-references/' | relative_url }}">References</a><a href="{{ '/research/10-pixel-photon-primitives/' | relative_url }}">Primitive map</a></div>
+      <div><strong>Source</strong><a href="https://github.com/bitwikiorg/pixel-art-2026">GitHub</a><a href="{{ '/research/00-research-thesis/' | relative_url }}">Research thesis</a><a href="{{ '/research/09-current-frontier/' | relative_url }}">Frontier</a></div>
+    </nav>
+  </footer>
   <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
   {% if page.tfjs %}<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>{% endif %}
   {% if page.scripts %}{% for script in page.scripts %}<script src="{{ script | relative_url }}" defer></script>{% endfor %}{% endif %}

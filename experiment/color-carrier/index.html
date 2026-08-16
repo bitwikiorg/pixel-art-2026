@@ -49,7 +49,7 @@ technical: |
 
   **OKLab and OKLCH.** Linear sRGB is transformed to LMS-like coordinates, cube-rooted, and linearly recombined into OKLab `(L,a,b)`. OKLCH is a cylindrical re-expression with `C = sqrt(a²+b²)` and hue angle `h = atan2(b,a)`. The cylindrical coordinates contain no extra source information beyond their Cartesian parent representation.
 
-  **Relational quantities.** `ΔE76` is Euclidean distance in CIELAB. The OKLab distance shown is Euclidean distance in OKLab. Relative luminance is the Y component of linear-light sRGB transformed to XYZ. Contrast ratio is `(L_high + 0.05)/(L_low + 0.05)`. These values depend on two colors or on declared viewing/encoding conventions; they are not independently stored inside color A.
+  **Relational quantities.** `ΔE76` is Euclidean distance in CIELAB. The OKLab distance shown is Euclidean distance in OKLab. Relative luminance is computed from linear-light sRGB using the normalized coefficients `0.2126`, `0.7152`, and `0.0722`. Contrast ratio is `(L_high + 0.05)/(L_low + 0.05)`. These values depend on two colors or declared encoding conventions; they are not independently stored inside color A.
 
   **Indexed-color accounting.** Four palette entries require `log2(4) = 2` bits per pixel index. If the palette is stored independently as four RGB888 values, palette cost is `4 × 24 = 96` bits. For `N` pixels, the simple exact ledger is `B_indexed = 2N + 96` versus `B_direct = 24N`. Indexed color is smaller only when all pixels are representable by that four-color palette and the saved per-pixel state outweighs palette overhead. A universal, reused, or deterministically derived palette changes the side-information ledger.
 
@@ -60,59 +60,69 @@ scripts:
   - /assets/js/color-carrier.js
 ---
 <div data-color-carrier>
+  <section class="lab-module">
+    <div class="lab-label">START HERE · CHANGE ONE VALUE AND WATCH WHAT MOVES</div>
+    <div class="home-boundary">
+      <div><strong>1 · Change Color A</strong><p>Stored bytes, binary, hex, uint24, color-space coordinates, luminance, assigned readings, and pairwise comparisons update from the same 24-bit codeword.</p></div>
+      <div><strong>2 · Change Color B</strong><p>Only relational measurements change: ΔE76, OKLab distance, and luminance contrast. Color A remains fixed.</p></div>
+      <div><strong>3 · Move the palette slider</strong><p>The colors do not change. Only the storage ledger changes as a fixed 96-bit four-color palette is amortized over more or fewer pixels.</p></div>
+      <div><strong>Question being tested</strong><p>Which quantities are directly stored, which are deterministic descriptions of the same state, which depend on another color, and which require information RGB does not contain?</p></div>
+    </div>
+  </section>
+
   <section class="lab-module color-carrier-controls">
     <div class="color-pair">
       <label><small>COLOR A · STORED PIXEL</small><span class="color-input-row"><input id="colorA" type="color" value="#44A791"><code>#44A791</code></span></label>
-      <div id="colorSwatchA" class="color-carrier-swatch" aria-label="Color A"></div>
+      <div id="colorSwatchA" class="color-carrier-swatch" style="background:#44A791" aria-label="Color A"></div>
       <label><small>COLOR B · COMPARISON</small><span class="color-input-row"><input id="colorB" type="color" value="#7357C7"><code>#7357C7</code></span></label>
-      <div id="colorSwatchB" class="color-carrier-swatch" aria-label="Color B"></div>
+      <div id="colorSwatchB" class="color-carrier-swatch" style="background:#7357C7" aria-label="Color B"></div>
     </div>
   </section>
 
   <section class="lab-module">
     <div class="lab-label">Stored state · exact 24-bit carrier</div>
     <div class="carrier-readout-grid">
-      <div><small>HEX</small><strong id="storedHex">—</strong></div>
-      <div><small>RGB BYTES</small><strong id="storedRgb">—</strong></div>
-      <div><small>UINT24</small><strong id="storedInt">—</strong></div>
-      <div class="wide"><small>24 BITS · R | G | B</small><code id="storedBits">—</code></div>
-      <div><small>R BITS</small><code id="storedRBits">—</code></div>
-      <div><small>G BITS</small><code id="storedGBits">—</code></div>
-      <div><small>B BITS</small><code id="storedBBits">—</code></div>
+      <div><small>HEX</small><strong id="storedHex">#44A791</strong></div>
+      <div><small>RGB BYTES</small><strong id="storedRgb">68, 167, 145</strong></div>
+      <div><small>UINT24</small><strong id="storedInt">4,499,345</strong></div>
+      <div class="wide"><small>24 BITS · R | G | B</small><code id="storedBits">01000100 10100111 10010001</code></div>
+      <div><small>R BITS</small><code id="storedRBits">01000100</code></div>
+      <div><small>G BITS</small><code id="storedGBits">10100111</code></div>
+      <div><small>B BITS</small><code id="storedBBits">10010001</code></div>
     </div>
   </section>
 
   <section class="lab-module">
     <div class="lab-label">Derived coordinates · fixed conversions, zero new source bits</div>
     <div class="color-coordinate-table">
-      <div><small>LINEAR RGB</small><code id="derivedLinear">—</code></div>
-      <div><small>HSL</small><code id="derivedHsl">—</code></div>
-      <div><small>HSV</small><code id="derivedHsv">—</code></div>
-      <div><small>XYZ · sRGB/D65</small><code id="derivedXyz">—</code></div>
-      <div><small>CIELAB · D65</small><code id="derivedLab">—</code></div>
-      <div><small>OKLAB</small><code id="derivedOklab">—</code></div>
-      <div><small>OKLCH</small><code id="derivedOklch">—</code></div>
-      <div><small>RELATIVE LUMINANCE</small><code id="derivedLuminance">—</code></div>
+      <div><small>LINEAR RGB</small><code id="derivedLinear">0.0578 · 0.3864 · 0.2831</code></div>
+      <div><small>HSL</small><code id="derivedHsl">166.7° · 42.1% · 46.1%</code></div>
+      <div><small>HSV</small><code id="derivedHsv">166.7° · 59.3% · 65.5%</code></div>
+      <div><small>XYZ · sRGB/D65</small><code id="derivedXyz">0.2131 · 0.3091 · 0.3163</code></div>
+      <div><small>CIELAB · D65</small><code id="derivedLab">62.43 · -34.31 · 2.77</code></div>
+      <div><small>OKLAB</small><code id="derivedOklab">0.6637 · -0.0982 · 0.0068</code></div>
+      <div><small>OKLCH</small><code id="derivedOklch">0.6637 · 0.0984 · 176.0°</code></div>
+      <div><small>RELATIVE LUMINANCE</small><code id="derivedLuminance">0.3091</code></div>
     </div>
   </section>
 
   <section class="lab-module">
     <div class="lab-label">Relational measurements · color A versus color B</div>
     <div class="information-ledger color-compare-ledger">
-      <div><small>ΔE76</small><strong id="compareDeltaE">—</strong></div>
-      <div><small>OKLAB DISTANCE</small><strong id="compareOklab">—</strong></div>
-      <div><small>LUMINANCE CONTRAST</small><strong id="compareContrast">—</strong></div>
+      <div><small>ΔE76</small><strong id="compareDeltaE">94.03</strong></div>
+      <div><small>OKLAB DISTANCE</small><strong id="compareOklab">0.2578</strong></div>
+      <div><small>LUMINANCE CONTRAST</small><strong id="compareContrast">1.83:1</strong></div>
     </div>
-    <p class="lab-explain">These measurements require a second color or a viewing convention. They are relational calculations, not additional values secretly stored inside color A.</p>
+    <p class="lab-explain">These values need two colors. They are relations between Color A and Color B, not extra fields stored inside Color A.</p>
   </section>
 
   <section class="lab-module">
     <div class="lab-label">Assigned computational readings · same codeword, different interpretation</div>
     <div class="semantic-reading-grid">
-      <div><small>UINT24 PAYLOAD</small><strong id="assignedUint">—</strong></div>
-      <div><small>CLASS · MOD 16</small><strong id="assignedClass">—</strong></div>
-      <div><small>TOKEN ID · MOD 8192</small><strong id="assignedToken">—</strong></div>
-      <div><small>NORMALIZED SCALAR</small><strong id="assignedScalar">—</strong></div>
+      <div><small>UINT24 PAYLOAD</small><strong id="assignedUint">4,499,345</strong></div>
+      <div><small>CLASS · MOD 16</small><strong id="assignedClass">1</strong></div>
+      <div><small>TOKEN ID · MOD 8192</small><strong id="assignedToken">1937</strong></div>
+      <div><small>NORMALIZED SCALAR</small><strong id="assignedScalar">0.268182</strong></div>
     </div>
     <p class="lab-explain">Class, token, and scalar are deliberately arbitrary deterministic readings. They demonstrate interpretation, not intrinsic properties of visible color.</p>
   </section>
@@ -121,12 +131,12 @@ scripts:
     <div class="lab-label">Direct RGB versus four-color indexed representation</div>
     <div class="palette-slider-row"><label>Pixels sharing one four-entry RGB palette <input id="palettePixelCount" type="range" min="1" max="1024" value="64"></label><strong id="palettePixelCountOut">64</strong></div>
     <div class="information-ledger palette-ledger">
-      <div><small>DIRECT RGB888</small><strong id="paletteDirectBits">—</strong><span>bits total</span></div>
-      <div><small>2-BIT INDICES + 96-BIT PALETTE</small><strong id="paletteIndexedBits">—</strong><span>bits total</span></div>
-      <div><small>INDEXED AMORTIZED</small><strong id="paletteAmortized">—</strong><span>bits / pixel</span></div>
-      <div><small>DIRECT − INDEXED</small><strong id="paletteDifference">—</strong><span>bits</span></div>
+      <div><small>DIRECT RGB888</small><strong id="paletteDirectBits">1,536</strong><span>bits total</span></div>
+      <div><small>2-BIT INDICES + 96-BIT PALETTE</small><strong id="paletteIndexedBits">224</strong><span>bits total</span></div>
+      <div><small>INDEXED AMORTIZED</small><strong id="paletteAmortized">3.500</strong><span>bits / pixel</span></div>
+      <div><small>DIRECT − INDEXED</small><strong id="paletteDifference">+1,312</strong><span>bits</span></div>
     </div>
-    <div class="lab-status"><strong id="paletteVerdict">—</strong>. The comparison is valid only when every pixel belongs to the four-color palette.</div>
+    <div class="lab-status"><strong id="paletteVerdict">indexed representation is smaller</strong>. The comparison is valid only when every pixel belongs to the four-color palette.</div>
   </section>
 
   <section class="lab-module physical-boundary">

@@ -50,6 +50,9 @@ jobs:
       - name: Audit experiment registry
         run: python3 scripts/audit_experiments.py
 
+      - name: Audit academic and technical references
+        run: python3 scripts/audit_references.py
+
       - name: Audit control-guide coverage
         run: python3 scripts/audit_control_guides.py
 
@@ -59,10 +62,16 @@ jobs:
       - name: Audit recorded benchmark data
         run: python3 scripts/audit_benchmark_results.py
 
-      - name: Build Jekyll site
+      - name: Build Jekyll site without content warnings
         env:
           JEKYLL_ENV: production
-        run: bundle exec jekyll build --trace
+        run: |
+          set -o pipefail
+          bundle exec jekyll build --trace 2>&1 | tee /tmp/jekyll-build.log
+          if grep -E "YAML Exception|Error reading|Liquid Exception" /tmp/jekyll-build.log; then
+            echo "Jekyll emitted a content/front-matter warning; refusing to publish a partially rendered site."
+            exit 1
+          fi
 
       - name: Audit rendered experiment registry
         run: python3 scripts/audit_experiments.py
