@@ -48,14 +48,14 @@
     {"title":"Pixel Photon primitives","url":"/research/10-pixel-photon-primitives/","note":"Defines the vector, tensor, and inner-token objects being compared."}
   ],
   "11": [
-    {"title":"Generative pixel engineering","url":"/research/12-generative-pixel-engineering/","note":"Procedural descriptions, shared decoders, symmetry, cellular rules, palettes, and exact description-length accounting."},
-    {"title":"Deep-Fold SpriteGenerator","url":"https://github.com/Deep-Fold/SpriteGenerator","note":"Creative mechanism reference for seeded structure, symmetry, local rules, and procedural color."},
-    {"title":"Interactive Pixel Sprite Generator","url":"https://deep-fold.itch.io/pixel-sprite-generator","note":"Visual reference for the broader space of procedurally generated sprite families."}
+    {"title":"Generative pixel engineering","url":"/research/12-generative-pixel-engineering/","note":"Procedural descriptions, shared decoders, morphology grammars, palettes, and description-length accounting."},
+    {"title":"Stanley · Compositional Pattern Producing Networks: A Novel Abstraction of Development","url":"https://doi.org/10.1007/s10710-007-9028-8","note":"Peer-reviewed foundation for indirect genotype-to-phenotype mappings that generate spatial patterns from compact descriptions."},
+    {"title":"Sims · Evolving Virtual Creatures","url":"https://doi.org/10.1145/192161.192167","note":"Seminal SIGGRAPH work on genetic descriptions that jointly specify generated morphology and control structures."}
   ],
   "12": [
     {"title":"Pixel organisms and artificial life","url":"/research/13-pixel-organisms-artificial-life/","note":"Genotype, phenotype, recurrent control, environment, selection, and stronger artificial-life extensions."},
-    {"title":"The Bibites","url":"https://thebibites.itch.io/the-bibites","note":"Design reference for coupling genes, procedural bodies, neural controllers, energy, sensing, reproduction, and mutation."},
-    {"title":"The Sapling","url":"https://woseseltops.itch.io/thesapling","note":"Design reference for organism construction, mutation, ecological interaction, and lineage."}
+    {"title":"Sims · Evolving Virtual Creatures","url":"https://doi.org/10.1145/192161.192167","note":"Seminal academic precedent for evolving morphology and neural control together in a simulated environment."},
+    {"title":"Stanley & Miikkulainen · Evolving Neural Networks through Augmenting Topologies","url":"https://doi.org/10.1162/106365602320169811","note":"Foundational neuroevolution research on inherited neural structure, mutation, crossover, and selection."}
   ],
   "A1": [
     {"title":"Cellular automata · Scholarpedia","url":"https://www.scholarpedia.org/article/Cellular_automata","note":"Background on local state-transition systems and repeated neighborhood updates."},
