@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Research
-description: Multidimensional Pixel Fields: representation, computation, memory, compression, topology, geometry, learning, color, light, generation, artificial life, and recursive systems.
+description: "Multidimensional Pixel Fields: representation, computation, memory, compression, topology, geometry, learning, color, light, generation, artificial life, and recursive systems."
 ---
 <div class="page-shell library-page" data-library-page="research">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ '/' | relative_url }}">Home</a><span>›</span><span>Research</span></nav>
@@ -44,8 +44,8 @@ description: Multidimensional Pixel Fields: representation, computation, memory,
     <section class="library-map-row" id="research-generation">
       <div class="library-map-label"><small>04</small><h2>Generation & artificial life</h2></div>
       <div class="library-link-grid">
-        <a class="library-link-card" href="{{ '/research/12-generative-pixel-engineering/' | relative_url }}"><strong>Generative pixel engineering</strong><span>Seeds, symmetry, cellular rules, shaders, vector fields, palettes, particles, layers, and shared decoders.</span></a>
-        <a class="library-link-card" href="{{ '/research/13-pixel-organisms-artificial-life/' | relative_url }}"><strong>Pixel organisms</strong><span>Genomes, phenotypes, recurrent controllers, physiology, environments, mutation, selection, and emergence.</span></a>
+        <a class="library-link-card" href="{{ '/research/12-generative-pixel-engineering/' | relative_url }}"><strong>Generative pixel engineering</strong><span>Seeds, morphology grammars, local rules, shaders, vector fields, palettes, layers, and shared decoders.</span></a>
+        <a class="library-link-card" href="{{ '/research/13-pixel-organisms-artificial-life/' | relative_url }}"><strong>Pixel organisms</strong><span>Genomes, phenotypes, recurrent controllers, physiology, environments, mutation, selection, and causal behavior.</span></a>
       </div>
     </section>
 
