@@ -4,59 +4,85 @@ title: Pixel Genome
 exp_id: "11"
 status: "PROCEDURAL BASELINE · LIVE"
 category: "Generation"
-question: "How much structured visual variation can a fixed 128-bit description produce when a shared deterministic interpreter generates indexed-color pixels?"
-explanation: "A 16-byte genome controls a deliberately narrow family of 24×24 creatures. Every genome is decoded by the same hand-written body grammar, so different outputs are expected to look related. The genome varies geometry, pattern, palette, and several discrete traits inside that family; it is not an arbitrary sprite generator."
-deck: "A 128-bit procedural description generates a 24×24 four-color indexed field inside a deliberately restricted family."
+question: "How much structured visual variation can a fixed 128-bit description produce when one shared deterministic interpreter maps it into several morphology grammars?"
+explanation: "A 16-byte genome now selects one of six explicit morphology families—orb, biped, quadruped, winged, crawler, or radial—then controls geometry, appendages, pattern, asymmetry, orientation, and a four-color palette inside that family. The goal is not arbitrary image synthesis. It is a transparent genotype-to-phenotype baseline where a small inherited edit can be traced into a generated raster."
+deck: "A 128-bit procedural description selects a morphology grammar and generates a 24×24 four-color indexed field."
 source: "128-bit genome"
-interpretation: "2-bit indexed-color raster + genome-derived 4-entry RGB palette"
+interpretation: "morphology grammar + 2-bit indexed-color raster + genome-derived 4-entry RGB palette"
 learned: "No · deterministic baseline"
-measure: "genome bits, index-raster bits, changed color indices, exact regeneration"
-shows: "A compact description plus a shared interpreter can generate and restore a larger indexed-color field inside a restricted model family."
-does_not_show: "General image compression, arbitrary sprite generation, or neural generation. The interpreter is shared side information and deliberately limits which images can exist."
+measure: "morphology family, genome bits, index-raster bits, changed color indices, exact regeneration"
+shows: "A compact description plus a shared interpreter can select qualitatively different morphology grammars and generate a larger indexed-color field while preserving exact genotype-to-raster reproducibility."
+does_not_show: "General image compression, unrestricted sprite generation, biological development, or neural generation. The six grammars and their rendering rules are shared side information."
+mental_model: "Think of the 128 bits as a tiny program configuration rather than a compressed photograph. Some bits choose a body grammar; other bits parameterize that grammar. The same decoder then turns those finite choices into 576 indexed pixels."
+background:
+  - "The genome is exactly sixteen bytes. The generated raster is 24×24 addresses with four possible palette indices, so a raw index raster costs 1,152 bits."
+  - "A small description can generate a larger output because the shared interpreter contributes structure. That does not make the genome a universal compressor for arbitrary images."
+  - "Mutation changes inherited bits. Damage changes only the disposable raster. Regeneration recomputes the raster from persistent inherited state."
+terms:
+  - term: "genotype"
+    definition: "the inherited finite description supplied to the decoder; here, exactly 128 bits"
+  - term: "phenotype"
+    definition: "the expressed generated raster and palette produced from the genome under the shared interpreter"
+  - term: "morphology grammar"
+    definition: "one of six hand-written shape-generating rule families selected by the genome"
+  - term: "pleiotropy"
+    definition: "one inherited value affects more than one expressed property, so one mutation can change several visible traits"
+outcomes:
+  - label: "Family changes after a small mutation"
+    meaning: "A mutation touched bits that participate in morphology-family selection, creating a discontinuous phenotype change from a small genotype edit."
+  - label: "Family stays fixed but shape changes"
+    meaning: "The mutation changed parameters inside the same morphology grammar, giving a more local genotype-to-phenotype effect."
+  - label: "Damage disappears after regeneration"
+    meaning: "The damaged raster was not the persistent description. Re-rendering from the unchanged genome restores the deterministic phenotype exactly."
 steps:
-  - label: "Generate a 128-bit description"
-    text: "A Parent A text seed deterministically produces sixteen bytes. Those bytes control position, width, height, eyes, horns, legs, pattern, asymmetry, palette, and pattern offsets."
-  - label: "Render one restricted phenotype"
-    text: "The shared body grammar produces 576 values in {0,1,2,3}. Every output belongs to the same designed creature family, which is why different seeds retain a recognizable common style."
-  - label: "Separate description from raster"
-    text: "Mutation, crossover, and interpolation alter the genome. Damage alters only color indices. Regeneration discards raster damage and renders again from the persistent description."
+  - label: "Decode inherited structure"
+    text: "A Parent A text seed deterministically produces sixteen bytes. Byte 0 selects one of six morphology grammars; the remaining bytes parameterize dimensions, appendages, orientation, pattern, asymmetry, and palette."
+  - label: "Generate the indexed phenotype"
+    text: "The selected grammar writes 576 values in {0,1,2,3}. The palette is also deterministically derived from the same genome."
+  - label: "Intervene on genotype or raster"
+    text: "Mutation, crossover, and interpolation alter inherited bytes. Damage alters only generated color indices. Regeneration discards raster damage and recomputes the phenotype from persistent inherited state."
 technical: |
-  The visible field contains `24 × 24 = 576` spatial addresses. With four possible palette indices, each address needs `log2(4) = 2` raw index bits, so the full index raster contains `576 × 2 = 1,152` bits.
+  The visible field contains `24 × 24 = 576` spatial addresses. With four possible palette indices, each address needs `log2(4) = 2` raw index bits, so the complete index raster contains `576 × 2 = 1,152` bits.
 
-  The four displayed RGB colors are deterministically derived from the already-counted 128-bit genome. They therefore add no new independent instance information in this generator. If a palette were instead stored independently with the raster, four RGB888 entries would cost another `4 × 24 = 96` bits.
+  The four displayed RGB colors are deterministically derived from the already-counted 128-bit genome. They add no independent per-instance palette bits in this implementation. If the palette were stored independently, four RGB888 entries would cost another `4 × 24 = 96` bits.
 
-  The apparent `128 / 1,152` description-to-raster ratio is meaningful only inside the restricted family defined by the shared interpreter. Many possible 24×24 four-color rasters cannot be represented by this 128-bit family at all. Similar-looking outputs are therefore expected: the decoder intentionally supplies a strong shape prior.
+  The interpreter contains six morphology grammars: `orb`, `biped`, `quadruped`, `winged`, `crawler`, and `radial`. `genome[0] mod 6` selects the family. Other bytes control dimensions, pattern period and orientation, appendage or limb length, asymmetry, offsets, and palette values. Several bytes participate in more than one expressed property, so the mapping intentionally contains pleiotropy.
 
-  Genome bytes have fixed roles. Bytes 0–2 control body position and radii; 3–9 control pattern spacing, eye placement, horn length, leg length, pattern mode, and asymmetry while some also participate in palette derivation; 10–12 control body color and pattern offsets; 13–15 control the dark background color. Because several bytes affect more than one expressed trait, a one-bit mutation can have pleiotropic visual effects.
+  The apparent `128 / 1,152 = 0.111…` description-to-raster ratio applies only to outputs representable by this fixed decoder. The decoder is shared side information and excludes almost all possible 24×24 four-color rasters. A short genome therefore demonstrates procedural description length inside a restricted family, not general compression.
 
-  Mutation selects one to three **unique** bit positions and flips each exactly once, so the inherited Hamming distance is exactly 1–3 bits. Crossover selects bytes from two parent genomes. Interpolation blends byte values. Raster damage changes generated palette indices without changing the genome, so regeneration demonstrates separation between persistent description and disposable rendering rather than learned self-repair.
+  Mutation selects one to three **unique** bit positions and flips each exactly once, so inherited Hamming distance is exactly 1–3 bits. Because family selection uses low bits of byte 0, some small mutations can switch morphology grammar while others alter parameters inside the same grammar. Crossover selects bytes from two parents. Interpolation blends byte values and may cross discrete family boundaries.
+
+  Raster damage changes generated palette indices without changing genome or derived palette. Regeneration is exact deterministic re-rendering from the persistent description; it is not learned self-repair or developmental regeneration.
 scripts:
   - /assets/js/pixel-genome.js
 ---
 <div data-genome-lab>
   <section class="lab-module family-boundary-box">
-    <div class="lab-label">GENERATIVE FAMILY · INTENTIONALLY NARROW</div>
-    <h2>Why different genomes still look like the same kind of creature</h2>
-    <p class="lab-explain">Every 128-bit genome is interpreted by the same body grammar: one central body, paired eyes, optional horn/leg extent, one of several simple patterns, possible asymmetry, and a four-color palette. The experiment measures variation <em>within</em> that family. It cannot generate an arbitrary 24×24 sprite.</p>
+    <div class="lab-label">GENOTYPE → MORPHOLOGY GRAMMAR → INDEXED PIXELS</div>
+    <h2>One genome can now select different kinds of generated body structure</h2>
+    <p class="lab-explain">The decoder contains six finite shape grammars rather than one universal body template. Different seeds can therefore produce orb, biped, quadruped, winged, crawler, or radial forms. Outputs inside each family still share a strong prior because the rules are intentionally transparent and hand-written.</p>
     <div class="genome-trait-map">
-      <div><small>BYTES 0–2</small><strong>body position · width · height</strong></div>
-      <div><small>BYTES 3–5</small><strong>pattern spacing · eye placement · palette</strong></div>
-      <div><small>BYTES 6–9</small><strong>horns · legs · pattern mode · asymmetry</strong></div>
-      <div><small>BYTES 10–12</small><strong>body color · pattern offsets</strong></div>
+      <div><small>BYTE 0</small><strong>morphology family</strong></div>
+      <div><small>BYTES 1–3</small><strong>dimensions · pattern spacing</strong></div>
+      <div><small>BYTES 4–9</small><strong>segments · offsets · appendages · limbs · pattern · orientation</strong></div>
+      <div><small>BYTES 10–12</small><strong>pattern phase · body / accent color</strong></div>
       <div><small>BYTES 13–15</small><strong>background color</strong></div>
     </div>
   </section>
 
-  <section class="lab-module"><div class="lab-controls"><label>Parent A seed <input id="genomeSeed" value="PIXEL-0001"></label><button id="genomeGenerate" class="btn primary">Generate</button><button id="genomeMutate" class="btn">Mutate genome</button><label>Parent B seed <input id="genomeParentB" value="PIXEL-0002"></label><button id="genomeCross" class="btn">Cross genomes</button><label>Interpolate <input id="genomeInterpolate" type="range" min="0" max="100" value="0"></label><strong id="genomeT">0.00</strong><button id="genomeDamage" class="btn">Damage raster</button><button id="genomeRegenerate" class="btn secondary">Regenerate from genome</button></div></section>
+  <section class="lab-module">
+    <div class="lab-label">Try it</div>
+    <p class="lab-explain"><strong>Generate</strong> reads Parent A and rebuilds the phenotype. <strong>Mutate</strong> flips exactly 1–3 inherited bits. <strong>Cross</strong> selects bytes from both visible parents. <strong>Damage</strong> changes only the raster; <strong>Regenerate</strong> proves whether the persistent genome can reconstruct it.</p>
+    <div class="lab-controls"><label>Parent A seed <input id="genomeSeed" value="PIXEL-0001"></label><button id="genomeGenerate" class="btn primary">Generate</button><button id="genomeMutate" class="btn">Mutate genome</button><label>Parent B seed <input id="genomeParentB" value="PIXEL-0002"></label><button id="genomeCross" class="btn">Cross genomes</button><label>Interpolate <input id="genomeInterpolate" type="range" min="0" max="100" value="0"></label><strong id="genomeT">0.00</strong><button id="genomeDamage" class="btn">Damage raster</button><button id="genomeRegenerate" class="btn secondary">Regenerate from genome</button></div>
+  </section>
   <section class="lab-two">
-    <div class="lab-module canvas-panel"><small>24×24 · FOUR-COLOR INDEXED FIELD</small><canvas id="genomeCanvas" class="pixel-canvas color-indexed"></canvas><p class="lab-explain">Each visible address stores an index from 0–3. The canvas converts that index to RGB using the derived palette.</p></div>
-    <div class="lab-module"><div class="lab-label">128-bit genome</div><pre id="genomeHex" class="carrier-code wrap" style="min-height:80px"></pre><div class="information-ledger"><div><small>GENOME</small><strong id="genomeDescriptionBits">128</strong></div><div><small>INDEX RASTER</small><strong id="genomeRasterBits">1,152</strong></div><div><small>GENOME / RASTER</small><strong id="genomeRatio">0.111×</strong></div><div><small>PIXEL STATE</small><strong>2-bit index</strong></div></div><div id="genomeStatus" class="lab-status"></div></div>
+    <div class="lab-module canvas-panel"><small>24×24 · FOUR-COLOR INDEXED PHENOTYPE</small><canvas id="genomeCanvas" class="pixel-canvas color-indexed"></canvas><p class="lab-explain">Each address stores an index from 0–3. Visible RGB is produced by applying the genome-derived palette.</p></div>
+    <div class="lab-module"><div class="lab-label">Inherited description</div><div class="information-ledger"><div><small>MORPHOLOGY FAMILY</small><strong id="genomeFamily">—</strong></div><div><small>GENOME</small><strong id="genomeDescriptionBits">128</strong></div><div><small>INDEX RASTER</small><strong id="genomeRasterBits">1,152</strong></div><div><small>GENOME / RASTER</small><strong id="genomeRatio">0.111×</strong></div></div><div class="lab-label" style="margin-top:16px">128-bit genome hex</div><pre id="genomeHex" class="carrier-code wrap" style="min-height:80px"></pre><div id="genomeStatus" class="lab-status"></div></div>
   </section>
   <section class="lab-module"><div class="lab-label">Palette derived from the genome</div><div class="genome-palette">
     <div class="palette-entry" data-palette-index="0"><span class="palette-swatch"></span><code>00 → —</code></div>
     <div class="palette-entry" data-palette-index="1"><span class="palette-swatch"></span><code>01 → —</code></div>
     <div class="palette-entry" data-palette-index="2"><span class="palette-swatch"></span><code>10 → —</code></div>
     <div class="palette-entry" data-palette-index="3"><span class="palette-swatch"></span><code>11 → —</code></div>
-  </div><p class="lab-explain">The RGB values above are derived from genome bytes. They are not a separate 96-bit instance palette. If the palette were stored independently, its cost would have to be added.</p></section>
-  <p class="lab-explain">Damage changes only generated color indices. The genome remains intact, so regeneration reproduces the indexed field specified by the current 128-bit description.</p>
+  </div><p class="lab-explain">The RGB palette is computed from inherited bytes. It is not stored as a separate 96-bit per-instance palette in this baseline.</p></section>
 </div>
