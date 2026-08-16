@@ -182,14 +182,16 @@
   function pct(v) { return (v * 100).toFixed(1) + "%"; }
 
   function initBrowser() {
-    if (typeof document === "undefined") return;
+    if (typeof document === "undefined") return false;
     const lab = document.querySelector("[data-color-carrier]");
-    if (!lab) return;
+    if (!lab || lab.dataset.initialized === "true") return false;
 
     const colorA = document.getElementById("colorA");
     const colorB = document.getElementById("colorB");
     const paletteCount = document.getElementById("palettePixelCount");
     const paletteCountOut = document.getElementById("palettePixelCountOut");
+    if (!colorA || !colorB || !paletteCount || !paletteCountOut) return false;
+    lab.dataset.initialized = "true";
 
     function text(id, value) { const el = document.getElementById(id); if (el) el.textContent = value; }
 
@@ -243,14 +245,19 @@
 
     [colorA, colorB, paletteCount].forEach(el => el.addEventListener("input", render));
     render();
+    return true;
   }
 
-  if (typeof window !== "undefined") window.addEventListener("DOMContentLoaded", initBrowser);
+  if (typeof window !== "undefined" && typeof document !== "undefined") {
+    if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", initBrowser, { once: true });
+    else initBrowser();
+  }
 
   return {
     parseHex, rgbToHex, rgbToInt, byteBits, rgbBits, linearRgb,
     rgbToHsl, rgbToHsv, rgbToXyz, xyzToLab, rgbToLab, rgbToOklab,
     oklabToOklch, relativeLuminance, deltaE76, oklabDistance,
-    contrastRatio, assignedReadings, paletteAccounting, summarizeColor
+    contrastRatio, assignedReadings, paletteAccounting, summarizeColor,
+    initBrowser
   };
 });
