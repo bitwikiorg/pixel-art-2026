@@ -1,0 +1,132 @@
+---
+layout: experiment
+title: Mathematical Organism
+exp_id: "13"
+status: "EQUATIONS + RECURRENCE · LIVE"
+category: "Generation"
+styles:
+  - /assets/css/mathematical-organism.css
+question: "Can a compact genome parameterize an explicit mathematical morphology while a tiny recurrent state continuously modulates that morphology through time?"
+explanation: "This experiment makes the bridge between procedural Pixel Genome morphologies and the recurrent Pixel Organism controller explicit. A 192-bit genome does not store a picture. It selects parameters for a polar harmonic body equation, a derived palette, and a two-state recurrent modulator. The visible 64×64 field is recomputed every frame from those persistent parameters plus time and transient recurrent state."
+deck: "A finite genome becomes an animated mathematical phenotype through explicit equations and a tiny recurrent modulator."
+source: "192-bit genome + time"
+interpretation: "polar harmonic morphology + derived color field + 2-state recurrent modulation"
+measure: "genome Hamming distance, morphology parameters, transient hidden state, occupied pixels, deterministic reset"
+shows: "Simple trigonometric morphology rules can produce complex organism-like pixel fields, while a tiny recurrent state can modulate the same inherited equation without storing the rendered frames."
+does_not_show: "Biological simulation, neural cellular automata, learned morphogenesis, consciousness, or compression of arbitrary images. The morphology equation and decoder are shared side information, and the recurrent weights are genome-decoded rather than gradient-trained."
+mental_model: "Think of the genome as coefficients for a tiny mathematical instrument. The equation defines the body family; time excites it; the recurrent state feeds a small amount of its own previous motion back into the next frame. The animation is generated state, not a sequence stored inside the genome."
+background:
+  - "Parametric and implicit equations can generate visually organic structures from a small number of coefficients. Complexity in the rendered shape does not imply an equally large stored description."
+  - "The recurrent state is transient. Resetting it returns the modulator to zero without changing inherited genome parameters."
+  - "The experiment keeps the equation visible in the interface so the source of the morphology remains inspectable rather than being hidden behind a generative model."
+terms:
+  - term: "parametric morphology"
+    definition: "a visible form generated from a compact set of mathematical parameters rather than stored pixel-by-pixel"
+  - term: "harmonic"
+    definition: "a sinusoidal component whose frequency, amplitude, and phase contribute to the generated boundary or internal pattern"
+  - term: "recurrent state"
+    definition: "transient values whose next state depends partly on their own previous state; here exactly two floating-point values"
+  - term: "phenotype field"
+    definition: "the derived 64×64 visible raster produced from genome parameters, time, and transient recurrent state"
+outcomes:
+  - label: "One-bit mutation changes morphology"
+    meaning: "A small inherited edit can change a harmonic frequency, amplitude, palette, or recurrent weight and therefore alter many derived pixels at once."
+  - label: "Equation-only and recurrent modes diverge"
+    meaning: "The inherited morphology equation is identical, but recurrence feeds previous hidden state back into phase, radial amplitude, and spatial warp."
+  - label: "Reset recurrence reproduces the same trajectory"
+    meaning: "With the same genome, time origin, and zero hidden state, the browser deterministically regenerates the same animation trajectory."
+steps:
+  - label: "Decode the mathematical genome"
+    text: "Twenty-four deterministic bytes are mapped into body radius, harmonic frequencies, amplitudes, phase coupling, spatial warp, palette parameters, and recurrent weights."
+  - label: "Evaluate the morphology field"
+    text: "Every visible address is mapped into normalized coordinates. Polar radius and angle feed an explicit harmonic boundary equation plus an interior pigment equation. No frame bitmap is inherited."
+  - label: "Feed state back through time"
+    text: "In recurrent mode, two tanh state variables update from sin(time), cos(time), and their previous values, then modulate the next morphology evaluation."
+technical: |
+  **Inherited description.** The genome is `24 bytes = 192 bits`. Bytes `0–11` parameterize visible morphology and palette. Bytes `12–23` parameterize a two-state recurrent modulator. The 64×64 rendered field contains `4,096` spatial addresses but is recomputed rather than stored as inherited raster data.
+
+  **Boundary equation.** For normalized coordinates `(x,y)`, the renderer computes `r = sqrt(x²+y²)` and `θ = atan2(y,x)`. The body boundary is a radial harmonic mixture of the form `R(θ,t,h) = b + a₁ sin(k₁θ + φ₁) + a₂ sin(k₂θ - φ₂)`, with small spatial warps applied before the polar conversion. Genome-derived coefficients determine `b`, amplitudes, frequencies, phase rates, and warp strength.
+
+  **Recurrent modulation.** The transient state `h = [h₀,h₁]` updates as `h(t+1) = tanh(W_h h(t) + W_x [sin(t), cos(t)] + b)`. Genome nibbles map deterministically to signed weights. The two state values modulate boundary amplitude, phase, and spatial warp. The weights are inherited; the hidden state is not.
+
+  **Interior field.** Pixels inside the generated boundary receive one of several genome-derived colors according to a second harmonic expression over radius, angle, and time. Edge pixels are separately emphasized from the signed distance to the boundary. The RGB palette is derived from genome bytes and therefore is not independent per-frame source information.
+
+  **Mutation.** The mutation control flips exactly one to three unique bits in the 192-bit genome. The displayed Hamming distance is therefore exactly the inherited edit size, while the phenotype difference can be spatially large because one coefficient influences many pixel addresses.
+
+  **Determinism boundary.** For a fixed genome, equation mode, time origin, and recurrent reset state, the generated trajectory is deterministic in this browser implementation. The experiment demonstrates compact procedural generation and recurrent modulation, not biological morphogenesis or learned neural cellular automata.
+scripts:
+  - /assets/js/mathematical-organism.js
+---
+<div data-math-organism>
+  <section class="lab-module math-organism-principle">
+    <div class="lab-label">GENOME → EQUATION → RECURRENT MODULATION → PIXEL FIELD</div>
+    <h2>Make the hidden bridge visible</h2>
+    <p class="lab-explain">Pixel Genome showed inherited procedural morphology. Pixel Organism added an inherited recurrent controller. Here they are fused into one inspectable equation: the genome supplies coefficients, the equation supplies body structure, and transient recurrence bends that structure through time.</p>
+    <pre class="carrier-code wrap math-equation">R(θ,t,h) = b + a₁·sin(k₁θ + φ₁(t,h)) + a₂·sin(k₂θ − φ₂(t,h))
+hₜ₊₁ = tanh(Wₕhₜ + Wₓ[sin(t), cos(t)] + b)</pre>
+  </section>
+
+  <section class="lab-module">
+    <div class="lab-controls math-organism-controls">
+      <label>Genome seed <input id="mathOrgSeed" value="HARMONIC-ORGANISM-01"></label>
+      <button id="mathOrgGenerate" class="btn primary">Generate</button>
+      <button id="mathOrgMutate" class="btn">Mutate 1–3 bits</button>
+      <label>Dynamics
+        <select id="mathOrgMode">
+          <option value="recurrent" selected>Equation + recurrence</option>
+          <option value="equation">Equation only</option>
+        </select>
+      </label>
+      <label>Tempo <input id="mathOrgTempo" type="range" min="20" max="180" step="5" value="80"><strong id="mathOrgTempoOut">0.80×</strong></label>
+      <button id="mathOrgPause" class="btn">Pause</button>
+      <button id="mathOrgReset" class="btn secondary">Reset time + state</button>
+    </div>
+  </section>
+
+  <section class="math-organism-stage">
+    <div class="lab-module math-organism-canvas-panel">
+      <small>64×64 DERIVED PHENOTYPE FIELD</small>
+      <canvas id="mathOrgCanvas" class="pixel-canvas math-organism-canvas" width="64" height="64"></canvas>
+      <div class="math-organism-legend"><span>persistent: genome</span><span>shared: equation</span><span>transient: time + h</span></div>
+    </div>
+
+    <div class="lab-module">
+      <div class="lab-label">Live state</div>
+      <div class="carrier-readout-grid math-organism-readout">
+        <div><small>GENOME</small><strong>192 bits</strong></div>
+        <div><small>FIELD</small><strong>4,096 px</strong></div>
+        <div><small>MUTATION Δ</small><strong id="mathOrgDistance">0 bits</strong></div>
+        <div><small>OCCUPIED</small><strong id="mathOrgOccupied">—</strong></div>
+        <div><small>h₀</small><strong id="mathOrgH0">0.000</strong></div>
+        <div><small>h₁</small><strong id="mathOrgH1">0.000</strong></div>
+      </div>
+      <div class="lab-label" style="margin-top:16px">192-bit genome hex</div>
+      <pre id="mathOrgGenome" class="carrier-code wrap">—</pre>
+      <div id="mathOrgStatus" class="lab-status"></div>
+    </div>
+  </section>
+
+  <section class="lab-two math-organism-analysis">
+    <div class="lab-module">
+      <div class="lab-label">Decoded morphology</div>
+      <div class="math-parameter-grid">
+        <div><small>BASE RADIUS</small><strong id="mathOrgRadius">—</strong></div>
+        <div><small>PRIMARY HARMONIC</small><strong id="mathOrgK1">—</strong></div>
+        <div><small>SECONDARY HARMONIC</small><strong id="mathOrgK2">—</strong></div>
+        <div><small>AMPLITUDES</small><strong id="mathOrgAmp">—</strong></div>
+        <div><small>WARP</small><strong id="mathOrgWarp">—</strong></div>
+        <div><small>PIGMENT FREQ.</small><strong id="mathOrgPigment">—</strong></div>
+      </div>
+    </div>
+
+    <div class="lab-module">
+      <div class="lab-label">Causal decomposition</div>
+      <div class="math-causal-stack">
+        <div><small>1 · INHERITED</small><strong>genome coefficients</strong><span>persistent across frames</span></div>
+        <div><small>2 · SHARED</small><strong>harmonic decoder</strong><span>the same equation for every genome</span></div>
+        <div><small>3 · TRANSIENT</small><strong>time + recurrent state</strong><span>changes during animation</span></div>
+        <div><small>4 · DERIVED</small><strong>pixel phenotype</strong><span>recomputed every frame</span></div>
+      </div>
+    </div>
+  </section>
+</div>
