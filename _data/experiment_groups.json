@@ -3,5 +3,5 @@
   {"id":"representation","title":"Representation","short":"Distributed and structured pixel state","ids":["05","06"]},
   {"id":"computation-and-memory","title":"Computation & memory","short":"Recall, local compute, and field dynamics","ids":["03","08","A1"]},
   {"id":"learning-and-comparison","title":"Learning & comparison","short":"Learned reconstruction, recurrence, and resource controls","ids":["07","09","10"]},
-  {"id":"generation","title":"Generation & life","short":"Genomes, phenotypes, controllers, and selection","ids":["11","12"]}
+  {"id":"generation","title":"Generation & life","short":"Genomes, phenotypes, mathematical morphology, controllers, and selection","ids":["11","12","13"]}
 ]
